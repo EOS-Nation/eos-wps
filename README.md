@@ -1,0 +1,2 @@
+# eosio-wps
+EOSIO WPS
