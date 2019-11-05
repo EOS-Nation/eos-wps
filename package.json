@@ -1,0 +1,25 @@
+{
+  "private": true,
+  "name": "eosio-wps",
+  "version": "0.1.0",
+  "description": "EOSIO WPS",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "npm run compile && npm run deploy",
+    "deploy": "./scripts/deploy.sh",
+    "compile": "./scripts/compile.sh",
+    "nodeos:start": "./scripts/start_nodeos.sh",
+    "nodeos:kill": "./scripts/kill_nodeos.sh"
+  },
+  "author": "Denis Carriere <denis@eosnation.io>",
+  "dependencies": {
+    "eosjs": "^20.0.0",
+    "node-fetch": "^2.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "^12.11.7",
+    "ts-node": "^8.4.1",
+    "typescript": "^3.6.4"
+  }
+}

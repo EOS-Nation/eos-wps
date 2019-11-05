@@ -1,6 +1,13 @@
 # Prerequisites
 *.d
 
+nodeos
+dist
+tmp
+node_modules
+package-lock.json
+stderr
+
 # Compiled Object files
 *.slo
 *.lo
