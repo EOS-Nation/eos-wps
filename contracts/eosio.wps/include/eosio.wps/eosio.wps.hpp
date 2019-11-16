@@ -6,6 +6,8 @@
 #include <eosio/singleton.hpp>
 #include <eosio/system.hpp>
 
+#include <eosio.token/eosio.token.hpp>
+
 using namespace eosio;
 using namespace std;
 
@@ -170,6 +172,7 @@ private:
     typedef eosio::singleton< "settings"_n, settings_row> settings_table;
 
     // private helpers
+    void check_json( const string json );
 };
 
 }
