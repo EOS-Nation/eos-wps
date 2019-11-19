@@ -15,7 +15,8 @@ then
     -R contracts/eosio.wps/ricardian \
     -o ./dist/eosio.wps.wasm \
     -I contracts/eosio.wps/include \
-    -I contracts/eosio.token/include
+    -I contracts/eosio.token/include \
+    -I ../boost_1_66_0
 fi
 
 if [[ $1 == "token" || $1 == "" ]]

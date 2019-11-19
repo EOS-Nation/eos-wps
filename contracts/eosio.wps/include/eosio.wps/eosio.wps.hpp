@@ -18,6 +18,20 @@ public:
     using contract::contract;
 
     /**
+     * Construct a new contract given the contract name
+     *
+     * @param {name} receiver - The name of this contract
+     * @param {name} code - The code name of the action this contract is processing.
+     * @param {datastream} ds - The datastream used
+     */
+    wps( name receiver, name code, eosio::datastream<const char*> ds )
+        : contract( receiver, code, ds ),
+            _settings( get_self(), get_self().value ),
+            _proposals( get_self(), get_self().value ),
+            _votes( get_self(), get_self().value )
+    {}
+
+    /**
      * ## ACTION `propose`
      *
      * Submit a WPS proposal
@@ -65,12 +79,30 @@ public:
     [[eosio::action]]
     void vote( const eosio::name voter, const eosio::name proposal_name, const eosio::name vote );
 
+    [[eosio::on_notify("eosio.token::transfer")]]
+    void transfer( const name&    from,
+                   const name&    to,
+                   const asset&   quantity,
+                   const string&  memo );
+
+    [[eosio::action]]
+    void init( const eosio::time_point_sec current_voting_period );
+
+    [[eosio::action]]
+    void activate( const eosio::name proposer, const eosio::name proposal_name );
+
+    [[eosio::action]]
+    void settings( const uint64_t vote_margin, const eosio::asset deposit_required, const uint64_t voting_interval );
+
+    [[eosio::action]]
+    void withdraw( const eosio::name proposer, const eosio::name proposal_name );
+
     using vote_action = eosio::action_wrapper<"vote"_n, &wps::vote>;
     using propose_action = eosio::action_wrapper<"propose"_n, &wps::propose>;
 
 private:
     /**
-     * ## TABLE `proposal`
+     * ## TABLE `proposals`
      *
      * - `{name} proposer` - proposer of proposal
      * - `{name} proposal_name` - proposal name
@@ -78,8 +110,10 @@ private:
      * - `{string} proposal_json` - proposal JSON metadata
      * - `{asset} budget` - monthly budget payment request
      * - `{uint8_t} payments` - number of monthly payment duration (maximum of 6 months)
-     * - `{time_point_sec} last_updated` - last updated (in UTC)
+     * - `{asset} deposit` - deposit required to active proposal
      * - `{name} status` - current status of proposal (draft/active/completed/expired)
+     * - `{time_point_sec} start` - start of voting period (UTC)
+     * - `{time_point_sec} end` - end of voting period (UTC)
      *
      * ### example
      *
@@ -91,20 +125,24 @@ private:
      *   "proposal_json": "{\"category\": \"other\", \"region\": \"global\"}",
      *   "budget": "500.0000 EOS",
      *   "payments": 1,
-     *   "last_updated": "2019-11-03T16:48:21",
-     *   "status": "draft"
+     *   "deposit": "0.0000 EOS",
+     *   "status": "draft",
+     *   "start": "2019-11-01T00:00:00",
+     *   "end": "2019-12-01T00:00:00"
      * }
      * ```
      */
-    struct [[eosio::table("proposal")]] proposal_row {
+    struct [[eosio::table("proposals")]] proposals_row {
         eosio::name                 proposer;
         eosio::name                 proposal_name;
         string                      title;
         string                      proposal_json;
         eosio::asset                budget;
         uint8_t                     payments;
-        eosio::time_point_sec       last_updated;
+        eosio::asset                deposit;
         eosio::name                 status;
+        eosio::time_point_sec       start;
+        eosio::time_point_sec       end;
 
         uint64_t primary_key() const { return proposal_name.value; }
     };
@@ -117,8 +155,6 @@ private:
      * - `{vector<name>} no` - vector array of no votes
      * - `{vector<name>} abstain` - vector array of abstain votes
      * - `{int16_t} total_net_votes` - total net votes
-     * - `{time_point_sec} start` - start of voting period
-     * - `{time_point_sec} end` - end of voting period
      *
      * ### example
      *
@@ -128,9 +164,7 @@ private:
      *   "yes": ["mybp1", "mybp3", "mybp4"],
      *   "no": ["mybp2"],
      *   "abstain": [],
-     *   "total_net_votes": 2,
-     *   "start": "2019-11-00T00:00:00",
-     *   "end": "2019-12-00T00:00:00"
+     *   "total_net_votes": 2
      * }
      * ```
      */
@@ -140,8 +174,6 @@ private:
         std::vector<eosio::name>        no;
         std::vector<eosio::name>        abstain;
         int16_t                         total_net_votes;
-        eosio::time_point_sec           start;
-        eosio::time_point_sec           end;
 
         uint64_t primary_key() const { return proposal_name.value; }
     };
@@ -149,27 +181,38 @@ private:
     /**
      * ## TABLE `settings`
      *
-     * - `{uint64_t} vote_margin` - minimum BP vote margin threshold to reach for proposals
-     * - `{time_point_sec} current` - current voting period
+     * - `{time_point_sec} current_voting_period` - current voting period
+     * - `{int16_t} [vote_margin=15]` - minimum BP vote margin threshold to reach for proposals
+     * - `{asset} [deposit_required="100.0000 EOS"]` - deposit required to active proposal
+     * - `{uint64_t} [voting_interval=2592000]` -  election interval in seconds
      *
      * ### example
      *
      * ```json
      * {
+     *   "current_voting_period": "2019-11-01T00:00:00",
      *   "vote_margin": 15,
-     *   "current": "2019-11-00T00:00:00"
+     *   "deposit_required": "100.0000 EOS",
+     *   "voting_interval": 2592000,
      * }
      * ```
      */
     struct [[eosio::table("settings")]] settings_row {
-        uint64_t                    vote_margin;
-        eosio::time_point_sec       current;
+        eosio::time_point_sec       current_voting_period;
+        int16_t                     vote_margin = 15;
+        eosio::asset                deposit_required = asset{1000000, symbol{"EOS", 4}};
+        uint64_t                    voting_interval = 2592000;
     };
 
     // Tables
-    typedef eosio::multi_index< "proposal"_n, proposal_row> proposal_table;
+    typedef eosio::multi_index< "proposals"_n, proposals_row> proposals_table;
     typedef eosio::multi_index< "votes"_n, votes_row> votes_table;
     typedef eosio::singleton< "settings"_n, settings_row> settings_table;
+
+    // local instances of the multi indexes
+    votes_table                 _votes;
+    proposals_table             _proposals;
+    settings_table              _settings;
 
     // private helpers
     void check_json( const string json );

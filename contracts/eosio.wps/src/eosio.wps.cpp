@@ -2,3 +2,5 @@
 
 #include "proposal.cpp"
 #include "vote.cpp"
+#include "on_notify.cpp"
+#include "settings.cpp"

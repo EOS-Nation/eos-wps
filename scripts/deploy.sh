@@ -1,11 +1,5 @@
 #!/bin/bash
-# Usage: ./deploy.sh
 
-# Assumptions: contracts already compiled (with abi's generated);
-# in a separate terminal window, nodeos is running locally with this exact command:
-#   nodeos -e -p eosio --max-transaction-time=1000 --http-validate-host=false --delete-all-blocks --contracts-console --plugin eosio::chain_api_plugin --plugin eosio::history_api_plugin --plugin eosio::producer_plugin --plugin eosio::http_plugin
-
-#=================================================================================#
 # Config Constants
 
 CYAN='\033[1;36m'
@@ -51,11 +45,18 @@ cleos create account eosio eosio.wps EOS6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGY
 cleos create account eosio eosio.token EOS6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5GDW5CV
 cleos create account eosio myaccount EOS6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5GDW5CV
 cleos create account eosio toaccount EOS6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5GDW5CV
+cleos set account permission eosio.wps active --add-code
+
 
 # deploy smart contract
 echo -e "${CYAN}-----------------------DEPLOYING CONTRACTS-----------------------${NC}"
 cleos set contract eosio.wps ./dist eosio.wps.wasm eosio.wps.abi
 cleos set contract eosio.token ./dist eosio.token.wasm eosio.token.abi
+
+echo -e "${CYAN}-----------------------CREATE EOS TOKEN-----------------------${NC}"
+cleos push action eosio.token create '["eosio", "1000000000.0000 EOS"]' -p eosio.token
+cleos push action eosio.token issue '["eosio", "1000000000.0000 EOS", "init"]' -p eosio
+cleos transfer eosio myaccount "1000.0000 EOS"
 
 on_exit
 echo -e "${GREEN}--> Done${NC}"
