@@ -95,7 +95,10 @@ public:
     void settings( const uint64_t vote_margin, const eosio::asset deposit_required, const uint64_t voting_interval );
 
     [[eosio::action]]
-    void withdraw( const eosio::name proposer, const eosio::name proposal_name );
+    void refund( const eosio::name proposer, const eosio::name proposal_name );
+
+    [[eosio::action]]
+    void cancel( const eosio::name proposer, const eosio::name proposal_name );
 
     using vote_action = eosio::action_wrapper<"vote"_n, &wps::vote>;
     using propose_action = eosio::action_wrapper<"propose"_n, &wps::propose>;

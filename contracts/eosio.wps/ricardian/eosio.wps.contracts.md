@@ -28,8 +28,14 @@ Set current settings
 
 Activate proposal
 
-<h1 class="contract">withdraw</h1>
+<h1 class="contract">refund</h1>
 
 ## Description
 
-Withdraw deposit amount
+Refund deposit amount
+
+<h1 class="contract">cancel</h1>
+
+## Description
+
+Cancel draft proposal

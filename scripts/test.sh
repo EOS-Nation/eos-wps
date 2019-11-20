@@ -9,8 +9,12 @@ cleos -v push action eosio.wps propose '["myaccount", "mywps2", "My WPS", "{\"ca
 # transfer
 cleos -v transfer myaccount eosio.wps "50.0000 EOS" "mywps"
 
+# refund
+cleos -v push action eosio.wps refund '["myaccount", "mywps"]' -p myaccount
+
 # activate
 cleos -v push action eosio.wps activate '["myaccount", "mywps"]' -p myaccount
 
-# withdraw
-cleos -v push action eosio.wps withdraw '["myaccount", "mywps"]' -p myaccount
+# cancel
+cleos -v push action eosio.wps cancel '["myaccount", "mywps"]' -p myaccount
+

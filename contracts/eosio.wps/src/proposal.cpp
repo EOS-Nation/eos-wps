@@ -61,24 +61,38 @@ void wps::activate( const eosio::name proposer, const eosio::name proposal_name 
     });
 }
 
-void wps::withdraw( const eosio::name proposer, const eosio::name proposal_name )
+void wps::refund( const eosio::name proposer, const eosio::name proposal_name )
 {
     require_auth( proposer );
 
     auto proposals_itr = _proposals.find( proposal_name.value );
 
     check( proposals_itr != _proposals.end(), "[proposal_name] does not exists");
-    check( proposals_itr->status == "draft"_n, "withdraw is only available for proposals in draft status");
-    check( proposals_itr->deposit.amount > 0, "proposal has no more deposit to withdraw");
+    check( proposals_itr->status == "draft"_n, "`refund` is only available for proposals in draft status");
+    check( proposals_itr->deposit.amount > 0, "proposal has no more deposit to refund");
 
     // send liquid token
     token::transfer_action transfer( "eosio.token"_n, { get_self(), "active"_n });
-    transfer.send( get_self(), proposer, proposals_itr->deposit, "withdraw deposit" );
+    transfer.send( get_self(), proposer, proposals_itr->deposit, "refund deposit" );
 
     // add deposit
     _proposals.modify( proposals_itr, same_payer, [&]( auto& row ) {
         row.deposit -= proposals_itr->deposit;
     });
+}
+
+void wps::cancel( const eosio::name proposer, const eosio::name proposal_name )
+{
+    require_auth( proposer );
+
+    auto proposals_itr = _proposals.find( proposal_name.value );
+
+    check( proposals_itr != _proposals.end(), "[proposal_name] does not exists");
+    check( proposals_itr->status == "draft"_n, "`cancel` is only available for proposals in draft status");
+    check( proposals_itr->deposit.amount == 0, "must `refund` remaining balance before closing");
+
+    // add deposit
+    _proposals.erase( proposals_itr );
 }
 
 void wps::check_json( const string json )
