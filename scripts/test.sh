@@ -18,3 +18,5 @@ cleos -v push action eosio.wps activate '["myaccount", "mywps"]' -p myaccount
 # cancel
 cleos -v push action eosio.wps cancel '["myaccount", "mywps"]' -p myaccount
 
+# vote
+cleos -v push action eosio.wps vote '["toaccount", "mywps", "yes"]' -p toaccount

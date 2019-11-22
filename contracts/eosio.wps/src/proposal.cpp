@@ -54,6 +54,7 @@ void wps::activate( const eosio::name proposer, const eosio::name proposal_name 
     // duration of proposal
     const time_point end = time_point(settings.current_voting_period) + time_point_sec(settings.voting_interval * proposals_itr->payments);
 
+    // set proposal as active
     _proposals.modify( proposals_itr, proposer, [&]( auto& row ) {
         row.status = "active"_n;
         row.start = current_time_point();

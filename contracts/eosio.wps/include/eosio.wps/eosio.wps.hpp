@@ -27,8 +27,7 @@ public:
     wps( name receiver, name code, eosio::datastream<const char*> ds )
         : contract( receiver, code, ds ),
             _settings( get_self(), get_self().value ),
-            _proposals( get_self(), get_self().value ),
-            _votes( get_self(), get_self().value )
+            _proposals( get_self(), get_self().value )
     {}
 
     /**
@@ -182,6 +181,30 @@ private:
     };
 
     /**
+     * ## TABLE `voters`
+     *
+     * Scoped: `proposal_name`
+     *
+     * - `{name} voter` - voter
+     * - `{name} vote` - vote
+     *
+     * ### example
+     *
+     * ```json
+     * {
+     *   "voter": "mybp1",
+     *   "vote": "yes"
+     * }
+     * ```
+     */
+    struct [[eosio::table("voters")]] voters_row {
+        eosio::name         voter;
+        eosio::name         vote
+
+        uint64_t primary_key() const { return voter.value; }
+    };
+
+    /**
      * ## TABLE `settings`
      *
      * - `{time_point_sec} current_voting_period` - current voting period
@@ -213,7 +236,6 @@ private:
     typedef eosio::singleton< "settings"_n, settings_row> settings_table;
 
     // local instances of the multi indexes
-    votes_table                 _votes;
     proposals_table             _proposals;
     settings_table              _settings;
 

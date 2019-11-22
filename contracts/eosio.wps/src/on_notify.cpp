@@ -23,7 +23,7 @@ void wps::transfer( const name&    from,
     auto settings = _settings.get_or_default();
 
     check( proposals_itr != _proposals.end(), "memo does not match any proposal");
-    check( proposals_itr->proposer == from, "`from` must match `proposer` of propsal")
+    check( proposals_itr->proposer == from, "`from` must match `proposer` of propsal");
     check( proposals_itr->status == "draft"_n, "proposal `status` must be in `draft`");
     check( quantity.symbol.code() == symbol_code("EOS"), "only EOS symbol code is allowed");
 
