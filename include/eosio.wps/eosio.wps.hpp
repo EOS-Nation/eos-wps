@@ -56,10 +56,10 @@ public:
     [[eosio::action]]
     void propose(const eosio::name proposer,
                  const eosio::name proposal_name,
-                 const string title,
+                 const eosio::string title,
                  const eosio::asset budget,
                  const uint8_t payments,
-                 const std::map<name, string> proposal_json );
+                 const std::map<eosio::name, eosio::string> proposal_json );
 
     /**
      * ## ACTION `vote`
@@ -95,10 +95,10 @@ public:
     void canceldraft( const eosio::name proposer, const eosio::name proposal_name );
 
     [[eosio::on_notify("eosio.token::transfer")]]
-    void transfer( const name&    from,
-                   const name&    to,
-                   const asset&   quantity,
-                   const string&  memo );
+    void transfer( const eosio::name&    from,
+                   const eosio::name&    to,
+                   const eosio::asset&   quantity,
+                   const eosio::string&  memo );
 
     using vote_action = eosio::action_wrapper<"vote"_n, &wps::vote>;
     using propose_action = eosio::action_wrapper<"propose"_n, &wps::propose>;
@@ -140,14 +140,14 @@ private:
      * ```
      */
     struct [[eosio::table("proposals")]] proposals_row {
-        eosio::name                 proposer;
-        eosio::name                 proposal_name;
-        string                      title;
-        eosio::asset                budget;
-        uint8_t                     payments;
-        eosio::asset                deposit;
-        eosio::name                 status;
-        map<name, string>           proposal_json;
+        eosio::name                             proposer;
+        eosio::name                             proposal_name;
+        eosio::string                           title;
+        eosio::asset                            budget;
+        uint8_t                                 payments;
+        eosio::asset                            deposit;
+        eosio::name                             status;
+        std::map<eosio::name, eosio::string>    proposal_json;
 
         uint64_t primary_key() const { return proposal_name.value; }
     };
@@ -226,7 +226,6 @@ private:
     votes_table                 _votes;
 
     // private helpers
-    void check_json( const string json );
     int16_t calculate_total_net_votes( const std::map<eosio::name, eosio::name> votes );
 };
 

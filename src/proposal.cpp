@@ -98,12 +98,4 @@ void wps::canceldraft( const eosio::name proposer, const eosio::name proposal_na
     _proposals.erase( proposals_itr );
 }
 
-void wps::check_json( const string json )
-{
-    if (json.size() <= 0) return;
-
-    check(json[0] == '{' && json[json.size() - 1] == '}', "must be a JSON object (if specified)" );
-    check( sizeof(json) < 32768, "JSON should be shorter than 32768 bytes" );
-}
-
 }
