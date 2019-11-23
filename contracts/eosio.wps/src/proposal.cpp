@@ -31,8 +31,6 @@ void wps::propose(const eosio::name proposer,
         row.payments = payments;
         row.deposit = asset{0, symbol{"EOS", 4}};
         row.status = "draft"_n;
-        row.start = time_point_sec(0);
-        row.end = time_point_sec(0);
     });
 }
 
@@ -51,12 +49,17 @@ void wps::activate( const eosio::name proposer, const eosio::name proposal_name 
     const time_point end_voting_period = time_point(settings.current_voting_period) + time_point_sec(settings.voting_interval);
     check( in_one_week < end_voting_period, "cannot activate within 7 days of next voting period ending");
 
-    // duration of proposal
-    const time_point end = time_point(settings.current_voting_period) + time_point_sec(settings.voting_interval * proposals_itr->payments);
-
     // set proposal as active
     _proposals.modify( proposals_itr, proposer, [&]( auto& row ) {
         row.status = "active"_n;
+    });
+
+    // duration of proposal
+    const time_point end = time_point(settings.current_voting_period) + time_point_sec(settings.voting_interval * proposals_itr->payments);
+
+    // add empty votes for proposal
+    _votes.emplace( proposer, [&]( auto& row ) {
+        row.proposal_name = proposal_name;
         row.start = current_time_point();
         row.end = end;
     });
@@ -82,14 +85,14 @@ void wps::refund( const eosio::name proposer, const eosio::name proposal_name )
     });
 }
 
-void wps::cancel( const eosio::name proposer, const eosio::name proposal_name )
+void wps::canceldraft( const eosio::name proposer, const eosio::name proposal_name )
 {
     require_auth( proposer );
 
     auto proposals_itr = _proposals.find( proposal_name.value );
 
     check( proposals_itr != _proposals.end(), "[proposal_name] does not exists");
-    check( proposals_itr->status == "draft"_n, "`cancel` is only available for proposals in draft status");
+    check( proposals_itr->status == "draft"_n, "`canceldraft` is only available for proposals in draft status");
     check( proposals_itr->deposit.amount == 0, "must `refund` remaining balance before closing");
 
     // add deposit

@@ -27,7 +27,8 @@ public:
     wps( name receiver, name code, eosio::datastream<const char*> ds )
         : contract( receiver, code, ds ),
             _settings( get_self(), get_self().value ),
-            _proposals( get_self(), get_self().value )
+            _proposals( get_self(), get_self().value ),
+            _votes( get_self(), get_self().value )
     {}
 
     /**
@@ -78,12 +79,6 @@ public:
     [[eosio::action]]
     void vote( const eosio::name voter, const eosio::name proposal_name, const eosio::name vote );
 
-    [[eosio::on_notify("eosio.token::transfer")]]
-    void transfer( const name&    from,
-                   const name&    to,
-                   const asset&   quantity,
-                   const string&  memo );
-
     [[eosio::action]]
     void init( const eosio::time_point_sec current_voting_period );
 
@@ -97,10 +92,21 @@ public:
     void refund( const eosio::name proposer, const eosio::name proposal_name );
 
     [[eosio::action]]
-    void cancel( const eosio::name proposer, const eosio::name proposal_name );
+    void canceldraft( const eosio::name proposer, const eosio::name proposal_name );
+
+    [[eosio::on_notify("eosio.token::transfer")]]
+    void transfer( const name&    from,
+                   const name&    to,
+                   const asset&   quantity,
+                   const string&  memo );
 
     using vote_action = eosio::action_wrapper<"vote"_n, &wps::vote>;
     using propose_action = eosio::action_wrapper<"propose"_n, &wps::propose>;
+    using init_action = eosio::action_wrapper<"init"_n, &wps::init>;
+    using activate_action = eosio::action_wrapper<"activate"_n, &wps::activate>;
+    using settings_action = eosio::action_wrapper<"settings"_n, &wps::settings>;
+    using refund_action = eosio::action_wrapper<"refund"_n, &wps::refund>;
+    using canceldraft_action = eosio::action_wrapper<"canceldraft"_n, &wps::canceldraft>;
 
 private:
     /**
@@ -114,8 +120,6 @@ private:
      * - `{uint8_t} payments` - number of monthly payment duration (maximum of 6 months)
      * - `{asset} deposit` - deposit required to active proposal
      * - `{name} status` - current status of proposal (draft/active/completed/expired)
-     * - `{time_point_sec} start` - start of voting period (UTC)
-     * - `{time_point_sec} end` - end of voting period (UTC)
      *
      * ### example
      *
@@ -128,9 +132,7 @@ private:
      *   "budget": "500.0000 EOS",
      *   "payments": 1,
      *   "deposit": "0.0000 EOS",
-     *   "status": "draft",
-     *   "start": "2019-11-01T00:00:00",
-     *   "end": "2019-12-01T00:00:00"
+     *   "status": "draft"
      * }
      * ```
      */
@@ -143,8 +145,6 @@ private:
         uint8_t                     payments;
         eosio::asset                deposit;
         eosio::name                 status;
-        eosio::time_point_sec       start;
-        eosio::time_point_sec       end;
 
         uint64_t primary_key() const { return proposal_name.value; }
     };
@@ -153,55 +153,37 @@ private:
      * ## TABLE `votes`
      *
      * - `{name} proposal_name` - The proposal's name, its ID among all proposals
-     * - `{vector<name>} yes` - vector array of yes votes
-     * - `{vector<name>} no` - vector array of no votes
-     * - `{vector<name>} abstain` - vector array of abstain votes
      * - `{int16_t} total_net_votes` - total net votes
+     * - `{time_point_sec} start` - start of voting period (UTC)
+     * - `{time_point_sec} end` - end of voting period (UTC)
+     * - `{map<name, name>} votes` - a sorted container of <voter, vote>
      *
      * ### example
      *
      * ```json
      * {
      *   "proposal_name": "mywps",
-     *   "yes": ["mybp1", "mybp3", "mybp4"],
-     *   "no": ["mybp2"],
-     *   "abstain": [],
-     *   "total_net_votes": 2
+     *   "total_net_votes": 2,
+     *   "start": "2019-11-01T00:00:00",
+     *   "end": "2019-12-01T00:00:00",
+     *   "votes": [
+     *      { "key": "mybp1", "value": "yes" },
+     *      { "key": "mybp2", "value": "no" },
+     *      { "key": "mybp3", "value": "yes" },
+     *      { "key": "mybp4", "value": "abstain" },
+     *      { "key": "mybp5", "value": "yes" }
+     *   ]
      * }
      * ```
      */
     struct [[eosio::table("votes")]] votes_row {
-        eosio::name                     proposal_name;
-        std::vector<eosio::name>        yes;
-        std::vector<eosio::name>        no;
-        std::vector<eosio::name>        abstain;
-        int16_t                         total_net_votes;
+        eosio::name                 proposal_name;
+        int16_t                     total_net_votes;
+        eosio::time_point_sec       start;
+        eosio::time_point_sec       end;
+        std::map<eosio::name, eosio::name>  votes;
 
         uint64_t primary_key() const { return proposal_name.value; }
-    };
-
-    /**
-     * ## TABLE `voters`
-     *
-     * Scoped: `proposal_name`
-     *
-     * - `{name} voter` - voter
-     * - `{name} vote` - vote
-     *
-     * ### example
-     *
-     * ```json
-     * {
-     *   "voter": "mybp1",
-     *   "vote": "yes"
-     * }
-     * ```
-     */
-    struct [[eosio::table("voters")]] voters_row {
-        eosio::name         voter;
-        eosio::name         vote
-
-        uint64_t primary_key() const { return voter.value; }
     };
 
     /**
@@ -238,9 +220,11 @@ private:
     // local instances of the multi indexes
     proposals_table             _proposals;
     settings_table              _settings;
+    votes_table                 _votes;
 
     // private helpers
     void check_json( const string json );
+    int16_t calculate_total_net_votes( const std::map<eosio::name, eosio::name> votes );
 };
 
 }

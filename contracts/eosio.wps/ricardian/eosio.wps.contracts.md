@@ -34,7 +34,7 @@ Activate proposal
 
 Refund deposit amount
 
-<h1 class="contract">cancel</h1>
+<h1 class="contract">canceldraft</h1>
 
 ## Description
 

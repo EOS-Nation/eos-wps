@@ -4,19 +4,23 @@
 cleos -v push action eosio.wps init '["2019-11-01T00:00:00"]' -p eosio.wps
 
 # propose
-cleos -v push action eosio.wps propose '["myaccount", "mywps2", "My WPS", "{\"category\": \"other\", \"region\": \"global\"}", "500.0000 EOS", 1]' -p myaccount
+cleos -v push action eosio.wps propose '["myaccount", "mywps", "My WPS", "{\"category\": \"other\", \"region\": \"global\"}", "500.0000 EOS", 1]' -p myaccount
 
 # transfer
-cleos -v transfer myaccount eosio.wps "50.0000 EOS" "mywps"
+cleos -v transfer myaccount eosio.wps "100.0000 EOS" "mywps"
 
 # refund
-cleos -v push action eosio.wps refund '["myaccount", "mywps"]' -p myaccount
+# cleos -v push action eosio.wps refund '["myaccount", "mywps"]' -p myaccount
 
 # activate
 cleos -v push action eosio.wps activate '["myaccount", "mywps"]' -p myaccount
 
 # cancel
-cleos -v push action eosio.wps cancel '["myaccount", "mywps"]' -p myaccount
+# cleos -v push action eosio.wps cancel '["myaccount", "mywps"]' -p myaccount
 
 # vote
-cleos -v push action eosio.wps vote '["toaccount", "mywps", "yes"]' -p toaccount
+cleos -v push action eosio.wps vote '["mybp1", "mywps", "yes"]' -p mybp1
+cleos -v push action eosio.wps vote '["mybp2", "mywps", "no"]' -p mybp2
+cleos -v push action eosio.wps vote '["mybp3", "mywps", "yes"]' -p mybp3
+cleos -v push action eosio.wps vote '["mybp4", "mywps", "abstain"]' -p mybp4
+cleos -v push action eosio.wps vote '["mybp5", "mywps", "yes"]' -p mybp5
