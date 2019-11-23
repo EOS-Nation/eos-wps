@@ -4,7 +4,7 @@
 cleos -v push action eosio.wps init '["2019-11-01T00:00:00"]' -p eosio.wps
 
 # propose
-cleos -v push action eosio.wps propose '["myaccount", "mywps", "My WPS", "{\"category\": \"other\", \"region\": \"global\"}", "500.0000 EOS", 1]' -p myaccount
+cleos -v push action eosio.wps propose '["myaccount", "mywps", "My WPS", "500.0000 EOS", 1, [["category", "other"], ["region", "global"]]]' -p myaccount
 
 # transfer
 cleos -v transfer myaccount eosio.wps "100.0000 EOS" "mywps"
@@ -16,7 +16,7 @@ cleos -v transfer myaccount eosio.wps "100.0000 EOS" "mywps"
 cleos -v push action eosio.wps activate '["myaccount", "mywps"]' -p myaccount
 
 # cancel
-# cleos -v push action eosio.wps cancel '["myaccount", "mywps"]' -p myaccount
+# cleos -v push action eosio.wps canceldraft '["myaccount", "mywps"]' -p myaccount
 
 # vote
 cleos -v push action eosio.wps vote '["mybp1", "mywps", "yes"]' -p mybp1

@@ -43,23 +43,23 @@ public:
      * - `{name} proposer` - proposer of proposal
      * - `{name} proposal_name` - proposal name
      * - `{string} title` - proposal title
-     * - `{string} proposal_json` - proposal JSON metadata
      * - `{asset} budget` - monthly budget payment request
      * - `{uin8_t} payments` - number of monthly payment duration (maximum of 6 months)
+     * - `{map<name, string>} proposal_json` - a sorted container of <key, value>
      *
      * ### example
      *
      * ```bash
-     * cleos push action eosio.wps propose '["myaccount", "mywps", "My WPS", "{\"category\": \"other\", \"region\": \"global\"}", "500.0000 EOS", 1]' -p myaccount
+     * cleos push action eosio.wps propose '["myaccount", "mywps", "My WPS", "500.0000 EOS", 1, [["category", "other"], ["region", "global"]]]' -p myaccount
      * ```
      */
     [[eosio::action]]
     void propose(const eosio::name proposer,
                  const eosio::name proposal_name,
                  const string title,
-                 const string proposal_json,
                  const eosio::asset budget,
-                 const uint8_t payments );
+                 const uint8_t payments,
+                 const std::map<name, string> proposal_json );
 
     /**
      * ## ACTION `vote`
@@ -115,11 +115,11 @@ private:
      * - `{name} proposer` - proposer of proposal
      * - `{name} proposal_name` - proposal name
      * - `{string} title` - proposal title
-     * - `{string} proposal_json` - proposal JSON metadata
      * - `{asset} budget` - monthly budget payment request
      * - `{uint8_t} payments` - number of monthly payment duration (maximum of 6 months)
      * - `{asset} deposit` - deposit required to active proposal
      * - `{name} status` - current status of proposal (draft/active/completed/expired)
+     * - `{map<name, string>} proposal_json` - a sorted container of <key, value>
      *
      * ### example
      *
@@ -128,11 +128,14 @@ private:
      *   "proposer": "myaccount",
      *   "proposal_name": "mywps",
      *   "title": "My WPS",
-     *   "proposal_json": "{\"category\": \"other\", \"region\": \"global\"}",
      *   "budget": "500.0000 EOS",
      *   "payments": 1,
      *   "deposit": "0.0000 EOS",
-     *   "status": "draft"
+     *   "status": "draft",
+     *   "proposal_json": [
+     *     { "key": "category", "value": "other" },
+     *     { "key": "region", "value": "global" }
+     *   ]
      * }
      * ```
      */
@@ -140,11 +143,11 @@ private:
         eosio::name                 proposer;
         eosio::name                 proposal_name;
         string                      title;
-        string                      proposal_json;
         eosio::asset                budget;
         uint8_t                     payments;
         eosio::asset                deposit;
         eosio::name                 status;
+        map<name, string>           proposal_json;
 
         uint64_t primary_key() const { return proposal_name.value; }
     };

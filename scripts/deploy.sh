@@ -62,6 +62,7 @@ echo -e "${CYAN}-----------------------CREATE EOS TOKEN-----------------------${
 cleos push action eosio.token create '["eosio", "1000000000.0000 EOS"]' -p eosio.token
 cleos push action eosio.token issue '["eosio", "1000000000.0000 EOS", "init"]' -p eosio
 cleos transfer eosio myaccount "1000.0000 EOS"
+cleos transfer eosio toaccount "1000.0000 EOS"
 
 on_exit
 echo -e "${GREEN}--> Done${NC}"

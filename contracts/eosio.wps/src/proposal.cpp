@@ -3,9 +3,9 @@ namespace eosio {
 void wps::propose(const eosio::name proposer,
                   const eosio::name proposal_name,
                   const string title,
-                  const string proposal_json,
                   const eosio::asset budget,
-                  const uint8_t payments )
+                  const uint8_t payments,
+                  const std::map<name, string> proposal_json )
 {
     require_auth( proposer );
     check( _settings.exists(), "settings must first be initialized");
@@ -15,7 +15,6 @@ void wps::propose(const eosio::name proposer,
     check( _proposals.find( proposal_name.value ) == _proposals.end(), "[proposal_name] already exists" );
     check( proposal_name.length() > 2, "[proposal_name] should be at least 3 characters long" );
     check( title.size() < 1024, "[title] should be less than 1024 characters long" );
-    check_json( proposal_json );
     check( budget.symbol == symbol{"EOS", 4}, "[budget] must use EOS symbol" );
     check( budget.amount >= 1000000, "[budget] must be a minimum of 100.0000 EOS ");
     check( payments > 0, "[payments] must be a minimum of 1 monthly period" );
@@ -26,11 +25,11 @@ void wps::propose(const eosio::name proposer,
         row.proposer = proposer;
         row.proposal_name = proposal_name;
         row.title = title;
-        row.proposal_json = proposal_json;
         row.budget = budget;
         row.payments = payments;
         row.deposit = asset{0, symbol{"EOS", 4}};
         row.status = "draft"_n;
+        row.proposal_json = proposal_json;
     });
 }
 
