@@ -154,6 +154,7 @@ cleos push action eosio.wps settings '[15, "100.0000 EOS", 2592000]' -p eosio.wp
 
 - `{name} proposal_name` - The proposal's name, its ID among all proposals
 - `{int16_t} total_net_votes` - total net votes
+- `{time_point_sec} voting_period` - active voting period (UTC)
 - `{time_point_sec} start` - start of voting period (UTC)
 - `{time_point_sec} end` - end of voting period (UTC)
 - `{map<name, name>} votes` - a sorted container of <voter, vote>
@@ -164,7 +165,8 @@ cleos push action eosio.wps settings '[15, "100.0000 EOS", 2592000]' -p eosio.wp
 {
   "proposal_name": "mywps",
   "total_net_votes": 2,
-  "start": "2019-11-01T00:00:00",
+  "voting_period": "2019-11-01T00:00:00",
+  "start": "2019-11-05T12:10:00",
   "end": "2019-12-01T00:00:00",
   "votes": [
       { "key": "mybp1", "value": "yes" },

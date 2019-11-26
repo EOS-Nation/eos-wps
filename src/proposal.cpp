@@ -61,7 +61,8 @@ void wps::activate( const eosio::name proposer, const eosio::name proposal_name 
     _votes.emplace( proposer, [&]( auto& row ) {
         row.proposal_name = proposal_name;
         row.status = "active"_n;
-        row.start = settings.current_voting_period;
+        row.voting_period = settings.current_voting_period;
+        row.start = current_time_point();
         row.end = end;
     });
 }

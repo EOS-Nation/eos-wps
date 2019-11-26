@@ -241,6 +241,7 @@ private:
      * - `{name} proposal_name` - The proposal's name, its ID among all proposals
      * - `{name} status` - current status of proposal (draft/active/completed/expired)
      * - `{int16_t} total_net_votes` - total net votes
+     * - `{time_point_sec} voting_period` - active voting period (UTC)
      * - `{time_point_sec} start` - start of voting period (UTC)
      * - `{time_point_sec} end` - end of voting period (UTC)
      * - `{map<name, name>} votes` - a sorted container of <voter, vote>
@@ -252,7 +253,8 @@ private:
      *   "proposal_name": "mywps",
      *   "status": "active",
      *   "total_net_votes": 2,
-     *   "start": "2019-11-01T00:00:00",
+     *   "voting_period": "2019-11-01T00:00:00",
+     *   "start": "2019-11-05T12:10:00",
      *   "end": "2019-12-01T00:00:00",
      *   "votes": [
      *      { "key": "mybp1", "value": "yes" },
@@ -268,13 +270,14 @@ private:
         eosio::name                         proposal_name;
         eosio::name                         status;
         int16_t                             total_net_votes;
+        eosio::time_point_sec               voting_period;
         eosio::time_point_sec               start;
         eosio::time_point_sec               end;
         std::map<eosio::name, eosio::name>  votes;
 
         uint64_t primary_key() const { return proposal_name.value; }
         uint64_t by_status() const { return status.value; }
-        // uint64_t by_start() const { return start.sec_since_epoch(); }
+        uint64_t by_voting_period() const { return voting_period.sec_since_epoch(); }
     };
 
     /**
@@ -308,8 +311,8 @@ private:
         indexed_by<"bystatus"_n, const_mem_fun<proposals_row, uint64_t, &proposals_row::by_status>>
     > proposals_table;
     typedef eosio::multi_index< "votes"_n, votes_row,
-        indexed_by<"bystatus"_n, const_mem_fun<votes_row, uint64_t, &votes_row::by_status>>
-        // indexed_by<"bystart"_n, const_mem_fun<votes_row, uint64_t, &votes_row::by_start>>
+        indexed_by<"bystatus"_n, const_mem_fun<votes_row, uint64_t, &votes_row::by_status>>,
+        indexed_by<"byperiod"_n, const_mem_fun<votes_row, uint64_t, &votes_row::by_voting_period>>
     > votes_table;
     typedef eosio::singleton< "settings"_n, settings_row> settings_table;
 

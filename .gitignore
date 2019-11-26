@@ -1,6 +1,7 @@
 # Prerequisites
 *.d
 .vscode
+eosc-vault.json
 
 nodeos
 dist
