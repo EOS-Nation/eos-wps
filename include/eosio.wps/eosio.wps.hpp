@@ -170,6 +170,7 @@ public:
      *
      * Should be removed in production
      */
+    [[eosio::action]]
     void clean( const eosio::name table, const std::optional<eosio::name> scope );
 
     [[eosio::on_notify("eosio.token::transfer")]]
@@ -273,7 +274,7 @@ private:
 
         uint64_t primary_key() const { return proposal_name.value; }
         uint64_t by_status() const { return status.value; }
-        uint64_t by_start() const { return start.sec_since_epoch(); }
+        // uint64_t by_start() const { return start.sec_since_epoch(); }
     };
 
     /**
@@ -307,8 +308,8 @@ private:
         indexed_by<"bystatus"_n, const_mem_fun<proposals_row, uint64_t, &proposals_row::by_status>>
     > proposals_table;
     typedef eosio::multi_index< "votes"_n, votes_row,
-        indexed_by<"bystatus"_n, const_mem_fun<votes_row, uint64_t, &votes_row::by_status>>,
-        indexed_by<"bystart"_n, const_mem_fun<votes_row, uint64_t, &votes_row::by_start>>
+        indexed_by<"bystatus"_n, const_mem_fun<votes_row, uint64_t, &votes_row::by_status>>
+        // indexed_by<"bystart"_n, const_mem_fun<votes_row, uint64_t, &votes_row::by_start>>
     > votes_table;
     typedef eosio::singleton< "settings"_n, settings_row> settings_table;
 
