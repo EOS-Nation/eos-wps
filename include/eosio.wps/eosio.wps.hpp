@@ -79,20 +79,91 @@ public:
     [[eosio::action]]
     void vote( const eosio::name voter, const eosio::name proposal_name, const eosio::name vote );
 
-    [[eosio::action]]
-    void init( const eosio::time_point_sec current_voting_period );
-
+    /**
+     * ## ACTION `activate`
+     *
+     * Activate WPS proposal
+     *
+     * - Authority:  `proposer`
+     *
+     * - `{name} proposer` - proposer
+     * - `{name} proposal_name` - proposal name
+     *
+     * ```bash
+     * cleos push action eosio.wps activate '["myaccount", "mywps"]' -p myaccount
+     * ```
+     */
     [[eosio::action]]
     void activate( const eosio::name proposer, const eosio::name proposal_name );
 
-    [[eosio::action]]
-    void settings( const uint64_t vote_margin, const eosio::asset deposit_required, const uint64_t voting_interval );
-
+    /**
+     * ## ACTION `refund`
+     *
+     * Refund any remaining deposit amount from a draft WPS proposal.
+     *
+     * - Authority:  `proposer`
+     *
+     * - `{name} proposer` - proposer
+     * - `{name} proposal_name` - proposal name
+     *
+     * ```bash
+     * cleos push action eosio.wps refund '["myaccount", "mywps"]' -p myaccount
+     * ```
+     */
     [[eosio::action]]
     void refund( const eosio::name proposer, const eosio::name proposal_name );
 
+    /**
+     * ## ACTION `canceldraft`
+     *
+     * Cancel draft WPS proposal
+     *
+     * - Authority:  `proposer`
+     *
+     * - `{name} proposer` - proposer
+     * - `{name} proposal_name` - proposal name
+     *
+     * ```bash
+     * cleos push action eosio.wps canceldraft '["myaccount", "mywps"]' -p myaccount
+     * ```
+     */
     [[eosio::action]]
     void canceldraft( const eosio::name proposer, const eosio::name proposal_name );
+
+    /**
+     * ## ACTION `init`
+     *
+     * Initialize WPS contract
+     *
+     * - Authority:  `get_self()`
+     *
+     * - `{name} proposer` - proposer
+     * - `{name} proposal_name` - proposal name
+     *
+     * ```bash
+     * cleos push action eosio.wps init '["2019-11-25T00:00:00"]' -p eosio.wps
+     * ```
+     */
+    [[eosio::action]]
+    void init( const eosio::time_point_sec current_voting_period );
+
+    /**
+     * ## ACTION `settings`
+     *
+     * Set settings for WPS contract
+     *
+     * - Authority:  `get_self()`
+     *
+     * - `{int16_t} [vote_margin=15]` - minimum BP vote margin threshold to reach for proposals
+     * - `{asset} [deposit_required="100.0000 EOS"]` - deposit required to active proposal
+     * - `{uint64_t} [voting_interval=2592000]` -  election interval in seconds
+     *
+     * ```bash
+     * cleos push action eosio.wps settings '[15, "100.0000 EOS", 2592000]' -p eosio.wps
+     * ```
+     */
+    [[eosio::action]]
+    void settings( const uint64_t vote_margin, const eosio::asset deposit_required, const uint64_t voting_interval );
 
     [[eosio::on_notify("eosio.token::transfer")]]
     void transfer( const eosio::name&    from,
@@ -102,11 +173,11 @@ public:
 
     using vote_action = eosio::action_wrapper<"vote"_n, &wps::vote>;
     using propose_action = eosio::action_wrapper<"propose"_n, &wps::propose>;
-    using init_action = eosio::action_wrapper<"init"_n, &wps::init>;
     using activate_action = eosio::action_wrapper<"activate"_n, &wps::activate>;
-    using settings_action = eosio::action_wrapper<"settings"_n, &wps::settings>;
     using refund_action = eosio::action_wrapper<"refund"_n, &wps::refund>;
     using canceldraft_action = eosio::action_wrapper<"canceldraft"_n, &wps::canceldraft>;
+    using init_action = eosio::action_wrapper<"init"_n, &wps::init>;
+    using settings_action = eosio::action_wrapper<"settings"_n, &wps::settings>;
 
 private:
     /**

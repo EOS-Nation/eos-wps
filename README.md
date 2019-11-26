@@ -1,11 +1,17 @@
 # EOSIO WPS
 
-## ACTION
+## ACTION - USER
 
 - [`propose`](#action-propose)
 - [`vote`](#action-vote)
-- [`unvote`](#action-unvote)
-- [`cancel`](#action-cancel)
+- [`activate`](#action-activate)
+- [`refund`](#action-refund)
+- [`canceldraft`](#action-canceldraft)
+
+## ACTION - ADMIN
+
+- [`settings`](#action-settings)
+- [`init`](#action-init)
 
 ## TABLE
 
@@ -47,18 +53,82 @@ Vote for a WPS proposal
 cleos push action eosio.wps vote '["myaccount", "mywps", "yes"]' -p myaccount
 ```
 
-## TABLE `proposal`
+## ACTION `activate`
+
+Activate WPS proposal
+
+- Authority:  `proposer`
+
+- `{name} proposer` - proposer
+- `{name} proposal_name` - proposal name
+
+```bash
+cleos push action eosio.wps activate '["myaccount", "mywps"]' -p myaccount
+```
+
+## ACTION `refund`
+
+Refund any remaining deposit amount from a draft WPS proposal.
+
+- Authority:  `proposer`
+
+- `{name} proposer` - proposer
+- `{name} proposal_name` - proposal name
+
+```bash
+cleos push action eosio.wps refund '["myaccount", "mywps"]' -p myaccount
+```
+
+## ACTION `canceldraft`
+
+Cancel draft WPS proposal
+
+- Authority:  `proposer`
+
+- `{name} proposer` - proposer
+- `{name} proposal_name` - proposal name
+
+```bash
+cleos push action eosio.wps canceldraft '["myaccount", "mywps"]' -p myaccount
+```
+
+## ACTION `init`
+
+Initialize WPS contract
+
+- Authority:  `get_self()`
+
+- `{name} proposer` - proposer
+- `{name} proposal_name` - proposal name
+
+```bash
+cleos push action eosio.wps init '["2019-11-25T00:00:00"]' -p eosio.wps
+```
+
+## ACTION `settings`
+
+Set settings for WPS contract
+
+- Authority:  `get_self()`
+
+- `{int16_t} [vote_margin=15]` - minimum BP vote margin threshold to reach for proposals
+- `{asset} [deposit_required="100.0000 EOS"]` - deposit required to active proposal
+- `{uint64_t} [voting_interval=2592000]` -  election interval in seconds
+
+```bash
+cleos push action eosio.wps settings '[15, "100.0000 EOS", 2592000]' -p eosio.wps
+```
+
+## TABLE `proposals`
 
 - `{name} proposer` - proposer of proposal
 - `{name} proposal_name` - proposal name
 - `{string} title` - proposal title
-- `{string} proposal_json` - proposal JSON metadata
 - `{asset} budget` - monthly budget payment request
 - `{uint8_t} payments` - number of monthly payment duration (maximum of 6 months)
 - `{asset} deposit` - deposit required to active proposal
 - `{name} status` - current status of proposal (draft/active/completed/expired)
-- `{time_point_sec} start` - start of voting period (UTC)
-- `{time_point_sec} end` - end of voting period (UTC)
+- `{map<name, string>} proposal_json` - a sorted container of <key, value>
 
 ### example
 
@@ -67,50 +137,57 @@ cleos push action eosio.wps vote '["myaccount", "mywps", "yes"]' -p myaccount
   "proposer": "myaccount",
   "proposal_name": "mywps",
   "title": "My WPS",
-  "proposal_json": "{\"category\": \"other\", \"region\": \"global\"}",
   "budget": "500.0000 EOS",
   "payments": 1,
-  "deposit": "100.0000 EOS",
-  "status": "active",
-  "start": "2019-11-01T00:00:00",
-  "end": "2019-12-01T00:00:00"
+  "deposit": "0.0000 EOS",
+  "status": "draft",
+  "proposal_json": [
+    { "key": "category", "value": "other" },
+    { "key": "region", "value": "global" }
+  ]
 }
 ```
 
 ## TABLE `votes`
 
 - `{name} proposal_name` - The proposal's name, its ID among all proposals
-- `{vector<name>} yes` - vector array of yes votes
-- `{vector<name>} no` - vector array of no votes
-- `{vector<name>} abstain` - vector array of abstain votes
 - `{int16_t} total_net_votes` - total net votes
+- `{time_point_sec} start` - start of voting period (UTC)
+- `{time_point_sec} end` - end of voting period (UTC)
+- `{map<name, name>} votes` - a sorted container of <voter, vote>
 
 ### example
 
 ```json
 {
   "proposal_name": "mywps",
-  "yes": ["mybp1", "mybp3", "mybp4"],
-  "no": ["mybp2"],
-  "abstain": [],
-  "total_net_votes": 2
+  "total_net_votes": 2,
+  "start": "2019-11-01T00:00:00",
+  "end": "2019-12-01T00:00:00",
+  "votes": [
+      { "key": "mybp1", "value": "yes" },
+      { "key": "mybp2", "value": "no" },
+      { "key": "mybp3", "value": "yes" },
+      { "key": "mybp4", "value": "abstain" },
+      { "key": "mybp5", "value": "yes" }
+  ]
 }
 ```
 
 ## TABLE `settings`
 
-- `{time_point_sec} current` - current voting period
-- `{uint64_t} vote_margin` - minimum BP vote margin threshold to reach for proposals
-- `{asset} deposit_quantity` - deposit required to active proposal
-- `{uint64_t} [interval=2592000]` - interval election in seconds
+- `{time_point_sec} current_voting_period` - current voting period
+- `{int16_t} [vote_margin=15]` - minimum BP vote margin threshold to reach for proposals
+- `{asset} [deposit_required="100.0000 EOS"]` - deposit required to active proposal
+- `{uint64_t} [voting_interval=2592000]` -  election interval in seconds
 
 ### example
 
 ```json
 {
-  "current": "2019-11-01T00:00:00",
+  "current_voting_period": "2019-11-01T00:00:00",
   "vote_margin": 15,
-  "deposit_quantity": "100.0000 EOS",
-  "interval": 2592000
+  "deposit_required": "100.0000 EOS",
+  "voting_interval": 2592000,
 }
 ```
