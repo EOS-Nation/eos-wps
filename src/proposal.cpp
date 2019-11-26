@@ -4,7 +4,7 @@ void wps::propose(const eosio::name proposer,
                   const eosio::name proposal_name,
                   const string title,
                   const eosio::asset budget,
-                  const uint8_t payments,
+                  const uint8_t duration,
                   const std::map<name, string> proposal_json )
 {
     require_auth( proposer );
@@ -17,8 +17,8 @@ void wps::propose(const eosio::name proposer,
     check( title.size() < 1024, "[title] should be less than 1024 characters long" );
     check( budget.symbol == symbol{"EOS", 4}, "[budget] must use EOS symbol" );
     check( budget.amount >= 1000000, "[budget] must be a minimum of 100.0000 EOS ");
-    check( payments > 0, "[payments] must be a minimum of 1 monthly period" );
-    check( payments <= 6, "[payments] must not exceed 6 monthly periods" );
+    check( duration > 0, "[duration] must be a minimum of 1 monthly period" );
+    check( duration <= 6, "[duration] must not exceed 6 monthly periods" );
 
     // add row
     _proposals.emplace( proposer, [&]( auto& row ) {
@@ -26,9 +26,10 @@ void wps::propose(const eosio::name proposer,
         row.proposal_name = proposal_name;
         row.title = title;
         row.budget = budget;
-        row.payments = payments;
-        row.deposit = asset{0, symbol{"EOS", 4}};
+        row.duration = duration;
         row.status = "draft"_n;
+        row.deposit = asset{0, symbol{"EOS", 4}};
+        row.payments = asset{0, symbol{"EOS", 4}};
         row.proposal_json = proposal_json;
     });
 }
@@ -54,12 +55,13 @@ void wps::activate( const eosio::name proposer, const eosio::name proposal_name 
     });
 
     // duration of proposal
-    const time_point end = time_point(settings.current_voting_period) + time_point_sec(settings.voting_interval * proposals_itr->payments);
+    const time_point end = time_point(settings.current_voting_period) + time_point_sec(settings.voting_interval * proposals_itr->duration);
 
     // add empty votes for proposal
     _votes.emplace( proposer, [&]( auto& row ) {
         row.proposal_name = proposal_name;
-        row.start = current_time_point();
+        row.status = "active"_n;
+        row.start = settings.current_voting_period;
         row.end = end;
     });
 }

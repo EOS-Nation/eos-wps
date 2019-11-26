@@ -31,12 +31,12 @@ Submit a WPS proposal
 - `{string} title` - proposal title
 - `{string} proposal_json` - proposal JSON metadata
 - `{asset} budget` - monthly budget payment request
-- `{uin8_t} payments` - number of monthly payment duration (maximum of 6 months)
+- `{uin8_t} duration` - monthly budget duration (maximum of 6 months)
 
 ### example
 
 ```bash
-cleos push action eosio.wps propose '["myaccount", "mywps", "My WPS", "{\"category\": \"other\", \"region\": \"global\"}", "500.0000 EOS", 1]' -p myaccount
+cleos push action eosio.wps propose '["myaccount", "mywps", "My WPS", "500.0000 EOS", 1, [{"key":"category", "value":"other"}, {"key":"region", "value":"global"}]]' -p myaccount
 ```
 
 ## ACTION `vote`
@@ -125,9 +125,10 @@ cleos push action eosio.wps settings '[15, "100.0000 EOS", 2592000]' -p eosio.wp
 - `{name} proposal_name` - proposal name
 - `{string} title` - proposal title
 - `{asset} budget` - monthly budget payment request
-- `{uint8_t} payments` - number of monthly payment duration (maximum of 6 months)
-- `{asset} deposit` - deposit required to active proposal
+- `{uint8_t} duration` - monthly budget duration (maximum of 6 months)
 - `{name} status` - current status of proposal (draft/active/completed/expired)
+- `{asset} deposit` - deposit required to active proposal
+- `{asset} payments` - payments made to WPS proposal
 - `{map<name, string>} proposal_json` - a sorted container of <key, value>
 
 ### example
@@ -138,9 +139,10 @@ cleos push action eosio.wps settings '[15, "100.0000 EOS", 2592000]' -p eosio.wp
   "proposal_name": "mywps",
   "title": "My WPS",
   "budget": "500.0000 EOS",
-  "payments": 1,
-  "deposit": "0.0000 EOS",
+  "duration": 1,
   "status": "draft",
+  "deposit": "0.0000 EOS",
+  "payments": "0.0000 EOS",
   "proposal_json": [
     { "key": "category", "value": "other" },
     { "key": "region", "value": "global" }
