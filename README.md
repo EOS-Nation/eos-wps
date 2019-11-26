@@ -1,5 +1,12 @@
 # EOSIO WPS
 
+## Workflow
+
+1. `propose`
+2. send 100 EOS using `memo` as `proposal_name`
+3. `activate`
+4. `vote`
+
 ## ACTION - USER
 
 - [`propose`](#action-propose)
