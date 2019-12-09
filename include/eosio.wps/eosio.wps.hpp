@@ -133,6 +133,29 @@ public:
     void canceldraft( const eosio::name proposer, const eosio::name proposal_name );
 
     /**
+     * ## ACTION `modifydraft`
+     *
+     * Modify draft WPS proposal
+     *
+     * - Authority:  `proposer`
+     *
+     * ### params
+     *
+     * - `{name} proposer` - proposer of proposal
+     * - `{name} proposal_name` - proposal name
+     * - `{string} title` - proposal title
+     * - `{map<name, string>} proposal_json` - a sorted container of <key, value>
+     *
+     * ### example
+     *
+     * ```bash
+     * cleos push action eosio.wps modifydraft '["myaccount", "mywps", "My WPS", [{"key":"region", "value":"global"}]]' -p myaccount
+     * ```
+     */
+    [[eosio::action]]
+    void modifydraft(const eosio::name proposer, const eosio::name proposal_name, const string title, const std::map<name, string> proposal_json );
+
+    /**
      * ## ACTION `init`
      *
      * Initialize WPS contract

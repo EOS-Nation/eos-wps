@@ -27,6 +27,7 @@
 - [`activate`](#action-activate)
 - [`refund`](#action-refund)
 - [`canceldraft`](#action-canceldraft)
+- [`modifydraft`](#action-modifydraft)
 
 ## ACTION - ADMIN
 
@@ -110,6 +111,25 @@ Cancel draft WPS proposal
 
 ```bash
 cleos push action eosio.wps canceldraft '["myaccount", "mywps"]' -p myaccount
+```
+
+## ACTION `modifydraft`
+
+Modify draft WPS proposal
+
+- Authority:  `proposer`
+
+### params
+
+- `{name} proposer` - proposer of proposal
+- `{name} proposal_name` - proposal name
+- `{string} title` - proposal title
+- `{map<name, string>} proposal_json` - a sorted container of <key, value>
+
+### example
+
+```bash
+cleos push action eosio.wps modifydraft '["myaccount", "mywps", "My WPS", [{"key":"region", value":"global"}]]' -p myaccount
 ```
 
 ## ACTION `init`

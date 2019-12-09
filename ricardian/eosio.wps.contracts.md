@@ -39,3 +39,9 @@ Refund deposit amount
 ## Description
 
 Cancel draft proposal
+
+<h1 class="contract">modifydraft</h1>
+
+## Description
+
+Modify draft proposal

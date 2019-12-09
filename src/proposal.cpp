@@ -15,6 +15,7 @@ void wps::propose(const eosio::name proposer,
     check( _proposals.find( proposal_name.value ) == _proposals.end(), "[proposal_name] already exists" );
     check( proposal_name.length() > 2, "[proposal_name] should be at least 3 characters long" );
     check( title.size() < 1024, "[title] should be less than 1024 characters long" );
+    check( title.size() > 2, "[title] should be at least 3 characters long" );
     check( budget.symbol == symbol{"EOS", 4}, "[budget] must use EOS symbol" );
     check( budget.amount >= 1000000, "[budget] must be a minimum of 100.0000 EOS ");
     check( duration > 0, "[duration] must be a minimum of 1 monthly period" );
@@ -101,6 +102,27 @@ void wps::canceldraft( const eosio::name proposer, const eosio::name proposal_na
 
     // add deposit
     _proposals.erase( proposals_itr );
+}
+
+void wps::modifydraft(const eosio::name proposer,
+                      const eosio::name proposal_name,
+                      const string title,
+                      const std::map<name, string> proposal_json )
+{
+    require_auth( proposer );
+
+    auto proposals_itr = _proposals.find( proposal_name.value );
+
+    check( proposals_itr != _proposals.end(), "[proposal_name] does not exists");
+    check( proposals_itr->status == "draft"_n, "`modifydraft` is only available for proposals in draft status");
+    check( title.size() < 1024, "[title] should be less than 1024 characters long" );
+    check( title.size() > 2, "[title] should be at least 3 characters long" );
+
+    // modify row
+    _proposals.modify( proposals_itr, same_payer, [&]( auto& row ) {
+        row.title = title;
+        row.proposal_json = proposal_json;
+    });
 }
 
 }
