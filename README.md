@@ -1,11 +1,24 @@
 # EOSIO WPS
 
-## Workflow
+## Workflows
 
-1. `propose`
-2. send 100 EOS using `memo` as `proposal_name`
-3. `activate`
-4. `vote`
+### A. Propose & Activate
+
+1. `propose` proposal draft
+2. send 100 EOS from any account using memo as the proposal name
+3. `activate` (can no longer be modified)
+
+### B. Cancel draft
+
+1. `propose` proposal draft
+2. `canceldraft`
+
+### C. Cancel & Refund
+
+1. `propose` proposal draft
+2. send 100 EOS
+3. `refund` 100 EOS
+4. `canceldraft`
 
 ## ACTION - USER
 
