@@ -44,10 +44,12 @@ void wps::activate( const eosio::name proposer, const eosio::name proposal_name 
     check( proposals_itr->status == "draft"_n, "proposal `status` must be in `draft`");
     check( proposals_itr->deposit >= settings.deposit_required, "deposit does not meet minimum required amount of " + settings.deposit_required.to_string());
 
-    // cannot activate within 7 days of next voting period ending
-    const time_point in_one_week = current_time_point() + time_point_sec(604800);
-    const time_point end_voting_period = time_point(settings.current_voting_period) + time_point_sec(settings.voting_interval);
-    check( in_one_week < end_voting_period, "cannot activate within 7 days of next voting period ending");
+    if ( !TESTING ) {
+        // cannot activate within 7 days of next voting period ending
+        const time_point in_one_week = current_time_point() + time_point_sec(604800);
+        const time_point end_voting_period = time_point(settings.current_voting_period) + time_point_sec(settings.voting_interval);
+        check( in_one_week < end_voting_period, "cannot activate within 7 days of next voting period ending");
+    }
 
     // set proposal as active
     _proposals.modify( proposals_itr, proposer, [&]( auto& row ) {

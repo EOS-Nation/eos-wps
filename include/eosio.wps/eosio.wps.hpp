@@ -11,6 +11,8 @@
 using namespace eosio;
 using namespace std;
 
+static constexpr bool TESTING = true;
+
 namespace eosio {
 
 class [[eosio::contract("eosio.wps")]] wps : public contract {
