@@ -3,8 +3,8 @@
 #include "proposal.cpp"
 #include "vote.cpp"
 #include "on_notify.cpp"
-#include "settings.cpp"
+#include "clean.cpp"
 #include "periods.cpp"
 
-// testing
-#include "clean.cpp"
+#include "settings.cpp"
+#include "state.cpp"

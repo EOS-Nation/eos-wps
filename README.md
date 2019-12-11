@@ -31,7 +31,7 @@
 
 ## ACTION - ADMIN
 
-- [`setsettings`](#action-setsettings)
+- [`setparams`](#action-setparams)
 - [`init`](#action-init)
 
 ## TABLE
@@ -50,7 +50,7 @@ Submit a WPS proposal
 - `{name} proposer` - proposer of proposal
 - `{name} proposal_name` - proposal name
 - `{string} title` - proposal title
-- `{string} proposal_json` - proposal JSON metadata
+- `{map<name, string>} proposal_json` - proposal JSON metadata
 - `{asset} budget` - monthly budget payment request
 - `{uin8_t} duration` - monthly budget duration (maximum of 6 months)
 
@@ -144,18 +144,19 @@ Initialize WPS contract
 cleos push action eosio.wps init '["2019-11-25T00:00:00"]' -p eosio.wps
 ```
 
-## ACTION `setsettings`
+## ACTION `setparams`
 
-Set settings for WPS contract
+Set paramaters for WPS contract
 
 - Authority:  `get_self()`
 
 - `{int16_t} [vote_margin=15]` - minimum BP vote margin threshold to reach for proposals
 - `{asset} [deposit_required="100.0000 EOS"]` - deposit required to active proposal
 - `{uint64_t} [voting_interval=2592000]` -  election interval in seconds
+- `{asset} [max_monthly_budget="50000.0000 EOS"]` - maximum monthly budget
 
 ```bash
-cleos push action eosio.wps setsettings '[15, "100.0000 EOS", 2592000]' -p eosio.wps
+cleos push action eosio.wps setparams '[{"vote_margin": 15, "deposit_required": "100.0000 EOS", "voting_interval": 2592000, "max_monthly_budget": "50000.0000 EOS"}]' -p eosio.wps
 ```
 
 ## TABLE `proposals`
@@ -222,6 +223,7 @@ cleos push action eosio.wps setsettings '[15, "100.0000 EOS", 2592000]' -p eosio
 - `{int16_t} [vote_margin=15]` - minimum BP vote margin threshold to reach for proposals
 - `{asset} [deposit_required="100.0000 EOS"]` - deposit required to active proposal
 - `{uint64_t} [voting_interval=2592000]` -  election interval in seconds
+- `{asset} [max_monthly_budget="50000.0000 EOS"]` - maximum monthly budget
 
 ### example
 
@@ -230,17 +232,24 @@ cleos push action eosio.wps setsettings '[15, "100.0000 EOS", 2592000]' -p eosio
   "vote_margin": 15,
   "deposit_required": "100.0000 EOS",
   "voting_interval": 2592000,
+  "max_monthly_budget": "50000.0000 EOS"
 }
 ```
 
-## TABLE `current`
+## TABLE `state`
 
-- `{time_point_sec} voting_period` - current voting period
+- `{time_point_sec} current_voting_period` - current voting period
+- `{asset} [liquid_deposits="0.0000 EOS"]` - liquid deposits
+- `{asset} [locked_deposits="0.0000 EOS"]` - locked deposits
+- `{asset} [available_funding="0.0000 EOS"]` - available funding
 
 ### example
 
 ```json
 {
-  "voting_period": "2019-11-01T00:00:00"
+  "current_voting_period": "2019-11-01T00:00:00",
+  "liquid_deposits": "100.0000 EOS",
+  "locked_deposits": "200.0000 EOS",
+  "available_funding": "50000.0000 EOS",
 }
 ```

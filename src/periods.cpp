@@ -2,7 +2,7 @@ namespace eosio {
 
 void wps::setperiod()
 {
-    print("foo");
+    print("to-do");
     // // add row
     // _proposals.emplace( proposer, [&]( auto& row ) {
     //     row.proposer = proposer;

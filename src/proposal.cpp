@@ -41,7 +41,7 @@ void wps::activate( const eosio::name proposer, const eosio::name proposal_name 
 {
     require_auth( proposer );
     auto settings = _settings.get_or_default();
-    auto current = _current.get_or_default();
+    auto state = _state.get_or_default();
     auto proposals_itr = _proposals.find( proposal_name.value );
 
     check( proposals_itr != _proposals.end(), "[proposal_name] does not exists");
@@ -51,7 +51,7 @@ void wps::activate( const eosio::name proposer, const eosio::name proposal_name 
     if ( !TESTING ) {
         // cannot activate within 7 days of next voting period ending
         const time_point in_one_week = current_time_point() + time_point_sec(604800);
-        const time_point end_voting_period = time_point(current.voting_period) + time_point_sec(settings.voting_interval);
+        const time_point end_voting_period = time_point(state.current_voting_period) + time_point_sec(settings.voting_interval);
         check( in_one_week < end_voting_period, "cannot activate within 7 days of next voting period ending");
     }
 
@@ -61,13 +61,13 @@ void wps::activate( const eosio::name proposer, const eosio::name proposal_name 
     });
 
     // duration of proposal
-    const time_point end = time_point(current.voting_period) + time_point_sec(settings.voting_interval * proposals_itr->duration);
+    const time_point end = time_point(state.current_voting_period) + time_point_sec(settings.voting_interval * proposals_itr->duration);
 
     // add empty votes for proposal
     _votes.emplace( proposer, [&]( auto& row ) {
         row.proposal_name = proposal_name;
         row.status = "active"_n;
-        row.voting_period = current.voting_period;
+        row.voting_period = state.current_voting_period;
         row.start = current_time_point();
         row.end = end;
     });

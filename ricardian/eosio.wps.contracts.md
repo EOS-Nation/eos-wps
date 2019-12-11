@@ -16,11 +16,11 @@ Vote for a WPS proposal
 
 Initialize settings
 
-<h1 class="contract">settings</h1>
+<h1 class="contract">setparams</h1>
 
 ## Description
 
-Set current settings
+Set paramaters for WPS contract
 
 <h1 class="contract">activate</h1>
 
@@ -45,3 +45,9 @@ Cancel draft proposal
 ## Description
 
 Modify draft proposal
+
+<h1 class="contract">clean</h1>
+
+## Description
+
+Clean table
