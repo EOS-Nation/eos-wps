@@ -17,6 +17,13 @@ void wps::init( const eosio::time_point_sec initial_voting_period )
     _settings.set( settings, get_self() );
 }
 
+void wps::add_funding( const eosio::asset quantity )
+{
+    auto state = _state.get_or_default();
+    state.available_funding += quantity;
+    _state.set( state, get_self() );
+}
+
 void wps::add_liquid_deposits( const eosio::asset quantity )
 {
     auto state = _state.get_or_default();

@@ -9,7 +9,7 @@ cleos push action eosio.wps setparams '[{"vote_margin": 15, "deposit_required": 
 # propose
 cleos -v push action eosio.wps propose '["myaccount", "mywps", "My WPS", "500.0000 EOS", 1, [{"key":"category", "value":"other"}, {"key":"region", "value":"global"}]]' -p myaccount
 
-# transfer
+# pay for proposal deposit
 cleos -v transfer myaccount eosio.wps "100.0000 EOS" "mywps"
 
 # refund
@@ -17,6 +17,9 @@ cleos -v transfer myaccount eosio.wps "100.0000 EOS" "mywps"
 
 # activate
 cleos -v push action eosio.wps activate '["myaccount", "mywps"]' -p myaccount
+
+# fund wps
+cleos -v transfer eosio.ramfee eosio.wps "50000.0000 EOS" ""
 
 # cancel
 # cleos -v push action eosio.wps canceldraft '["myaccount", "mywps"]' -p myaccount

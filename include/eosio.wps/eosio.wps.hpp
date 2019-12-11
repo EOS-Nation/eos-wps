@@ -388,6 +388,7 @@ private:
     void move_to_locked_deposits( const eosio::asset quantity );
     void add_liquid_deposits( const eosio::asset quantity );
     void deposit_to_proposal( const eosio::name proposal_name, const eosio::asset quantity );
+    void add_funding( const eosio::asset quantity );
 };
 
 }

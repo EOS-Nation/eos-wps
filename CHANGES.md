@@ -1,5 +1,6 @@
 # 2019-12-11
 
+- add funding using `memo="funding"` or from designated system account
 - change 7 day => 24 hours (cannot activate within X period of next voting period ending)
 - update `liquid_deposits` when transfer in
 - update `locked_deposits` when activate proposal
