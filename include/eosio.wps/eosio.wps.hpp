@@ -28,9 +28,10 @@ public:
      */
     wps( name receiver, name code, eosio::datastream<const char*> ds )
         : contract( receiver, code, ds ),
-            _settings( get_self(), get_self().value ),
             _proposals( get_self(), get_self().value ),
-            _votes( get_self(), get_self().value )
+            _votes( get_self(), get_self().value ),
+            _settings( get_self(), get_self().value ),
+            _current( get_self(), get_self().value )
     {}
 
     /**
@@ -162,8 +163,7 @@ public:
      *
      * - Authority:  `get_self()`
      *
-     * - `{name} proposer` - proposer
-     * - `{name} proposal_name` - proposal name
+     * - `{time_point_sec} initial_voting_period` - initial voting period
      *
      * ```bash
      * cleos push action eosio.wps init '["2019-11-25T00:00:00"]' -p eosio.wps
@@ -188,7 +188,7 @@ public:
      * ```
      */
     [[eosio::action]]
-    void settings( const uint64_t vote_margin, const eosio::asset deposit_required, const uint64_t voting_interval );
+    void setsettings( const uint64_t vote_margin, const eosio::asset deposit_required, const uint64_t voting_interval );
 
     /**
      * TESTING ONLY
@@ -210,7 +210,7 @@ public:
     using refund_action = eosio::action_wrapper<"refund"_n, &wps::refund>;
     using canceldraft_action = eosio::action_wrapper<"canceldraft"_n, &wps::canceldraft>;
     using init_action = eosio::action_wrapper<"init"_n, &wps::init>;
-    using settings_action = eosio::action_wrapper<"settings"_n, &wps::settings>;
+    using setsettings_action = eosio::action_wrapper<"setsettings"_n, &wps::setsettings>;
 
 private:
     /**
@@ -308,7 +308,6 @@ private:
     /**
      * ## TABLE `settings`
      *
-     * - `{time_point_sec} current_voting_period` - current voting period
      * - `{int16_t} [vote_margin=15]` - minimum BP vote margin threshold to reach for proposals
      * - `{asset} [deposit_required="100.0000 EOS"]` - deposit required to active proposal
      * - `{uint64_t} [voting_interval=2592000]` -  election interval in seconds
@@ -317,7 +316,6 @@ private:
      *
      * ```json
      * {
-     *   "current_voting_period": "2019-11-01T00:00:00",
      *   "vote_margin": 15,
      *   "deposit_required": "100.0000 EOS",
      *   "voting_interval": 2592000,
@@ -325,10 +323,26 @@ private:
      * ```
      */
     struct [[eosio::table("settings")]] settings_row {
-        eosio::time_point_sec       current_voting_period;
         int16_t                     vote_margin = 15;
         eosio::asset                deposit_required = asset{1000000, symbol{"EOS", 4}};
         uint64_t                    voting_interval = 2592000;
+    };
+
+    /**
+     * ## TABLE `current`
+     *
+     * - `{time_point_sec} voting_period` - current voting period
+     *
+     * ### example
+     *
+     * ```json
+     * {
+     *   "voting_period": "2019-11-01T00:00:00"
+     * }
+     * ```
+     */
+    struct [[eosio::table("current")]] current_row {
+        eosio::time_point_sec       voting_period;
     };
 
     // Tables
@@ -339,15 +353,19 @@ private:
         indexed_by<"bystatus"_n, const_mem_fun<votes_row, uint64_t, &votes_row::by_status>>,
         indexed_by<"byperiod"_n, const_mem_fun<votes_row, uint64_t, &votes_row::by_voting_period>>
     > votes_table;
+
     typedef eosio::singleton< "settings"_n, settings_row> settings_table;
+    typedef eosio::singleton< "current"_n, current_row> current_table;
 
     // local instances of the multi indexes
     proposals_table             _proposals;
-    settings_table              _settings;
     votes_table                 _votes;
+    settings_table              _settings;
+    current_table               _current;
 
     // private helpers
     int16_t calculate_total_net_votes( const std::map<eosio::name, eosio::name> votes );
+    void setperiod();
 };
 
 }

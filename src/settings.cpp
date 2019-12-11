@@ -1,17 +1,20 @@
-void wps::init( const eosio::time_point_sec current_voting_period )
+void wps::init( const eosio::time_point_sec initial_voting_period )
 {
     require_auth( get_self() );
 
+    if ( !TESTING ) check( !_current.exists(), "already initialized" );
+
+    auto current = _current.get_or_default();
     auto settings = _settings.get_or_default();
-    settings.current_voting_period = current_voting_period;
+
+    current.voting_period = initial_voting_period;
+    _current.set( current, get_self() );
     _settings.set( settings, get_self() );
 }
 
-void wps::settings( const uint64_t vote_margin, const eosio::asset deposit_required, const uint64_t voting_interval )
+void wps::setsettings( const uint64_t vote_margin, const eosio::asset deposit_required, const uint64_t voting_interval )
 {
     require_auth( get_self() );
-
-    check( _settings.exists(), "settings must first be initialized");
 
     auto settings = _settings.get_or_default();
     settings.vote_margin = vote_margin;

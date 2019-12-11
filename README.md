@@ -31,7 +31,7 @@
 
 ## ACTION - ADMIN
 
-- [`settings`](#action-settings)
+- [`setsettings`](#action-setsettings)
 - [`init`](#action-init)
 
 ## TABLE
@@ -138,14 +138,13 @@ Initialize WPS contract
 
 - Authority:  `get_self()`
 
-- `{name} proposer` - proposer
-- `{name} proposal_name` - proposal name
+- `{time_point_sec} initial_voting_period` - initial voting period
 
 ```bash
 cleos push action eosio.wps init '["2019-11-25T00:00:00"]' -p eosio.wps
 ```
 
-## ACTION `settings`
+## ACTION `setsettings`
 
 Set settings for WPS contract
 
@@ -156,7 +155,7 @@ Set settings for WPS contract
 - `{uint64_t} [voting_interval=2592000]` -  election interval in seconds
 
 ```bash
-cleos push action eosio.wps settings '[15, "100.0000 EOS", 2592000]' -p eosio.wps
+cleos push action eosio.wps setsettings '[15, "100.0000 EOS", 2592000]' -p eosio.wps
 ```
 
 ## TABLE `proposals`
@@ -220,7 +219,6 @@ cleos push action eosio.wps settings '[15, "100.0000 EOS", 2592000]' -p eosio.wp
 
 ## TABLE `settings`
 
-- `{time_point_sec} current_voting_period` - current voting period
 - `{int16_t} [vote_margin=15]` - minimum BP vote margin threshold to reach for proposals
 - `{asset} [deposit_required="100.0000 EOS"]` - deposit required to active proposal
 - `{uint64_t} [voting_interval=2592000]` -  election interval in seconds
@@ -229,9 +227,20 @@ cleos push action eosio.wps settings '[15, "100.0000 EOS", 2592000]' -p eosio.wp
 
 ```json
 {
-  "current_voting_period": "2019-11-01T00:00:00",
   "vote_margin": 15,
   "deposit_required": "100.0000 EOS",
   "voting_interval": 2592000,
+}
+```
+
+## TABLE `current`
+
+- `{time_point_sec} voting_period` - current voting period
+
+### example
+
+```json
+{
+  "voting_period": "2019-11-01T00:00:00"
 }
 ```
