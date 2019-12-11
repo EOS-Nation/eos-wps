@@ -17,24 +17,11 @@ void wps::transfer( const name&    from,
     // validate memo
     check( memo.length() > 0, "memo is required");
     check( memo.length() <= 12, "memo must be 12 characters or less");
+    const eosio::name proposal_name = name{ memo };
 
-    // validate proposal
-    auto proposals_itr = _proposals.find( name{ memo }.value );
-    auto settings = _settings.get_or_default();
-
-    check( proposals_itr != _proposals.end(), "memo does not match any proposal");
-    check( proposals_itr->status == "draft"_n, "proposal `status` must be in `draft`");
-    check( quantity.symbol.code() == symbol_code("EOS"), "only EOS symbol code is allowed");
-
-    // only accept incoming deposits from proposer (optional check)
-    check( proposals_itr->proposer == from, "`from` must match `proposer` of proposal");
-
-    // add deposit
-    _proposals.modify( proposals_itr, from, [&]( auto& row ) {
-        row.deposit += quantity;
-        // prevent sending too much EOS for activation deposit
-        check( row.deposit <= settings.deposit_required, "activation deposit cannot be greater than " + settings.deposit_required.to_string());
-    });
+    // deposit quantity to proposal
+    deposit_to_proposal( proposal_name, quantity );
+    add_liquid_deposits( quantity );
 }
 
 }

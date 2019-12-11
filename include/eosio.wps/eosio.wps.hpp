@@ -15,6 +15,10 @@ using namespace std;
 
 static constexpr bool TESTING = true;
 
+static constexpr uint64_t DAY = 86400; // 24 hours
+static constexpr uint64_t WEEK = 604800; // 7 days
+static constexpr uint64_t MONTH = 2592000; // 30 days
+
 namespace eosio {
 
 /**
@@ -381,6 +385,9 @@ private:
     // private helpers
     int16_t calculate_total_net_votes( const std::map<eosio::name, eosio::name> votes );
     void setperiod();
+    void move_to_locked_deposits( const eosio::asset quantity );
+    void add_liquid_deposits( const eosio::asset quantity );
+    void deposit_to_proposal( const eosio::name proposal_name, const eosio::asset quantity );
 };
 
 }

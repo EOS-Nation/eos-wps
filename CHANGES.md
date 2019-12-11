@@ -1,8 +1,12 @@
-# 2019-11-11
+# 2019-12-11
 
+- change 7 day => 24 hours (cannot activate within X period of next voting period ending)
+- update `liquid_deposits` when transfer in
+- update `locked_deposits` when activate proposal
 - add `max_monthly_budget` to `settings` TABLE
 - rename `setsettings` => `setparams`
 - add `state` table
+- remove `from` check (deposit can come from any account)
 
 ## TABLE `state`
 

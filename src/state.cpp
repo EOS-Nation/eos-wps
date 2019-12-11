@@ -1,3 +1,4 @@
+// @action
 void wps::init( const eosio::time_point_sec initial_voting_period )
 {
     require_auth( get_self() );
@@ -14,4 +15,19 @@ void wps::init( const eosio::time_point_sec initial_voting_period )
 
     _state.set( state, get_self() );
     _settings.set( settings, get_self() );
+}
+
+void wps::add_liquid_deposits( const eosio::asset quantity )
+{
+    auto state = _state.get_or_default();
+    state.liquid_deposits += quantity;
+    _state.set( state, get_self() );
+}
+
+void wps::move_to_locked_deposits( const eosio::asset quantity )
+{
+    auto state = _state.get_or_default();
+    state.liquid_deposits -= quantity;
+    state.locked_deposits += quantity;
+    _state.set( state, get_self() );
 }

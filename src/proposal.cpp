@@ -48,12 +48,10 @@ void wps::activate( const eosio::name proposer, const eosio::name proposal_name 
     check( proposals_itr->status == "draft"_n, "proposal `status` must be in `draft`");
     check( proposals_itr->deposit >= settings.deposit_required, "deposit does not meet minimum required amount of " + settings.deposit_required.to_string());
 
-    if ( !TESTING ) {
-        // cannot activate within 7 days of next voting period ending
-        const time_point in_one_week = current_time_point() + time_point_sec(604800);
-        const time_point end_voting_period = time_point(state.current_voting_period) + time_point_sec(settings.voting_interval);
-        check( in_one_week < end_voting_period, "cannot activate within 7 days of next voting period ending");
-    }
+    // cannot activate within 24 hours of next voting period ending
+    const time_point in_one_week = current_time_point() + time_point_sec( DAY );
+    const time_point end_voting_period = time_point(state.current_voting_period) + time_point_sec(settings.voting_interval);
+    check( in_one_week < end_voting_period, "cannot activate within 24 hours of next voting period ending");
 
     // set proposal as active
     _proposals.modify( proposals_itr, proposer, [&]( auto& row ) {
@@ -71,6 +69,9 @@ void wps::activate( const eosio::name proposer, const eosio::name proposal_name 
         row.start = current_time_point();
         row.end = end;
     });
+
+    // lock deposit amount
+    move_to_locked_deposits( proposals_itr->deposit );
 }
 
 // @action
@@ -128,6 +129,24 @@ void wps::modifydraft(const eosio::name proposer,
     _proposals.modify( proposals_itr, same_payer, [&]( auto& row ) {
         row.title = title;
         row.proposal_json = proposal_json;
+    });
+}
+
+void wps::deposit_to_proposal( const eosio::name proposal_name, const eosio::asset quantity )
+{
+    // validate proposal
+    auto proposals_itr = _proposals.find( proposal_name.value );
+    auto settings = _settings.get_or_default();
+
+    check( proposals_itr != _proposals.end(), "memo does not match any proposal");
+    check( proposals_itr->status == "draft"_n, "proposal `status` must be in `draft`");
+    check( quantity.symbol.code() == symbol_code("EOS"), "only EOS symbol code is allowed");
+
+    // add deposit to proposal
+    _proposals.modify( proposals_itr, same_payer, [&]( auto& row ) {
+        row.deposit += quantity;
+        // prevent sending too much EOS for activation deposit
+        check( row.deposit <= settings.deposit_required, "activation deposit cannot be greater than " + settings.deposit_required.to_string());
     });
 }
 
