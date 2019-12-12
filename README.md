@@ -134,6 +134,23 @@ Modify draft WPS proposal
 cleos push action eosio.wps modifydraft '["myaccount", "mywps", "My WPS", [{"key":"region", value":"global"}]]' -p myaccount
 ```
 
+## ACTION `setproposer`
+
+Set proposer's metadata
+
+- Authority:  `proposer`
+
+### params
+
+- `{name} proposer` - proposer of proposal
+- `{map<name, string>} metadata_json` - a sorted container of <key, value>
+
+### example
+
+```bash
+cleos push action eosio.wps setproposer '["myaccount", [{"key":"region", value":"global"}]]' -p myaccount
+```
+
 ## ACTION `init`
 
 Initialize WPS contract
@@ -284,6 +301,22 @@ cleos push action eosio.wps setparams '[{"vote_margin": 15, "deposit_required": 
   "duration": 1,
   "proposal_json": [
     { "key": "category", "value": "other" },
+    { "key": "region", "value": "global" }
+  ]
+}
+```
+
+## TABLE `proposers`
+
+- `{name} proposer` - proposer of proposal
+- `{map<name, string>} metadata_json` - a sorted container of <key, value>
+
+### example
+
+```json
+{
+  "proposer": "myaccount",
+  "metadata_json": [
     { "key": "region", "value": "global" }
   ]
 }

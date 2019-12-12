@@ -46,6 +46,12 @@ Cancel draft proposal
 
 Modify draft proposal
 
+<h1 class="contract">setproposer</h1>
+
+## Description
+
+Set proposer metadata
+
 <h1 class="contract">clean</h1>
 
 ## Description

@@ -9,14 +9,14 @@ function cleos() { command cleos --verbose --url=${ENDPOINT} "$@"; echo $@; }
 # propose draft
 cleos push action $CONTRACT submitdraft '["deniscarrier", "mywps", "My WPS", "500.0000 EOS", 1, [{"key":"category", "value":"other"}, {"key":"region", "value":"global"}]]' -p deniscarrier
 
-# deposit EOS into account
-cleos transfer deniscarrier $CONTRACT "100.0000 EOS" ""
+# # deposit EOS into account
+# cleos transfer deniscarrier $CONTRACT "100.0000 EOS" ""
 
-# activate
-cleos push action $CONTRACT activate '["deniscarrier", "mywps"]' -p deniscarrier
+# # activate
+# cleos push action $CONTRACT activate '["deniscarrier", "mywps"]' -p deniscarrier
 
-# vote
-cleos push action $CONTRACT vote '["deniscarrier", "mywps", "yes"]' -p deniscarrier
+# # vote
+# cleos push action $CONTRACT vote '["deniscarrier", "mywps", "yes"]' -p deniscarrier
 
 # # init
 # cleos push action $CONTRACT init '["2019-12-12T00:00:00"]' -p $CONTRACT

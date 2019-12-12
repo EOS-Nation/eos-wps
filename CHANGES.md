@@ -4,6 +4,8 @@
 - remove `status` field from `votes` & `proposals`
 - add `start` & `end` fields to `proposals`
 - simplify `votes` TABLE, only has 3 fields (`proposal_name`, `total_net_votes`, `votes`)
+- add `proposers` TABLE & `setproposer` ACTION
+- renamed incoming EOS transfer memo "funding" => "donate" (to fund available WPS liquidity)
 
 # 2019-12-12
 
@@ -17,7 +19,6 @@
 
 TO-DO:
 
-- remove extra fields in `votes` & `proposals`
 - add `proposers` TABLE to add extra metadata about proposer
 - add `funding` TABLE to track incoming funding deposits
 - handle `vote` on expired proposals

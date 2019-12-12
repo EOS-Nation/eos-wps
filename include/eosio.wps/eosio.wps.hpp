@@ -88,6 +88,31 @@ struct [[eosio::table("drafts"), eosio::contract("eosio.wps")]] drafts_row {
 typedef eosio::multi_index< "drafts"_n, drafts_row> drafts_table;
 
 /**
+ * ## TABLE `proposers`
+ *
+ * - `{name} proposer` - proposer of proposal
+ * - `{map<name, string>} metadata_json` - a sorted container of <key, value>
+ *
+ * ### example
+ *
+ * ```json
+ * {
+ *   "proposer": "myaccount",
+ *   "metadata_json": [
+ *     { "key": "region", "value": "global" }
+ *   ]
+ * }
+ * ```
+ */
+struct [[eosio::table("proposers"), eosio::contract("eosio.wps")]] proposers_row {
+    eosio::name                             proposer;
+    std::map<eosio::name, eosio::string>    metadata_json;
+
+    uint64_t primary_key() const { return proposer.value; }
+};
+typedef eosio::multi_index< "proposers"_n, proposers_row> proposers_table;
+
+/**
  * ## TABLE `proposals`
  *
  * - `{name} proposer` - proposer of proposal
@@ -236,7 +261,8 @@ public:
             _votes( get_self(), get_self().value ),
             _settings( get_self(), get_self().value ),
             _state( get_self(), get_self().value ),
-            _deposits( get_self(), get_self().value )
+            _deposits( get_self(), get_self().value ),
+            _proposers( get_self(), get_self().value )
     {}
 
     /**
@@ -395,6 +421,27 @@ public:
     void setparams( const wps_parameters params );
 
     /**
+     * ## ACTION `setproposer`
+     *
+     * Set proposer's metadata
+     *
+     * - Authority:  `proposer`
+     *
+     * ### params
+     *
+     * - `{name} proposer` - proposer of proposal
+     * - `{map<name, string>} metadata_json` - a sorted container of <key, value>
+     *
+     * ### example
+     *
+     * ```bash
+     * cleos push action eosio.wps setproposer '["myaccount", [{"key":"region", value":"global"}]]' -p myaccount
+     * ```
+     */
+    [[eosio::action]]
+    void setproposer(const eosio::name proposer, const std::map<name, string> metadata_json );
+
+    /**
      * TESTING ONLY
      *
      * Should be removed in production
@@ -424,6 +471,7 @@ private:
     settings_table              _settings;
     state_table                 _state;
     deposits_table              _deposits;
+    proposers_table             _proposers;
 
     // private helpers
     int16_t calculate_total_net_votes( const std::map<eosio::name, eosio::name> votes );

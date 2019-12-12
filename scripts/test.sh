@@ -9,6 +9,9 @@ cleos push action eosio.wps setparams '[{"vote_margin": 15, "deposit_required": 
 # propose draft
 cleos -v push action eosio.wps submitdraft '["myaccount", "mywps", "My WPS", "500.0000 EOS", 1, [{"key":"category", "value":"other"}, {"key":"region", "value":"global"}]]' -p myaccount
 
+# set proposer
+cleos -v push action eosio.wps setproposer '["myaccount", [{"key":"region", "value":"global"}]]' -p myaccount
+
 # # cancel draft
 # cleos -v push action eosio.wps canceldraft '["myaccount", "mywps"]' -p myaccount
 

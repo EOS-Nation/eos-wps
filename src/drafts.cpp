@@ -14,8 +14,10 @@ void wps::submitdraft(const eosio::name proposer,
     // get scoped draft
     drafts_table _drafts( get_self(), proposer.value );
     auto drafts_itr = _drafts.find( proposal_name.value );
+    auto proposals_itr = _proposals.find( proposal_name.value );
 
     // validation
+    check( proposals_itr == _proposals.end(), "[proposal_name] activated proposal already exists, try using a different proposal name" );
     check( drafts_itr == _drafts.end(), "[proposal_name] draft already exists, try using `modifydraft` or `canceldraft`" );
     check( proposal_name.length() > 2, "[proposal_name] should be at least 3 characters in length" );
     check( proposal_name.length() < 13, "[proposal_name] cannot exceed 12 characters in length" );
