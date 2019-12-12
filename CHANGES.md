@@ -1,6 +1,9 @@
 # 2019-12-12
 
 - add check to prevent +13 character `eosio:name` in `proposal_name`
+- remove `status` field from `votes` & `proposals`
+- add `start` & `end` fields to `proposals`
+- simplify `votes` TABLE, only has 3 fields (`proposal_name`, `total_net_votes`, `votes`)
 
 # 2019-12-12
 

@@ -21,9 +21,11 @@ void wps::activate( const eosio::name proposer, const eosio::name proposal_name 
     check( proposals_itr == _proposals.end(), "[proposal_name] unfortunately already exists, please `canceldraft` and try a using a new proposal_name");
 
     // cannot activate within 24 hours of next voting period ending
-    const time_point in_one_week = current_time_point() + time_point_sec( DAY );
     const time_point end_voting_period = time_point(state.current_voting_period) + time_point_sec(settings.voting_interval);
-    check( in_one_week < end_voting_period, "cannot activate within 24 hours of next voting period ending");
+    check( current_time_point() + time_point_sec( DAY ) < end_voting_period, "cannot activate within 24 hours of next voting period ending");
+
+    // duration of proposal
+    const time_point end = time_point(state.current_voting_period) + time_point_sec(settings.voting_interval * proposals_itr->duration);
 
     // convert draft proposal to active
     _proposals.emplace( proposer, [&]( auto& row ) {
@@ -33,18 +35,15 @@ void wps::activate( const eosio::name proposer, const eosio::name proposal_name 
         row.budget          = drafts_itr->budget;
         row.duration        = drafts_itr->duration;
         row.proposal_json   = drafts_itr->proposal_json;
+        row.start           = current_time_point();
+        row.end             = end;
     });
 
     // erase draft
     _drafts.erase( drafts_itr );
 
-    // duration of proposal
-    const time_point end = time_point(state.current_voting_period) + time_point_sec(settings.voting_interval * proposals_itr->duration);
-
     // add empty votes for proposal
     _votes.emplace( proposer, [&]( auto& row ) {
         row.proposal_name = proposal_name;
-        row.voting_period = state.current_voting_period;
-        row.end = end;
     });
 }

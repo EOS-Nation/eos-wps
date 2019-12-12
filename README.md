@@ -165,10 +165,9 @@ cleos push action eosio.wps setparams '[{"vote_margin": 15, "deposit_required": 
 - `{string} title` - proposal title
 - `{asset} budget` - monthly budget payment request
 - `{uint8_t} duration` - monthly budget duration (maximum of 6 months)
-- `{name} status` - current status of proposal (draft/active/completed/expired)
-- `{asset} deposit` - deposit required to active proposal
-- `{asset} payments` - payments made to WPS proposal
 - `{map<name, string>} proposal_json` - a sorted container of <key, value>
+- `{time_point_sec} start` - start of voting period (UTC)
+- `{time_point_sec} end` - end of voting period (UTC)
 
 ### example
 
@@ -179,13 +178,12 @@ cleos push action eosio.wps setparams '[{"vote_margin": 15, "deposit_required": 
   "title": "My WPS",
   "budget": "500.0000 EOS",
   "duration": 1,
-  "status": "draft",
-  "deposit": "0.0000 EOS",
-  "payments": "0.0000 EOS",
   "proposal_json": [
     { "key": "category", "value": "other" },
     { "key": "region", "value": "global" }
-  ]
+  ],
+  "start": "2019-11-05T12:10:00",
+  "end": "2019-12-01T00:00:00"
 }
 ```
 
@@ -193,9 +191,6 @@ cleos push action eosio.wps setparams '[{"vote_margin": 15, "deposit_required": 
 
 - `{name} proposal_name` - The proposal's name, its ID among all proposals
 - `{int16_t} total_net_votes` - total net votes
-- `{time_point_sec} voting_period` - active voting period (UTC)
-- `{time_point_sec} start` - start of voting period (UTC)
-- `{time_point_sec} end` - end of voting period (UTC)
 - `{map<name, name>} votes` - a sorted container of <voter, vote>
 
 ### example
@@ -204,9 +199,6 @@ cleos push action eosio.wps setparams '[{"vote_margin": 15, "deposit_required": 
 {
   "proposal_name": "mywps",
   "total_net_votes": 2,
-  "voting_period": "2019-11-01T00:00:00",
-  "start": "2019-11-05T12:10:00",
-  "end": "2019-12-01T00:00:00",
   "votes": [
       { "key": "mybp1", "value": "yes" },
       { "key": "mybp2", "value": "no" },
