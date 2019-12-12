@@ -19,6 +19,19 @@ void wps::clean( const eosio::name table, const std::optional<eosio::name> scope
         while ( proposals_itr != _proposals.end() ) {
             proposals_itr = _proposals.erase( proposals_itr );
         }
+    // deposits
+    } else if (table == "deposits"_n) {
+        auto deposits_itr = _deposits.begin();
+        while ( deposits_itr != _deposits.end() ) {
+            deposits_itr = _deposits.erase( deposits_itr );
+        }
+    // drafts
+    } else if (table == "drafts"_n) {
+        drafts_table _drafts( get_self(), scope->value );
+        auto drafts_itr = _drafts.begin();
+        while ( drafts_itr != _drafts.end() ) {
+            drafts_itr = _drafts.erase( drafts_itr );
+        }
     }
     else if (table == "settings"_n) _settings.remove();
     else if (table == "state"_n) _state.remove();

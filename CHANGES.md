@@ -1,5 +1,9 @@
 # 2019-12-12
 
+- add check to prevent +13 character `eosio:name` in `proposal_name`
+
+# 2019-12-12
+
 - rename `propopse` => `submitdraft`
 - simplify `refund` action (only have 1 param, "account")
 - first time EOS deposits must first require the user to submit a proposal
@@ -13,6 +17,7 @@ TO-DO:
 - remove extra fields in `votes` & `proposals`
 - add `proposers` TABLE to add extra metadata about proposer
 - add `funding` TABLE to track incoming funding deposits
+- handle `vote` on expired proposals
 
 # 2019-12-11
 

@@ -17,7 +17,8 @@ void wps::submitdraft(const eosio::name proposer,
 
     // validation
     check( drafts_itr == _drafts.end(), "[proposal_name] draft already exists, try using `modifydraft` or `canceldraft`" );
-    check( proposal_name.length() > 2, "[proposal_name] should be at least 3 characters long" );
+    check( proposal_name.length() > 2, "[proposal_name] should be at least 3 characters in length" );
+    check( proposal_name.length() < 13, "[proposal_name] cannot exceed 12 characters in length" );
     check_title( title );
     check( budget.symbol == symbol{"EOS", 4}, "[budget] must use EOS symbol" );
     check( budget >= settings.deposit_required, "[budget] must be a minimum of " + settings.deposit_required.to_string());
