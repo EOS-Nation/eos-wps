@@ -4,30 +4,30 @@
 
 ### A. Propose & Activate
 
-1. `propose` proposal draft
-2. send 100 EOS from any account using memo as the proposal name
+1. `submitdraft` proposal draft
+2. send 100 EOS from any account
 3. `activate` (can no longer be modified)
 
 ### B. Cancel draft
 
-1. `propose` proposal draft
+1. `submitdraft` proposal draft
 2. `canceldraft`
 
 ### C. Cancel & Refund
 
-1. `propose` proposal draft
+1. `submitdraft` proposal draft
 2. send 100 EOS
 3. `refund` 100 EOS
 4. `canceldraft`
 
 ## ACTION - USER
 
-- [`propose`](#action-propose)
+- [`submitdraft`](#action-submitdraft)
+- [`modifydraft`](#action-modifydraft)
+- [`canceldraft`](#action-canceldraft)
 - [`vote`](#action-vote)
 - [`activate`](#action-activate)
 - [`refund`](#action-refund)
-- [`canceldraft`](#action-canceldraft)
-- [`modifydraft`](#action-modifydraft)
 
 ## ACTION - ADMIN
 
@@ -39,9 +39,9 @@
 - [`draft`](#table-draft)
 - [`proposal`](#table-proposal)
 
-## ACTION `propose`
+## ACTION `submitdraft`
 
-Submit a WPS proposal
+Submit a draft WPS proposal (create/modify)
 
 - Authority:  `proposer`
 
@@ -50,14 +50,14 @@ Submit a WPS proposal
 - `{name} proposer` - proposer of proposal
 - `{name} proposal_name` - proposal name
 - `{string} title` - proposal title
-- `{map<name, string>} proposal_json` - proposal JSON metadata
 - `{asset} budget` - monthly budget payment request
 - `{uin8_t} duration` - monthly budget duration (maximum of 6 months)
+- `{map<name, string>} proposal_json` - a sorted container of <key, value>
 
 ### example
 
 ```bash
-cleos push action eosio.wps propose '["myaccount", "mywps", "My WPS", "500.0000 EOS", 1, [{"key":"category", "value":"other"}, {"key":"region", "value":"global"}]]' -p myaccount
+cleos push action eosio.wps submitdraft '["myaccount", "mywps", "My WPS", "500.0000 EOS", 1, [{"key":"category", "value":"other"}, {"key":"region", "value":"global"}]]' -p myaccount
 ```
 
 ## ACTION `vote`
@@ -89,15 +89,14 @@ cleos push action eosio.wps activate '["myaccount", "mywps"]' -p myaccount
 
 ## ACTION `refund`
 
-Refund any remaining deposit amount from a draft WPS proposal.
+Refund any remaining deposit amount from requesting account
 
-- Authority:  `proposer`
+- Authority:  `account`
 
-- `{name} proposer` - proposer
-- `{name} proposal_name` - proposal name
+- `{name} account` - account requesting refund
 
 ```bash
-cleos push action eosio.wps refund '["myaccount", "mywps"]' -p myaccount
+cleos push action eosio.wps refund '["myaccount"]' -p myaccount
 ```
 
 ## ACTION `canceldraft`
@@ -251,5 +250,19 @@ cleos push action eosio.wps setparams '[{"vote_margin": 15, "deposit_required": 
   "liquid_deposits": "100.0000 EOS",
   "locked_deposits": "200.0000 EOS",
   "available_funding": "50000.0000 EOS",
+}
+```
+
+## TABLE `deposits`
+
+- `{name} account` - account balance owner
+- `{asset} balance` - token balance amount
+
+### example
+
+```json
+{
+  "account": "myaccount",
+  "balance": "100.0000 EOS"
 }
 ```

@@ -20,14 +20,17 @@ void wps::transfer( const eosio::name&    from,
         return;
     }
 
-    // funding WPS proposal deposit requirements
-    // validate memo
-    check( memo.length() > 0, "memo is required");
-    check( memo.length() <= 12, "memo must be 12 characters or less");
-    const eosio::name proposal_name = name{ memo };
+    // // funding WPS proposal deposit requirements
+    // // validate memo
+    // check( memo.length() > 0, "memo is required");
+    // check( memo.length() <= 12, "memo must be 12 characters or less");
+    // const eosio::name proposal_name = name{ memo };
 
-    // deposit quantity to proposal
-    deposit_to_proposal( proposal_name, quantity );
+    // deposit quantity to account
+    auto deposits_itr = _deposits.find( from.value );
+    check( deposits_itr != _deposits.end(), "deposit account does not exist, must `submitdraft` action before sending funds to " + get_self().to_string());
+
+    add_deposit( from, quantity );
     add_liquid_deposits( quantity );
 }
 

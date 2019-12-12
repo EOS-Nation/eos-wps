@@ -1,5 +1,3 @@
-namespace eosio {
-
 /**
  * TESTING ONLY
  *
@@ -24,6 +22,4 @@ void wps::clean( const eosio::name table, const std::optional<eosio::name> scope
     }
     else if (table == "settings"_n) _settings.remove();
     else if (table == "state"_n) _state.remove();
-}
-
 }

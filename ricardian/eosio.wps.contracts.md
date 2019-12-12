@@ -1,8 +1,8 @@
-<h1 class="contract">propose</h1>
+<h1 class="contract">submitdraft</h1>
 
 ## Description
 
-Submit a WPS proposal
+Submit a WPS draft proposal
 
 <h1 class="contract">vote</h1>
 

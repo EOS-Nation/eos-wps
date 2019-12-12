@@ -19,8 +19,6 @@ static constexpr uint64_t DAY = 86400; // 24 hours
 static constexpr uint64_t WEEK = 604800; // 7 days
 static constexpr uint64_t MONTH = 2592000; // 30 days
 
-namespace eosio {
-
 /**
  * ## TABLE `settings`
  *
@@ -46,6 +44,48 @@ struct [[eosio::table("settings"), eosio::contract("eosio.wps")]] wps_parameters
     uint64_t            voting_interval = 2592000;
     eosio::asset        max_monthly_budget = asset{ 500000000, symbol{"EOS", 4}};
 };
+
+typedef eosio::singleton< "settings"_n, wps_parameters> settings_table;
+
+/**
+ * ## TABLE `drafts`
+ *
+ * - scope: `proposer`
+ *
+ * - `{name} proposer` - proposer of proposal
+ * - `{name} proposal_name` - proposal name
+ * - `{string} title` - proposal title
+ * - `{asset} budget` - monthly budget payment request
+ * - `{uint8_t} duration` - monthly budget duration (maximum of 6 months)
+ * - `{map<name, string>} proposal_json` - a sorted container of <key, value>
+ *
+ * ### example
+ *
+ * ```json
+ * {
+ *   "proposer": "myaccount",
+ *   "proposal_name": "mywps",
+ *   "title": "My WPS",
+ *   "budget": "500.0000 EOS",
+ *   "duration": 1,
+ *   "proposal_json": [
+ *     { "key": "category", "value": "other" },
+ *     { "key": "region", "value": "global" }
+ *   ]
+ * }
+ * ```
+ */
+struct [[eosio::table("drafts"), eosio::contract("eosio.wps")]] drafts_row {
+    eosio::name                             proposer;
+    eosio::name                             proposal_name;
+    eosio::string                           title;
+    eosio::asset                            budget;
+    uint8_t                                 duration;
+    std::map<eosio::name, eosio::string>    proposal_json;
+
+    uint64_t primary_key() const { return proposal_name.value; }
+};
+typedef eosio::multi_index< "drafts"_n, drafts_row> drafts_table;
 
 /**
  * ## TABLE `proposals`
@@ -94,6 +134,10 @@ struct [[eosio::table("proposals"), eosio::contract("eosio.wps")]] proposals_row
     uint64_t by_status() const { return status.value; }
 };
 
+typedef eosio::multi_index< "proposals"_n, proposals_row,
+    indexed_by<"bystatus"_n, const_mem_fun<proposals_row, uint64_t, &proposals_row::by_status>>
+> proposals_table;
+
 /**
  * ## TABLE `votes`
  *
@@ -139,6 +183,11 @@ struct [[eosio::table("votes"), eosio::contract("eosio.wps")]] votes_row {
     uint64_t by_voting_period() const { return voting_period.sec_since_epoch(); }
 };
 
+typedef eosio::multi_index< "votes"_n, votes_row,
+    indexed_by<"bystatus"_n, const_mem_fun<votes_row, uint64_t, &votes_row::by_status>>,
+    indexed_by<"byperiod"_n, const_mem_fun<votes_row, uint64_t, &votes_row::by_voting_period>>
+> votes_table;
+
 /**
  * ## TABLE `state`
  *
@@ -165,6 +214,34 @@ struct [[eosio::table("state"), eosio::contract("eosio.wps")]] state_row {
     eosio::asset                available_funding;
 };
 
+typedef eosio::singleton< "state"_n, state_row> state_table;
+
+/**
+ * ## TABLE `deposits`
+ *
+ * - `{name} account` - account balance owner
+ * - `{asset} balance` - token balance amount
+ *
+ * ### example
+ *
+ * ```json
+ * {
+ *   "account": "myaccount",
+ *   "balance": "100.0000 EOS"
+ * }
+ * ```
+ */
+struct [[eosio::table("deposits"), eosio::contract("eosio.wps")]] deposits_row {
+    eosio::name         account;
+    eosio::asset        balance;
+
+    uint64_t primary_key() const { return account.value; }
+};
+
+typedef eosio::multi_index< "deposits"_n, deposits_row > deposits_table;
+
+namespace eosio {
+
 class [[eosio::contract("eosio.wps")]] wps : public contract {
 public:
     using contract::contract;
@@ -181,11 +258,12 @@ public:
             _proposals( get_self(), get_self().value ),
             _votes( get_self(), get_self().value ),
             _settings( get_self(), get_self().value ),
-            _state( get_self(), get_self().value )
+            _state( get_self(), get_self().value ),
+            _deposits( get_self(), get_self().value )
     {}
 
     /**
-     * ## ACTION `propose`
+     * ## ACTION `submitdraft`
      *
      * Submit a WPS proposal
      *
@@ -203,16 +281,16 @@ public:
      * ### example
      *
      * ```bash
-     * cleos push action eosio.wps propose '["myaccount", "mywps", "My WPS", "500.0000 EOS", 1, [{"key":"category", "value":"other"}, {"key":"region", "value":"global"}]]' -p myaccount
+     * cleos push action eosio.wps submitdraft '["myaccount", "mywps", "My WPS", "500.0000 EOS", 1, [{"key":"category", "value":"other"}, {"key":"region", "value":"global"}]]' -p myaccount
      * ```
      */
     [[eosio::action]]
-    void propose(const eosio::name proposer,
-                 const eosio::name proposal_name,
-                 const eosio::string title,
-                 const eosio::asset budget,
-                 const uint8_t duration,
-                 const std::map<eosio::name, eosio::string> proposal_json );
+    void submitdraft(const eosio::name proposer,
+                     const eosio::name proposal_name,
+                     const eosio::string title,
+                     const eosio::asset budget,
+                     const uint8_t duration,
+                     const std::map<eosio::name, eosio::string> proposal_json );
 
     /**
      * ## ACTION `vote`
@@ -252,19 +330,18 @@ public:
     /**
      * ## ACTION `refund`
      *
-     * Refund any remaining deposit amount from a draft WPS proposal.
+     * Refund any remaining deposit amount from requesting account
      *
-     * - Authority:  `proposer`
+     * - Authority:  `account`
      *
-     * - `{name} proposer` - proposer
-     * - `{name} proposal_name` - proposal name
+     * - `{name} account` - account requesting refund
      *
      * ```bash
-     * cleos push action eosio.wps refund '["myaccount", "mywps"]' -p myaccount
+     * cleos push action eosio.wps refund '["myaccount"]' -p myaccount
      * ```
      */
     [[eosio::action]]
-    void refund( const eosio::name proposer, const eosio::name proposal_name );
+    void refund( const eosio::name account );
 
     /**
      * ## ACTION `canceldraft`
@@ -355,32 +432,21 @@ public:
                    const eosio::string&  memo );
 
     using vote_action = eosio::action_wrapper<"vote"_n, &wps::vote>;
-    using propose_action = eosio::action_wrapper<"propose"_n, &wps::propose>;
+    using submitdraft_action = eosio::action_wrapper<"submitdraft"_n, &wps::submitdraft>;
     using activate_action = eosio::action_wrapper<"activate"_n, &wps::activate>;
     using refund_action = eosio::action_wrapper<"refund"_n, &wps::refund>;
     using canceldraft_action = eosio::action_wrapper<"canceldraft"_n, &wps::canceldraft>;
+    using modifydraft_action = eosio::action_wrapper<"modifydraft"_n, &wps::modifydraft>;
     using init_action = eosio::action_wrapper<"init"_n, &wps::init>;
     using setparams_action = eosio::action_wrapper<"setparams"_n, &wps::setparams>;
 
 private:
-    // Tables
-    typedef eosio::multi_index< "proposals"_n, proposals_row,
-        indexed_by<"bystatus"_n, const_mem_fun<proposals_row, uint64_t, &proposals_row::by_status>>
-    > proposals_table;
-
-    typedef eosio::multi_index< "votes"_n, votes_row,
-        indexed_by<"bystatus"_n, const_mem_fun<votes_row, uint64_t, &votes_row::by_status>>,
-        indexed_by<"byperiod"_n, const_mem_fun<votes_row, uint64_t, &votes_row::by_voting_period>>
-    > votes_table;
-
-    typedef eosio::singleton< "settings"_n, wps_parameters> settings_table;
-    typedef eosio::singleton< "state"_n, state_row> state_table;
-
     // local instances of the multi indexes
     proposals_table             _proposals;
     votes_table                 _votes;
     settings_table              _settings;
     state_table                 _state;
+    deposits_table              _deposits;
 
     // private helpers
     int16_t calculate_total_net_votes( const std::map<eosio::name, eosio::name> votes );
@@ -389,6 +455,12 @@ private:
     void add_liquid_deposits( const eosio::asset quantity );
     void deposit_to_proposal( const eosio::name proposal_name, const eosio::asset quantity );
     void add_funding( const eosio::asset quantity );
+    void check_title( const string title );
+
+    // deposits
+    void add_deposit( const eosio::name account, const eosio::asset quantity );
+    void sub_deposit( const eosio::name account, const eosio::asset quantity );
+    void create_deposit_account( const eosio::name account );
 };
 
 }

@@ -1,5 +1,3 @@
-namespace eosio {
-
 void wps::setperiod()
 {
     print("to-do");
@@ -8,6 +6,4 @@ void wps::setperiod()
     //     row.proposer = proposer;
     //     row.proposal_name = proposal_name;
     // });
-}
-
 }

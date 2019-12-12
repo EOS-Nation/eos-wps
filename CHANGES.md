@@ -1,3 +1,19 @@
+# 2019-12-12
+
+- rename `propopse` => `submitdraft`
+- simplify `refund` action (only have 1 param, "account")
+- first time EOS deposits must first require the user to submit a proposal
+- new `draft` TABLE scoped by `proposer`
+- creating a `proposal` is first sent to `drafts` TABLE scoped under the `proposer` account name
+- account can deposit any amount of EOS (regardless of proposal)
+- when `activate` proposal, it deducts the amount of EOS directly from the `deposits` account
+
+TO-DO:
+
+- remove extra fields in `votes` & `proposals`
+- add `proposers` TABLE to add extra metadata about proposer
+- add `funding` TABLE to track incoming funding deposits
+
 # 2019-12-11
 
 - add funding using `memo="funding"` or from designated system account
@@ -6,8 +22,8 @@
 - update `locked_deposits` when activate proposal
 - add `max_monthly_budget` to `settings` TABLE
 - rename `setsettings` => `setparams`
-- add `state` table
 - remove `from` check (deposit can come from any account)
+- add `state` table
 
 ## TABLE `state`
 

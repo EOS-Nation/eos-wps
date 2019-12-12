@@ -6,14 +6,20 @@ cleos -v push action eosio.wps init '["2019-11-25T00:00:00"]' -p eosio.wps
 # setparams (optional)
 cleos push action eosio.wps setparams '[{"vote_margin": 15, "deposit_required": "100.0000 EOS", "voting_interval": 2592000, "max_monthly_budget": "50000.0000 EOS"}]' -p eosio.wps
 
-# propose
-cleos -v push action eosio.wps propose '["myaccount", "mywps", "My WPS", "500.0000 EOS", 1, [{"key":"category", "value":"other"}, {"key":"region", "value":"global"}]]' -p myaccount
+# propose draft
+cleos -v push action eosio.wps submitdraft '["myaccount", "mywps", "My WPS", "500.0000 EOS", 1, [{"key":"category", "value":"other"}, {"key":"region", "value":"global"}]]' -p myaccount
 
-# pay for proposal deposit
-cleos -v transfer myaccount eosio.wps "100.0000 EOS" "mywps"
+# # cancel draft
+# cleos -v push action eosio.wps canceldraft '["myaccount", "mywps"]' -p myaccount
+
+# # modify draft
+# cleos -v push action eosio.wps modifydraft '["myaccount", "mywps", "My WPS", [{"key":"category", "value":"other"}]]' -p myaccount
+
+# deposit EOS into account
+cleos -v transfer myaccount eosio.wps "100.0000 EOS" ""
 
 # refund
-# cleos -v push action eosio.wps refund '["myaccount", "mywps"]' -p myaccount
+# cleos -v push action eosio.wps refund '["myaccount"]' -p myaccount
 
 # activate
 cleos -v push action eosio.wps activate '["myaccount", "mywps"]' -p myaccount

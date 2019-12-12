@@ -1,12 +1,9 @@
-namespace eosio {
-
 void wps::vote( const eosio::name voter, const eosio::name proposal_name, const eosio::name vote )
 {
     require_auth( voter );
 
     auto proposals_itr = _proposals.find( proposal_name.value );
     check( proposals_itr != _proposals.end(), "[proposals::proposal_name] does not exists");
-    check( proposals_itr->status == "active"_n, "[proposals::proposal_name] is not active");
 
     auto votes_itr = _votes.find( proposal_name.value );
     check( votes_itr != _votes.end(), "[votes::proposal_name] does not exist");
@@ -33,6 +30,4 @@ int16_t wps::calculate_total_net_votes( const std::map<eosio::name, eosio::name>
         else if (vote == "no"_n) total_net_votes -= 1;
     }
     return total_net_votes;
-}
-
 }
