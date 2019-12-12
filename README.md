@@ -264,7 +264,7 @@ cleos push action eosio.wps setparams '[{"vote_margin": 15, "deposit_required": 
 
 ## TABLE `drafts`
 
-- scope: `proposer`
+**scope**: `proposer`
 
 - `{name} proposer` - proposer of proposal
 - `{name} proposal_name` - proposal name
