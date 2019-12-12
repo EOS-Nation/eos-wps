@@ -429,7 +429,6 @@ private:
     int16_t calculate_total_net_votes( const std::map<eosio::name, eosio::name> votes );
     void setperiod();
     void move_to_locked_deposits( const eosio::asset quantity );
-    void add_liquid_deposits( const eosio::asset quantity );
     void deposit_to_proposal( const eosio::name proposal_name, const eosio::asset quantity );
     void add_funding( const eosio::asset quantity );
     void check_title( const string title );
@@ -438,6 +437,8 @@ private:
     void add_deposit( const eosio::name account, const eosio::asset quantity );
     void sub_deposit( const eosio::name account, const eosio::asset quantity );
     void create_deposit_account( const eosio::name account );
+    void add_liquid_deposits( const eosio::asset quantity );
+    void sub_liquid_deposits( const eosio::asset quantity );
 };
 
 }

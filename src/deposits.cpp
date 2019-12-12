@@ -5,17 +5,19 @@ void wps::refund( const eosio::name account )
 
     auto deposits_itr = _deposits.find( account.value );
 
+    // validation
     check( deposits_itr != _deposits.end(), "[account] does not exists");
     check( deposits_itr->balance.amount > 0, "account has no amount to refund");
 
     // send liquid token
+    const eosio::asset remaining_balance = deposits_itr->balance;
     token::transfer_action transfer( "eosio.token"_n, { get_self(), "active"_n });
-    transfer.send( get_self(), account, deposits_itr->balance, "refund" );
+    transfer.send( get_self(), account, remaining_balance, "refund" );
 
-    // add deposit
-    _deposits.modify( deposits_itr, same_payer, [&]( auto& row ) {
-        row.balance -= deposits_itr->balance;
-    });
+    // substract deposits
+    sub_liquid_deposits( remaining_balance );
+    sub_deposit( account, remaining_balance );
+
 }
 
 void wps::create_deposit_account( const eosio::name account )

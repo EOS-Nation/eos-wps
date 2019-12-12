@@ -31,6 +31,13 @@ void wps::add_liquid_deposits( const eosio::asset quantity )
     _state.set( state, get_self() );
 }
 
+void wps::sub_liquid_deposits( const eosio::asset quantity )
+{
+    auto state = _state.get_or_default();
+    state.liquid_deposits -= quantity;
+    _state.set( state, get_self() );
+}
+
 void wps::move_to_locked_deposits( const eosio::asset quantity )
 {
     auto state = _state.get_or_default();

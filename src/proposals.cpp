@@ -25,7 +25,7 @@ void wps::activate( const eosio::name proposer, const eosio::name proposal_name 
     check( current_time_point() + time_point_sec( DAY ) < end_voting_period, "cannot activate within 24 hours of next voting period ending");
 
     // duration of proposal
-    const time_point end = time_point(state.current_voting_period) + time_point_sec(settings.voting_interval * proposals_itr->duration);
+    const time_point end = time_point(state.current_voting_period) + time_point_sec(settings.voting_interval * drafts_itr->duration);
 
     // convert draft proposal to active
     _proposals.emplace( proposer, [&]( auto& row ) {

@@ -2,23 +2,22 @@
 
 ## Workflows
 
-### A. Propose & Activate
+### A. Submit & Deposit & Activate
 
-1. `submitdraft` proposal draft
-2. send 100 EOS from any account
-3. `activate` (can no longer be modified)
+1. `submitdraft` to create a draft proposal
+2. send 100 EOS from `proposer` account
+3. `activate` proposal, deducts min deposit & can no longer be modified
 
-### B. Cancel draft
+### B. Submit & Cancel
 
-1. `submitdraft` proposal draft
-2. `canceldraft`
+1. `submitdraft` draft proposal
+2. `canceldraft` cancel draft
 
-### C. Cancel & Refund
+### C. Deposit & Refund
 
-1. `submitdraft` proposal draft
+1. `submitdraft` draft proposal
 2. send 100 EOS
-3. `refund` 100 EOS
-4. `canceldraft`
+3. `refund` action to return 100 EOS
 
 ## ACTION - USER
 
