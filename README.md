@@ -35,8 +35,11 @@
 
 ## TABLE
 
-- [`draft`](#table-draft)
-- [`proposal`](#table-proposal)
+- [`drafts`](#table-drafts)
+- [`proposals`](#table-proposals)
+- [`votes`](#table-votes)
+- [`settings`](#table-settings)
+- [`state`](#table-state)
 
 ## ACTION `submitdraft`
 
