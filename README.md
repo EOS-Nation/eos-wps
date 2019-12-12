@@ -35,11 +35,12 @@
 
 ## TABLE
 
-- [`drafts`](#table-drafts)
 - [`proposals`](#table-proposals)
 - [`votes`](#table-votes)
 - [`settings`](#table-settings)
 - [`state`](#table-state)
+- [`deposits`](#table-deposits)
+- [`drafts`](#table-drafts)
 
 ## ACTION `submitdraft`
 
@@ -258,5 +259,32 @@ cleos push action eosio.wps setparams '[{"vote_margin": 15, "deposit_required": 
 {
   "account": "myaccount",
   "balance": "100.0000 EOS"
+}
+```
+
+## TABLE `drafts`
+
+- scope: `proposer`
+
+- `{name} proposer` - proposer of proposal
+- `{name} proposal_name` - proposal name
+- `{string} title` - proposal title
+- `{asset} budget` - monthly budget payment request
+- `{uint8_t} duration` - monthly budget duration (maximum of 6 months)
+- `{map<name, string>} proposal_json` - a sorted container of <key, value>
+
+### example
+
+```json
+{
+  "proposer": "myaccount",
+  "proposal_name": "mywps",
+  "title": "My WPS",
+  "budget": "500.0000 EOS",
+  "duration": 1,
+  "proposal_json": [
+    { "key": "category", "value": "other" },
+    { "key": "region", "value": "global" }
+  ]
 }
 ```
