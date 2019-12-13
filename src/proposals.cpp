@@ -36,7 +36,7 @@ void wps::activate( const eosio::name proposer, const eosio::name proposal_name 
         row.duration        = drafts_itr->duration;
         row.total_budget    = drafts_itr->total_budget;
         row.proposal_json   = drafts_itr->proposal_json;
-        row.activated       = current_time_point();
+        row.created         = current_time_point();
         row.start           = state.current_voting_period;
         row.end             = end;
     });

@@ -43,6 +43,7 @@
 - [`drafts`](#table-drafts)
 - [`proposers`](#table-proposers)
 - [`periods`](#table-periods)
+- [`funding`](#table-funding)
 
 ## ACTION `submitdraft`
 
@@ -341,5 +342,25 @@ cleos push action eosio.wps setparams '[{"vote_margin": 15, "deposit_required": 
 {
   "period": "2019-11-01T00:00:00",
   "proposals": ["mywps"],
+}
+```
+
+## TABLE `funding`
+
+- `{uint64_t} id` - incoming transfer identifier
+- `{name} from` - sender of transfer
+- `{asset} quantity` - transfer quantity amount
+- `{string} memo` - transfer memo
+- `{checksum256} tx_id` - transaction ID
+
+### example
+
+```json
+{
+  "id": 0,
+  "from": "myaccount",
+  "quantity": "50.0000 EOS",
+  "memo": "donation",
+  "tx_id": "<TRANSACTION ID>"
 }
 ```

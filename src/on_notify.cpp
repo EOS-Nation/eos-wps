@@ -1,5 +1,3 @@
-namespace eosio {
-
 [[eosio::on_notify("eosio.token::transfer")]]
 void wps::transfer( const eosio::name&    from,
                     const eosio::name&    to,
@@ -17,14 +15,9 @@ void wps::transfer( const eosio::name&    from,
     // funding WPS using memo="donate" or from designated system account
     if ( memo == "donate" || from == "eosio.saving"_n || from == "eosio.names"_n || from == "eosio.ramfee"_n ) {
         add_funding( quantity );
+        add_funding_transfer( from, quantity, memo );
         return;
     }
-
-    // // funding WPS proposal deposit requirements
-    // // validate memo
-    // check( memo.length() > 0, "memo is required");
-    // check( memo.length() <= 12, "memo must be 12 characters or less");
-    // const eosio::name proposal_name = name{ memo };
 
     // deposit quantity to account
     auto deposits_itr = _deposits.find( from.value );
@@ -32,6 +25,4 @@ void wps::transfer( const eosio::name&    from,
 
     add_deposit( from, quantity );
     add_liquid_deposits( quantity );
-}
-
 }

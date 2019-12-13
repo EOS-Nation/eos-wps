@@ -143,7 +143,7 @@ typedef eosio::multi_index< "proposers"_n, proposers_row> proposers_table;
  *     { "key": "category", "value": "other" },
  *     { "key": "region", "value": "global" }
  *   ],
- *   "activated": "2019-11-05T12:10:00",
+ *   "created": "2019-11-05T12:10:00",
  *   "start": "2019-11-01T00:00:00",
  *   "end": "2019-12-01T00:00:00"
  * }
@@ -157,7 +157,7 @@ struct [[eosio::table("proposals"), eosio::contract("eosio.wps")]] proposals_row
     uint8_t                                 duration;
     eosio::asset                            total_budget;
     std::map<eosio::name, eosio::string>    proposal_json;
-    eosio::time_point_sec                   activated;
+    eosio::time_point_sec                   created;
     eosio::time_point_sec                   start;
     eosio::time_point_sec                   end;
 
@@ -252,6 +252,39 @@ struct [[eosio::table("deposits"), eosio::contract("eosio.wps")]] deposits_row {
 typedef eosio::multi_index< "deposits"_n, deposits_row > deposits_table;
 
 /**
+ * ## TABLE `funding`
+ *
+ * - `{uint64_t} id` - incoming transfer identifier
+ * - `{name} from` - sender of transfer
+ * - `{asset} quantity` - transfer quantity amount
+ * - `{string} memo` - transfer memo
+ * - `{checksum256} tx_id` - transaction ID
+ *
+ * ### example
+ *
+ * ```json
+ * {
+ *   "id": 0,
+ *   "from": "myaccount",
+ *   "quantity": "50.0000 EOS",
+ *   "memo": "donation",
+ *   "tx_id": "<TRANSACTION ID>"
+ * }
+ * ```
+ */
+struct [[eosio::table("funding"), eosio::contract("eosio.wps")]] funding_row {
+    uint64_t            id;
+    eosio::name         from;
+    eosio::asset        quantity;
+    eosio::string       memo;
+    eosio::checksum256  tx_id;
+
+    uint64_t primary_key() const { return id; }
+};
+
+typedef eosio::multi_index< "funding"_n, funding_row > funding_table;
+
+/**
  * ## TABLE `periods`
  *
  * - `{time_point_sec} period` - current voting period
@@ -296,7 +329,8 @@ public:
             _state( get_self(), get_self().value ),
             _deposits( get_self(), get_self().value ),
             _proposers( get_self(), get_self().value ),
-            _periods( get_self(), get_self().value )
+            _periods( get_self(), get_self().value ),
+            _funding( get_self(), get_self().value )
     {}
 
     /**
@@ -507,15 +541,21 @@ private:
     deposits_table              _deposits;
     proposers_table             _proposers;
     periods_table               _periods;
+    funding_table               _funding;
 
     // private helpers
     int16_t calculate_total_net_votes( const std::map<eosio::name, eosio::name> votes );
     void setperiod();
     void move_to_locked_deposits( const eosio::asset quantity );
     void deposit_to_proposal( const eosio::name proposal_name, const eosio::asset quantity );
-    void add_funding( const eosio::asset quantity );
     void check_title( const string title );
     void proposal_to_periods( const eosio::name proposal_name, const uint8_t duration, const eosio::name ram_payer );
+    eosio::checksum256 get_tx_id();
+
+    // funding
+    void add_funding_transfer( const eosio::name from, const eosio::asset quantity, const eosio::string memo );
+    void add_funding( const eosio::asset quantity );
+    void sub_funding( const eosio::asset quantity );
 
     // deposits
     void add_deposit( const eosio::name account, const eosio::asset quantity );

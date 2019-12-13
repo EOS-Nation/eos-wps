@@ -17,7 +17,6 @@ void wps::refund( const eosio::name account )
     // substract deposits
     sub_liquid_deposits( remaining_balance );
     sub_deposit( account, remaining_balance );
-
 }
 
 void wps::create_deposit_account( const eosio::name account )
@@ -59,4 +58,26 @@ void wps::sub_deposit( const eosio::name account, const eosio::asset quantity )
         row.balance -= quantity;
         check( row.balance.amount >= 0, "post-balance cannot be less than 0");
     });
+}
+
+void wps::add_liquid_deposits( const eosio::asset quantity )
+{
+    auto state = _state.get_or_default();
+    state.liquid_deposits += quantity;
+    _state.set( state, get_self() );
+}
+
+void wps::sub_liquid_deposits( const eosio::asset quantity )
+{
+    auto state = _state.get_or_default();
+    state.liquid_deposits -= quantity;
+    _state.set( state, get_self() );
+}
+
+void wps::move_to_locked_deposits( const eosio::asset quantity )
+{
+    auto state = _state.get_or_default();
+    state.liquid_deposits -= quantity;
+    state.locked_deposits += quantity;
+    _state.set( state, get_self() );
 }

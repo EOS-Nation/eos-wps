@@ -1,5 +1,6 @@
 # 2019-12-13
 
+- add `funding` TABLE to track incoming funding deposits
 - 🔥`submitdraft` CHANGE: rename `budget` => `monthly_budget` param
 - add `periods` TABLE
 - when proposal `activate` add proposal name to `periods` TABLE
@@ -23,12 +24,6 @@
 - creating a `proposal` is first sent to `drafts` TABLE scoped under the `proposer` account name
 - account can deposit any amount of EOS (regardless of proposal)
 - when `activate` proposal, it deducts the amount of EOS directly from the `deposits` account
-
-TO-DO:
-
-- add `proposers` TABLE to add extra metadata about proposer
-- add `funding` TABLE to track incoming funding deposits
-- handle `vote` on expired proposals
 
 # 2019-12-11
 

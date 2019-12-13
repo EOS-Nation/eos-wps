@@ -3,10 +3,10 @@ void wps::vote( const eosio::name voter, const eosio::name proposal_name, const 
     require_auth( voter );
 
     auto proposals_itr = _proposals.find( proposal_name.value );
-    check( proposals_itr != _proposals.end(), "[proposals::proposal_name] does not exists");
+    check( proposals_itr != _proposals.end(), "[proposal_name] does not exists");
 
     auto votes_itr = _votes.find( proposal_name.value );
-    check( votes_itr != _votes.end(), "[votes::proposal_name] does not exist");
+    check( votes_itr != _votes.end(), "[proposal_name] does not exist");
     check( vote == "yes"_n || vote == "no"_n || vote == "abstain"_n || vote == ""_n, "[vote] invalid (ex: yes/no/abstain)");
     check( proposals_itr->end > current_time_point(), "proposal has ended");
 
