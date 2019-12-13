@@ -256,8 +256,10 @@ typedef eosio::multi_index< "deposits"_n, deposits_row > deposits_table;
  *
  * - `{uint64_t} id` - incoming transfer identifier
  * - `{name} from` - sender of transfer
+ * - `{name} to` - receiver of transfer
  * - `{asset} quantity` - transfer quantity amount
  * - `{string} memo` - transfer memo
+ * - `{time_point_sec} timestamp` - timestamp of transfer
  * - `{checksum256} tx_id` - transaction ID
  *
  * ### example
@@ -267,19 +269,23 @@ typedef eosio::multi_index< "deposits"_n, deposits_row > deposits_table;
  *   "id": 0,
  *   "type": "donation",
  *   "from": "myaccount",
+ *   "to": "eosio.wps",
  *   "quantity": "50.0000 EOS",
  *   "memo": "donation",
+ *   "timestamp": "2019-11-01T00:00:00",
  *   "tx_id": "<TRANSACTION ID>"
  * }
  * ```
  */
 struct [[eosio::table("transfers"), eosio::contract("eosio.wps")]] transfers_row {
-    uint64_t            id;
-    eosio::name         type;
-    eosio::name         from;
-    eosio::asset        quantity;
-    eosio::string       memo;
-    eosio::checksum256  tx_id;
+    uint64_t                id;
+    eosio::name             type;
+    eosio::name             from;
+    eosio::name             to;
+    eosio::asset            quantity;
+    eosio::string           memo;
+    eosio::time_point_sec   timestamp;
+    eosio::checksum256      tx_id;
 
     uint64_t primary_key() const { return id; }
 };
@@ -555,7 +561,7 @@ private:
     eosio::checksum256 get_tx_id();
 
     // transfers
-    void add_transfer( const eosio::name type, const eosio::name from, const eosio::asset quantity, const eosio::string memo );
+    void add_transfer( const eosio::name type, const eosio::name from, const eosio::name to, const eosio::asset quantity, const eosio::string memo );
     void add_funding( const eosio::asset quantity );
     void sub_funding( const eosio::asset quantity );
 

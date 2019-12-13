@@ -34,7 +34,6 @@ void wps::clean( const eosio::name table, const std::optional<eosio::name> scope
         }
     // transfers
     } else if (table == "transfers"_n) {
-        transfers_table _transfers( get_self(), scope->value );
         auto transfers_itr = _transfers.begin();
         while ( transfers_itr != _transfers.end() ) {
             transfers_itr = _transfers.erase( transfers_itr );

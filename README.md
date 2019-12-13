@@ -350,8 +350,10 @@ cleos push action eosio.wps setparams '[{"vote_margin": 15, "deposit_required": 
 - `{uint64_t} id` - incoming transfer identifier
 - `{name} type` - type of transfer
 - `{name} from` - sender of transfer
+- `{name} to` - receiver of transfer
 - `{asset} quantity` - transfer quantity amount
 - `{string} memo` - transfer memo
+- `{time_point_sec} timestamp` - timestamp of transfer
 - `{checksum256} tx_id` - transaction ID
 
 ### example
@@ -360,8 +362,10 @@ cleos push action eosio.wps setparams '[{"vote_margin": 15, "deposit_required": 
 {
   "id": 0,
   "from": "myaccount",
+  "to": "eosio.wps",
   "quantity": "50.0000 EOS",
   "memo": "donation",
+  "timestamp": "2019-11-01T00:00:00",
   "tx_id": "<TRANSACTION ID>"
 }
 ```
