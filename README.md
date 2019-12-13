@@ -43,7 +43,7 @@
 - [`drafts`](#table-drafts)
 - [`proposers`](#table-proposers)
 - [`periods`](#table-periods)
-- [`funding`](#table-funding)
+- [`transfers`](#table-transfers) (TESTING ONLY)
 
 ## ACTION `submitdraft`
 
@@ -345,9 +345,10 @@ cleos push action eosio.wps setparams '[{"vote_margin": 15, "deposit_required": 
 }
 ```
 
-## TABLE `funding`
+## TABLE `transfers` (TESTING ONLY)
 
 - `{uint64_t} id` - incoming transfer identifier
+- `{name} type` - type of transfer
 - `{name} from` - sender of transfer
 - `{asset} quantity` - transfer quantity amount
 - `{string} memo` - transfer memo

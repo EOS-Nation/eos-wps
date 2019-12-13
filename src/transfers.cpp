@@ -1,7 +1,13 @@
-void wps::add_funding_transfer( const eosio::name from, const eosio::asset quantity, const eosio::string memo )
+/**
+ * TESTING ONLY
+ *
+ * Should be removed in production
+ */
+void wps::add_transfer( const eosio::name type, const eosio::name from, const eosio::asset quantity, const eosio::string memo )
 {
-    _funding.emplace( get_self(), [&]( auto& row ) {
-        row.id          = _funding.available_primary_key();
+    _transfers.emplace( get_self(), [&]( auto& row ) {
+        row.id          = _transfers.available_primary_key();
+        row.type        = type;
         row.from        = from;
         row.quantity    = quantity;
         row.memo        = memo;

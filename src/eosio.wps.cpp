@@ -10,4 +10,4 @@
 #include "vote.cpp"
 #include "proposers.cpp"
 #include "get_tx_id.cpp"
-#include "funding.cpp"
+#include "transfers.cpp"

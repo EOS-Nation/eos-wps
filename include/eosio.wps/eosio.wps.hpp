@@ -252,7 +252,7 @@ struct [[eosio::table("deposits"), eosio::contract("eosio.wps")]] deposits_row {
 typedef eosio::multi_index< "deposits"_n, deposits_row > deposits_table;
 
 /**
- * ## TABLE `funding`
+ * ## TABLE `transfers` (TESTING ONLY)
  *
  * - `{uint64_t} id` - incoming transfer identifier
  * - `{name} from` - sender of transfer
@@ -265,6 +265,7 @@ typedef eosio::multi_index< "deposits"_n, deposits_row > deposits_table;
  * ```json
  * {
  *   "id": 0,
+ *   "type": "donation",
  *   "from": "myaccount",
  *   "quantity": "50.0000 EOS",
  *   "memo": "donation",
@@ -272,8 +273,9 @@ typedef eosio::multi_index< "deposits"_n, deposits_row > deposits_table;
  * }
  * ```
  */
-struct [[eosio::table("funding"), eosio::contract("eosio.wps")]] funding_row {
+struct [[eosio::table("transfers"), eosio::contract("eosio.wps")]] transfers_row {
     uint64_t            id;
+    eosio::name         type;
     eosio::name         from;
     eosio::asset        quantity;
     eosio::string       memo;
@@ -282,7 +284,7 @@ struct [[eosio::table("funding"), eosio::contract("eosio.wps")]] funding_row {
     uint64_t primary_key() const { return id; }
 };
 
-typedef eosio::multi_index< "funding"_n, funding_row > funding_table;
+typedef eosio::multi_index< "transfers"_n, transfers_row > transfers_table;
 
 /**
  * ## TABLE `periods`
@@ -330,7 +332,7 @@ public:
             _deposits( get_self(), get_self().value ),
             _proposers( get_self(), get_self().value ),
             _periods( get_self(), get_self().value ),
-            _funding( get_self(), get_self().value )
+            _transfers( get_self(), get_self().value )
     {}
 
     /**
@@ -541,7 +543,7 @@ private:
     deposits_table              _deposits;
     proposers_table             _proposers;
     periods_table               _periods;
-    funding_table               _funding;
+    transfers_table             _transfers;
 
     // private helpers
     int16_t calculate_total_net_votes( const std::map<eosio::name, eosio::name> votes );
@@ -552,8 +554,8 @@ private:
     void proposal_to_periods( const eosio::name proposal_name, const uint8_t duration, const eosio::name ram_payer );
     eosio::checksum256 get_tx_id();
 
-    // funding
-    void add_funding_transfer( const eosio::name from, const eosio::asset quantity, const eosio::string memo );
+    // transfers
+    void add_transfer( const eosio::name type, const eosio::name from, const eosio::asset quantity, const eosio::string memo );
     void add_funding( const eosio::asset quantity );
     void sub_funding( const eosio::asset quantity );
 

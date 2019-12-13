@@ -12,10 +12,11 @@ void wps::transfer( const eosio::name&    from,
     // exclude system account
     if ( from == "eosio.ram"_n || from == "eosio.stake"_n ) return;
 
-    // funding WPS using memo="donate" or from designated system account
+    // funding WPS from designated system account
+    // funding WPS using donations (memo="donate")
     if ( memo == "donate" || from == "eosio.saving"_n || from == "eosio.names"_n || from == "eosio.ramfee"_n ) {
         add_funding( quantity );
-        add_funding_transfer( from, quantity, memo );
+        add_transfer( "funding"_n, from, quantity, memo );
         return;
     }
 
@@ -25,4 +26,5 @@ void wps::transfer( const eosio::name&    from,
 
     add_deposit( from, quantity );
     add_liquid_deposits( quantity );
+    add_transfer( "deposit"_n, from, quantity, memo );
 }

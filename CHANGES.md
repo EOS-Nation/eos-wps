@@ -1,6 +1,6 @@
 # 2019-12-13
 
-- add `funding` TABLE to track incoming funding deposits
+- add `transfers` TABLE to track incoming funding & deposits transfers (for TESTING purposes)
 - 🔥`submitdraft` CHANGE: rename `budget` => `monthly_budget` param
 - add `periods` TABLE
 - when proposal `activate` add proposal name to `periods` TABLE
