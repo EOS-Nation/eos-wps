@@ -1,3 +1,10 @@
+# 2019-12-13
+
+- 🔥`submitdraft` CHANGE: rename `budget` => `monthly_budget` param
+- add `periods` TABLE
+- when proposal `activate` add proposal name to `periods` TABLE
+- add `total_budget` param
+
 # 2019-12-12
 
 - add check to prevent +13 character `eosio:name` in `proposal_name`

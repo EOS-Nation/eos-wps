@@ -55,8 +55,9 @@ typedef eosio::singleton< "settings"_n, wps_parameters> settings_table;
  * - `{name} proposer` - proposer of proposal
  * - `{name} proposal_name` - proposal name
  * - `{string} title` - proposal title
- * - `{asset} budget` - monthly budget payment request
+ * - `{asset} monthly_budget` - monthly budget payment request
  * - `{uint8_t} duration` - monthly budget duration (maximum of 6 months)
+ * - `{asset} total_budget` - total budget payment request
  * - `{map<name, string>} proposal_json` - a sorted container of <key, value>
  *
  * ### example
@@ -66,8 +67,9 @@ typedef eosio::singleton< "settings"_n, wps_parameters> settings_table;
  *   "proposer": "myaccount",
  *   "proposal_name": "mywps",
  *   "title": "My WPS",
- *   "budget": "500.0000 EOS",
- *   "duration": 1,
+ *   "monthly_budget": "500.0000 EOS",
+ *   "duration": 2,
+ *   "total_budget": "1000.0000 EOS",
  *   "proposal_json": [
  *     { "key": "category", "value": "other" },
  *     { "key": "region", "value": "global" }
@@ -79,8 +81,9 @@ struct [[eosio::table("drafts"), eosio::contract("eosio.wps")]] drafts_row {
     eosio::name                             proposer;
     eosio::name                             proposal_name;
     eosio::string                           title;
-    eosio::asset                            budget;
+    eosio::asset                            monthly_budget;
     uint8_t                                 duration;
+    eosio::asset                            total_budget;
     std::map<eosio::name, eosio::string>    proposal_json;
 
     uint64_t primary_key() const { return proposal_name.value; }
@@ -118,9 +121,11 @@ typedef eosio::multi_index< "proposers"_n, proposers_row> proposers_table;
  * - `{name} proposer` - proposer of proposal
  * - `{name} proposal_name` - proposal name
  * - `{string} title` - proposal title
- * - `{asset} budget` - monthly budget payment request
+ * - `{asset} monthly_budget` - monthly budget payment request
  * - `{uint8_t} duration` - monthly budget duration (maximum of 6 months)
+ * - `{asset} total_budget` - total budget payment request
  * - `{map<name, string>} proposal_json` - a sorted container of <key, value>
+ * - `{time_point_sec} activated` - time proposal was activated (UTC)
  * - `{time_point_sec} start` - start of voting period (UTC)
  * - `{time_point_sec} end` - end of voting period (UTC)
  *
@@ -131,24 +136,28 @@ typedef eosio::multi_index< "proposers"_n, proposers_row> proposers_table;
  *   "proposer": "myaccount",
  *   "proposal_name": "mywps",
  *   "title": "My WPS",
- *   "budget": "500.0000 EOS",
- *   "duration": 1,
+ *   "monthly_budget": "500.0000 EOS",
+ *   "duration": 2,
+ *   "total_budget": "1000.0000 EOS",
  *   "proposal_json": [
  *     { "key": "category", "value": "other" },
  *     { "key": "region", "value": "global" }
  *   ],
- *   "start": "2019-11-05T12:10:00",
+ *   "activated": "2019-11-05T12:10:00",
+ *   "start": "2019-11-01T00:00:00",
  *   "end": "2019-12-01T00:00:00"
  * }
  * ```
  */
-struct [[eosio::table("proposals"), eosio::contract("eosio.wps")]] proposals_row {
+struct [[eosio::table("proposals"), eosio::contract("eosio.wps")]] proposals_row : drafts_row {
     eosio::name                             proposer;
     eosio::name                             proposal_name;
     eosio::string                           title;
-    eosio::asset                            budget;
+    eosio::asset                            monthly_budget;
     uint8_t                                 duration;
+    eosio::asset                            total_budget;
     std::map<eosio::name, eosio::string>    proposal_json;
+    eosio::time_point_sec                   activated;
     eosio::time_point_sec                   start;
     eosio::time_point_sec                   end;
 
@@ -242,6 +251,30 @@ struct [[eosio::table("deposits"), eosio::contract("eosio.wps")]] deposits_row {
 
 typedef eosio::multi_index< "deposits"_n, deposits_row > deposits_table;
 
+/**
+ * ## TABLE `periods`
+ *
+ * - `{time_point_sec} period` - current voting period
+ * - `{set<name>} proposals` - set of proposal names
+ *
+ * ### example
+ *
+ * ```json
+ * {
+ *   "period": "2019-11-01T00:00:00",
+ *   "proposals": ["mywps"],
+ * }
+ * ```
+ */
+struct [[eosio::table("periods"), eosio::contract("eosio.wps")]] periods_row {
+    eosio::time_point_sec       period;
+    std::set<eosio::name>       proposals;
+
+    uint64_t primary_key() const { return period.sec_since_epoch(); }
+};
+
+typedef eosio::multi_index< "periods"_n, periods_row > periods_table;
+
 namespace eosio {
 
 class [[eosio::contract("eosio.wps")]] wps : public contract {
@@ -262,7 +295,8 @@ public:
             _settings( get_self(), get_self().value ),
             _state( get_self(), get_self().value ),
             _deposits( get_self(), get_self().value ),
-            _proposers( get_self(), get_self().value )
+            _proposers( get_self(), get_self().value ),
+            _periods( get_self(), get_self().value )
     {}
 
     /**
@@ -277,7 +311,7 @@ public:
      * - `{name} proposer` - proposer of proposal
      * - `{name} proposal_name` - proposal name
      * - `{string} title` - proposal title
-     * - `{asset} budget` - monthly budget payment request
+     * - `{asset} monthly_budget` - monthly budget payment request
      * - `{uin8_t} duration` - monthly budget duration (maximum of 6 months)
      * - `{map<name, string>} proposal_json` - a sorted container of <key, value>
      *
@@ -291,7 +325,7 @@ public:
     void submitdraft(const eosio::name proposer,
                      const eosio::name proposal_name,
                      const eosio::string title,
-                     const eosio::asset budget,
+                     const eosio::asset monthly_budget,
                      const uint8_t duration,
                      const std::map<eosio::name, eosio::string> proposal_json );
 
@@ -472,6 +506,7 @@ private:
     state_table                 _state;
     deposits_table              _deposits;
     proposers_table             _proposers;
+    periods_table               _periods;
 
     // private helpers
     int16_t calculate_total_net_votes( const std::map<eosio::name, eosio::name> votes );
@@ -480,6 +515,7 @@ private:
     void deposit_to_proposal( const eosio::name proposal_name, const eosio::asset quantity );
     void add_funding( const eosio::asset quantity );
     void check_title( const string title );
+    void proposal_to_periods( const eosio::name proposal_name, const uint8_t duration, const eosio::name ram_payer );
 
     // deposits
     void add_deposit( const eosio::name account, const eosio::asset quantity );

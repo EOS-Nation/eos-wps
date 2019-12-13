@@ -7,7 +7,7 @@ cleos -v push action eosio.wps init '["2019-11-25T00:00:00"]' -p eosio.wps
 cleos push action eosio.wps setparams '[{"vote_margin": 15, "deposit_required": "100.0000 EOS", "voting_interval": 2592000, "max_monthly_budget": "50000.0000 EOS"}]' -p eosio.wps
 
 # propose draft
-cleos -v push action eosio.wps submitdraft '["myaccount", "mywps", "My WPS", "500.0000 EOS", 1, [{"key":"category", "value":"other"}, {"key":"region", "value":"global"}]]' -p myaccount
+cleos -v push action eosio.wps submitdraft '["myaccount", "mywps", "My WPS", "500.0000 EOS", 2, [{"key":"category", "value":"other"}, {"key":"region", "value":"global"}]]' -p myaccount
 
 # set proposer
 cleos -v push action eosio.wps setproposer '["myaccount", [{"key":"region", "value":"global"}]]' -p myaccount

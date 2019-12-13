@@ -41,6 +41,8 @@
 - [`state`](#table-state)
 - [`deposits`](#table-deposits)
 - [`drafts`](#table-drafts)
+- [`proposers`](#table-proposers)
+- [`periods`](#table-periods)
 
 ## ACTION `submitdraft`
 
@@ -183,9 +185,11 @@ cleos push action eosio.wps setparams '[{"vote_margin": 15, "deposit_required": 
 - `{name} proposer` - proposer of proposal
 - `{name} proposal_name` - proposal name
 - `{string} title` - proposal title
-- `{asset} budget` - monthly budget payment request
+- `{asset} monthly_budget` - monthly budget payment request
 - `{uint8_t} duration` - monthly budget duration (maximum of 6 months)
+- `{asset} total_budget` - total budget payment request
 - `{map<name, string>} proposal_json` - a sorted container of <key, value>
+- `{time_point_sec} activated` - time proposal was activated (UTC)
 - `{time_point_sec} start` - start of voting period (UTC)
 - `{time_point_sec} end` - end of voting period (UTC)
 
@@ -196,13 +200,15 @@ cleos push action eosio.wps setparams '[{"vote_margin": 15, "deposit_required": 
   "proposer": "myaccount",
   "proposal_name": "mywps",
   "title": "My WPS",
-  "budget": "500.0000 EOS",
-  "duration": 1,
+  "monthly_budget": "500.0000 EOS",
+  "duration": 2,
+  "total_budget": "1000.0000 EOS",
   "proposal_json": [
     { "key": "category", "value": "other" },
     { "key": "region", "value": "global" }
   ],
-  "start": "2019-11-05T12:10:00",
+  "activated": "2019-11-05T12:10:00",
+  "start": "2019-11-01T00:00:00",
   "end": "2019-12-01T00:00:00"
 }
 ```
@@ -286,8 +292,9 @@ cleos push action eosio.wps setparams '[{"vote_margin": 15, "deposit_required": 
 - `{name} proposer` - proposer of proposal
 - `{name} proposal_name` - proposal name
 - `{string} title` - proposal title
-- `{asset} budget` - monthly budget payment request
+- `{asset} monthly_budget` - monthly budget payment request
 - `{uint8_t} duration` - monthly budget duration (maximum of 6 months)
+- `{asset} total_budget` - total budget payment request
 - `{map<name, string>} proposal_json` - a sorted container of <key, value>
 
 ### example
@@ -297,8 +304,9 @@ cleos push action eosio.wps setparams '[{"vote_margin": 15, "deposit_required": 
   "proposer": "myaccount",
   "proposal_name": "mywps",
   "title": "My WPS",
-  "budget": "500.0000 EOS",
-  "duration": 1,
+  "monthly_budget": "500.0000 EOS",
+  "duration": 2,
+  "total_budget": "1000.0000 EOS",
   "proposal_json": [
     { "key": "category", "value": "other" },
     { "key": "region", "value": "global" }
@@ -319,5 +327,19 @@ cleos push action eosio.wps setparams '[{"vote_margin": 15, "deposit_required": 
   "metadata_json": [
     { "key": "region", "value": "global" }
   ]
+}
+```
+
+## TABLE `periods`
+
+- `{time_point_sec} period` - current voting period
+- `{set<name>} proposals` - set of proposal names
+
+### example
+
+```json
+{
+  "period": "2019-11-01T00:00:00",
+  "proposals": ["mywps"],
 }
 ```

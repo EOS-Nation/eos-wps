@@ -29,13 +29,15 @@ void wps::activate( const eosio::name proposer, const eosio::name proposal_name 
 
     // convert draft proposal to active
     _proposals.emplace( proposer, [&]( auto& row ) {
-        row.proposer        = drafts_itr->proposer;
-        row.proposal_name   = drafts_itr->proposal_name;
+        row.proposer        = proposer;
+        row.proposal_name   = proposal_name;
         row.title           = drafts_itr->title;
-        row.budget          = drafts_itr->budget;
+        row.monthly_budget  = drafts_itr->monthly_budget;
         row.duration        = drafts_itr->duration;
+        row.total_budget    = drafts_itr->total_budget;
         row.proposal_json   = drafts_itr->proposal_json;
-        row.start           = current_time_point();
+        row.activated       = current_time_point();
+        row.start           = state.current_voting_period;
         row.end             = end;
     });
 
@@ -46,4 +48,7 @@ void wps::activate( const eosio::name proposer, const eosio::name proposal_name 
     _votes.emplace( proposer, [&]( auto& row ) {
         row.proposal_name = proposal_name;
     });
+
+    // add proposal name to time periods
+    proposal_to_periods( proposal_name, drafts_itr->duration, proposer );
 }

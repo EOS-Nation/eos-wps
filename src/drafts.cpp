@@ -2,7 +2,7 @@
 void wps::submitdraft(const eosio::name proposer,
                       const eosio::name proposal_name,
                       const string title,
-                      const eosio::asset budget,
+                      const eosio::asset monthly_budget,
                       const uint8_t duration,
                       const std::map<name, string> proposal_json )
 {
@@ -22,8 +22,8 @@ void wps::submitdraft(const eosio::name proposer,
     check( proposal_name.length() > 2, "[proposal_name] should be at least 3 characters in length" );
     check( proposal_name.length() < 13, "[proposal_name] cannot exceed 12 characters in length" );
     check_title( title );
-    check( budget.symbol == symbol{"EOS", 4}, "[budget] must use EOS symbol" );
-    check( budget >= settings.deposit_required, "[budget] must be a minimum of " + settings.deposit_required.to_string());
+    check( monthly_budget.symbol == symbol{"EOS", 4}, "[monthly_budget] must use EOS symbol" );
+    check( monthly_budget >= settings.deposit_required, "[monthly_budget] must be a minimum of " + settings.deposit_required.to_string());
     check( duration > 0, "[duration] must be a minimum of 1 monthly period" );
     check( duration <= 6, "[duration] must not exceed 6 monthly periods" );
 
@@ -32,8 +32,9 @@ void wps::submitdraft(const eosio::name proposer,
         row.proposer        = proposer;
         row.proposal_name   = proposal_name;
         row.title           = title;
-        row.budget          = budget;
+        row.monthly_budget  = monthly_budget;
         row.duration        = duration;
+        row.total_budget    = asset{ monthly_budget.amount * duration, monthly_budget.symbol };
         row.proposal_json   = proposal_json;
     });
 
