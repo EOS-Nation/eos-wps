@@ -125,7 +125,7 @@ typedef eosio::multi_index< "proposers"_n, proposers_row> proposers_table;
  * - `{uint8_t} duration` - monthly budget duration (maximum of 6 months)
  * - `{asset} total_budget` - total budget payment request
  * - `{map<name, string>} proposal_json` - a sorted container of <key, value>
- * - `{time_point_sec} activated` - time proposal was activated (UTC)
+ * - `{time_point_sec} created` - time proposal was created (UTC)
  * - `{time_point_sec} start` - start of voting period (UTC)
  * - `{time_point_sec} end` - end of voting period (UTC)
  *
