@@ -5,6 +5,7 @@ void wps::transfer( const eosio::name&    from,
                     const eosio::string&  memo )
 {
     require_auth( from );
+    const eosio::name ram_payer = from;
 
     // Only monitor incoming transfers to get_self() account
     if ( to != get_self() ) return;
@@ -26,7 +27,7 @@ void wps::transfer( const eosio::name&    from,
     auto deposits_itr = _deposits.find( from.value );
     check( deposits_itr != _deposits.end(), "deposit account does not exist, must `submitdraft` action before sending funds to " + get_self().to_string());
 
-    add_deposit( from, quantity );
+    add_deposit( from, quantity, ram_payer );
     add_liquid_deposits( quantity );
 
     // TESTING PURPOSES

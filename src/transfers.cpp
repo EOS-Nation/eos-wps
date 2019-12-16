@@ -19,14 +19,18 @@ void wps::add_transfer( const eosio::name type, const eosio::name from, const eo
 
 void wps::add_funding( const eosio::asset quantity )
 {
+    const eosio::name ram_payer = get_self();
+
     auto state = _state.get_or_default();
     state.available_funding += quantity;
-    _state.set( state, get_self() );
+    _state.set( state, ram_payer );
 }
 
 void wps::sub_funding( const eosio::asset quantity )
 {
+    const eosio::name ram_payer = get_self();
+
     auto state = _state.get_or_default();
     state.available_funding -= quantity;
-    _state.set( state, get_self() );
+    _state.set( state, ram_payer );
 }

@@ -22,25 +22,25 @@ void wps::refund( const eosio::name account )
     sub_deposit( account, remaining_balance );
 }
 
-void wps::create_deposit_account( const eosio::name account )
+void wps::create_deposit_account( const eosio::name account, const eosio::name ram_payer )
 {
     auto deposits_itr = _deposits.find( account.value );
 
     if ( deposits_itr == _deposits.end()) {
-        _deposits.emplace( account, [&]( auto& row ) {
+        _deposits.emplace( ram_payer, [&]( auto& row ) {
             row.account = account;
             row.balance = asset{0, symbol{ "EOS", 4 }};
         });
     }
 }
 
-void wps::add_deposit( const eosio::name account, const eosio::asset quantity )
+void wps::add_deposit( const eosio::name account, const eosio::asset quantity, const eosio::name ram_payer )
 {
     auto deposits_itr = _deposits.find( account.value );
 
     // create deposit row
     if (deposits_itr == _deposits.end()) {
-        _deposits.emplace( account, [&]( auto& row ) {
+        _deposits.emplace( ram_payer, [&]( auto& row ) {
             row.account = account;
             row.balance = quantity;
         });
@@ -65,22 +65,28 @@ void wps::sub_deposit( const eosio::name account, const eosio::asset quantity )
 
 void wps::add_liquid_deposits( const eosio::asset quantity )
 {
+    const eosio::name ram_payer = get_self();
+
     auto state = _state.get_or_default();
     state.liquid_deposits += quantity;
-    _state.set( state, get_self() );
+    _state.set( state, ram_payer );
 }
 
 void wps::sub_liquid_deposits( const eosio::asset quantity )
 {
+    const eosio::name ram_payer = get_self();
+
     auto state = _state.get_or_default();
     state.liquid_deposits -= quantity;
-    _state.set( state, get_self() );
+    _state.set( state, ram_payer );
 }
 
 void wps::move_to_locked_deposits( const eosio::asset quantity )
 {
+    const eosio::name ram_payer = get_self();
+
     auto state = _state.get_or_default();
     state.liquid_deposits -= quantity;
     state.locked_deposits += quantity;
-    _state.set( state, get_self() );
+    _state.set( state, ram_payer );
 }

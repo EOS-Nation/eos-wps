@@ -2,8 +2,6 @@
 void wps::activate( const eosio::name proposer, const eosio::name proposal_name )
 {
     require_auth( proposer );
-
-    // wps contract pays for activating proposals
     const eosio::name ram_payer = get_self();
 
     // settings

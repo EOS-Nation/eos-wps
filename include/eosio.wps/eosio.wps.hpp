@@ -347,6 +347,7 @@ public:
      * Submit a WPS proposal
      *
      * - authority: `proposer`
+     * - ram_payer: `proposer`
      *
      * ### params
      *
@@ -470,7 +471,8 @@ public:
      *
      * Modify draft WPS proposal budget
      *
-     * - Authority:  `proposer`
+     * - authority:  `proposer`
+     * - ram_payer: `proposer`
      *
      * ### params
      *
@@ -516,6 +518,9 @@ public:
      * Initialize WPS contract
      *
      * - authority: `get_self()`
+     * - ram_payer: `get_self()`
+     *
+     * ### params
      *
      * - `{time_point_sec} initial_voting_period` - initial voting period
      *
@@ -533,6 +538,8 @@ public:
      *
      * - authority: `get_self()`
      * - ram_payer: `get_self()`
+     *
+     * ### params
      *
      * - `{int16_t} [vote_margin=15]` - minimum BP vote margin threshold to reach for proposals
      * - `{asset} [deposit_required="100.0000 EOS"]` - deposit required to active proposal
@@ -594,9 +601,9 @@ private:
     void sub_funding( const eosio::asset quantity );
 
     // deposits
-    void add_deposit( const eosio::name account, const eosio::asset quantity );
+    void add_deposit( const eosio::name account, const eosio::asset quantity, const eosio::name ram_payer );
     void sub_deposit( const eosio::name account, const eosio::asset quantity );
-    void create_deposit_account( const eosio::name account );
+    void create_deposit_account( const eosio::name account, const eosio::name ram_payer );
     void add_liquid_deposits( const eosio::asset quantity );
     void sub_liquid_deposits( const eosio::asset quantity );
 

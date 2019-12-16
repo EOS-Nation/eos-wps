@@ -7,6 +7,7 @@ void wps::submitdraft(const eosio::name proposer,
                       const std::map<name, string> proposal_json )
 {
     require_auth( proposer );
+    const eosio::name ram_payer = proposer;
 
     // get scoped draft
     drafts_table _drafts( get_self(), proposer.value );
@@ -23,7 +24,7 @@ void wps::submitdraft(const eosio::name proposer,
     check_duration( duration );
 
     // create draft proposal
-    _drafts.emplace( proposer, [&]( auto& row ) {
+    _drafts.emplace( ram_payer, [&]( auto& row ) {
         row.proposer        = proposer;
         row.proposal_name   = proposal_name;
         row.title           = title;
@@ -33,7 +34,7 @@ void wps::submitdraft(const eosio::name proposer,
         row.proposal_json   = proposal_json;
     });
 
-    create_deposit_account( proposer );
+    create_deposit_account( proposer, ram_payer );
 }
 
 // @action

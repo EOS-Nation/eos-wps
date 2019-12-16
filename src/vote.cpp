@@ -1,6 +1,7 @@
 void wps::vote( const eosio::name voter, const eosio::name proposal_name, const eosio::name vote )
 {
     require_auth( voter );
+    const eosio::name ram_payer = get_self();
 
     auto proposals_itr = _proposals.find( proposal_name.value );
     check( proposals_itr != _proposals.end(), "[proposal_name] does not exists");
@@ -10,7 +11,7 @@ void wps::vote( const eosio::name voter, const eosio::name proposal_name, const 
     check( vote == "yes"_n || vote == "no"_n || vote == "abstain"_n || vote == ""_n, "[vote] invalid (ex: yes/no/abstain)");
     check( proposals_itr->end > current_time_point(), "proposal has ended");
 
-    _votes.modify( votes_itr, voter, [&]( auto& row ) {
+    _votes.modify( votes_itr, ram_payer, [&]( auto& row ) {
         check(row.votes[voter] != vote, "[vote] has not been modified");
 
         if (vote == ""_n) row.votes.erase(voter); // unvote
