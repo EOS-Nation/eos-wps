@@ -56,7 +56,7 @@ Submit a draft WPS proposal (create/modify)
 - `{name} proposer` - proposer of proposal
 - `{name} proposal_name` - proposal name
 - `{string} title` - proposal title
-- `{asset} budget` - monthly budget payment request
+- `{asset} monthly_budget` - monthly budget payment request
 - `{uin8_t} duration` - monthly budget duration (maximum of 6 months)
 - `{map<name, string>} proposal_json` - a sorted container of <key, value>
 
@@ -135,6 +135,25 @@ Modify draft WPS proposal
 
 ```bash
 cleos push action eosio.wps modifydraft '["myaccount", "mywps", "My WPS", [{"key":"region", value":"global"}]]' -p myaccount
+```
+
+## ACTION `modifybudget`
+
+Modify draft WPS proposal budget
+
+- Authority:  `proposer`
+
+### params
+
+- `{name} proposer` - proposer of proposal
+- `{name} proposal_name` - proposal name
+- `{asset} monthly_budget` - monthly budget payment request
+- `{uin8_t} duration` - monthly budget duration (maximum of 6 months)
+
+### example
+
+```bash
+cleos push action eosio.wps modifybudget '["myaccount", "mywps", "500.0000 EOS", 2]' -p myaccount
 ```
 
 ## ACTION `setproposer`

@@ -2,6 +2,11 @@
 void wps::activate( const eosio::name proposer, const eosio::name proposal_name )
 {
     require_auth( proposer );
+
+    // wps contract pays for activating proposals
+    const eosio::name ram_payer = get_self();
+
+    // settings
     auto settings = _settings.get_or_default();
     auto state = _state.get_or_default();
 
@@ -28,7 +33,7 @@ void wps::activate( const eosio::name proposer, const eosio::name proposal_name 
     const time_point end = time_point(state.current_voting_period) + time_point_sec(settings.voting_interval * drafts_itr->duration);
 
     // convert draft proposal to active
-    _proposals.emplace( proposer, [&]( auto& row ) {
+    _proposals.emplace( ram_payer, [&]( auto& row ) {
         row.proposer        = proposer;
         row.proposal_name   = proposal_name;
         row.title           = drafts_itr->title;
@@ -45,10 +50,10 @@ void wps::activate( const eosio::name proposer, const eosio::name proposal_name 
     _drafts.erase( drafts_itr );
 
     // add empty votes for proposal
-    _votes.emplace( proposer, [&]( auto& row ) {
+    _votes.emplace( ram_payer, [&]( auto& row ) {
         row.proposal_name = proposal_name;
     });
 
     // add proposal name to time periods
-    proposal_to_periods( proposal_name, drafts_itr->duration, proposer );
+    proposal_to_periods( proposal_name, drafts_itr->duration, ram_payer );
 }

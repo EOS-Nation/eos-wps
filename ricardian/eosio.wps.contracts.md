@@ -46,6 +46,12 @@ Cancel draft proposal
 
 Modify draft proposal
 
+<h1 class="contract">modifybudget</h1>
+
+## Description
+
+Modify draft proposal budget
+
 <h1 class="contract">setproposer</h1>
 
 ## Description

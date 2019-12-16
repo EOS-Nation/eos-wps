@@ -346,7 +346,7 @@ public:
      *
      * Submit a WPS proposal
      *
-     * - Authority:  `proposer`
+     * - authority: `proposer`
      *
      * ### params
      *
@@ -376,7 +376,8 @@ public:
      *
      * Vote for a WPS proposal
      *
-     * - Authority:  `voter`
+     * - authority: `voter`
+     * - ram_payer: `get_self()`
      *
      * - `{name} voter` - voter
      * - `{name} proposal_name` - proposal name
@@ -394,7 +395,8 @@ public:
      *
      * Activate WPS proposal
      *
-     * - Authority:  `proposer`
+     * - authority: `proposer`
+     * - ram_payer: `get_self()`
      *
      * - `{name} proposer` - proposer
      * - `{name} proposal_name` - proposal name
@@ -411,7 +413,7 @@ public:
      *
      * Refund any remaining deposit amount from requesting account
      *
-     * - Authority:  `account`
+     * - authority: `account`
      *
      * - `{name} account` - account requesting refund
      *
@@ -427,7 +429,7 @@ public:
      *
      * Cancel draft WPS proposal
      *
-     * - Authority:  `proposer`
+     * - authority: `proposer`
      *
      * - `{name} proposer` - proposer
      * - `{name} proposal_name` - proposal name
@@ -444,7 +446,8 @@ public:
      *
      * Modify draft WPS proposal
      *
-     * - Authority:  `proposer`
+     * - authority: `proposer`
+     * - ram_payer: `proposer`
      *
      * ### params
      *
@@ -463,11 +466,56 @@ public:
     void modifydraft(const eosio::name proposer, const eosio::name proposal_name, const string title, const std::map<name, string> proposal_json );
 
     /**
+     * ## ACTION `modifybudget`
+     *
+     * Modify draft WPS proposal budget
+     *
+     * - Authority:  `proposer`
+     *
+     * ### params
+     *
+     * - `{name} proposer` - proposer of proposal
+     * - `{name} proposal_name` - proposal name
+     * - `{asset} monthly_budget` - monthly budget payment request
+     * - `{uin8_t} duration` - monthly budget duration (maximum of 6 months)
+     *
+     * ### example
+     *
+     * ```bash
+     * cleos push action eosio.wps modifybudget '["myaccount", "mywps", "500.0000 EOS", 2]' -p myaccount
+     * ```
+     */
+    [[eosio::action]]
+    void modifybudget(const eosio::name proposer, const eosio::name proposal_name, const eosio::asset monthly_budget, const uint8_t duration );
+
+    /**
+     * ## ACTION `setproposer`
+     *
+     * Set proposer's metadata
+     *
+     * - authority: `proposer`
+     * - ram_payer: `proposer`
+     *
+     * ### params
+     *
+     * - `{name} proposer` - proposer of proposal
+     * - `{map<name, string>} metadata_json` - a sorted container of <key, value>
+     *
+     * ### example
+     *
+     * ```bash
+     * cleos push action eosio.wps setproposer '["myaccount", [{"key":"region", value":"global"}]]' -p myaccount
+     * ```
+     */
+    [[eosio::action]]
+    void setproposer(const eosio::name proposer, const std::map<name, string> metadata_json );
+
+    /**
      * ## ACTION `init`
      *
      * Initialize WPS contract
      *
-     * - Authority:  `get_self()`
+     * - authority: `get_self()`
      *
      * - `{time_point_sec} initial_voting_period` - initial voting period
      *
@@ -483,7 +531,8 @@ public:
      *
      * Set paramaters for WPS contract
      *
-     * - Authority:  `get_self()`
+     * - authority: `get_self()`
+     * - ram_payer: `get_self()`
      *
      * - `{int16_t} [vote_margin=15]` - minimum BP vote margin threshold to reach for proposals
      * - `{asset} [deposit_required="100.0000 EOS"]` - deposit required to active proposal
@@ -495,27 +544,6 @@ public:
      */
     [[eosio::action]]
     void setparams( const wps_parameters params );
-
-    /**
-     * ## ACTION `setproposer`
-     *
-     * Set proposer's metadata
-     *
-     * - Authority:  `proposer`
-     *
-     * ### params
-     *
-     * - `{name} proposer` - proposer of proposal
-     * - `{map<name, string>} metadata_json` - a sorted container of <key, value>
-     *
-     * ### example
-     *
-     * ```bash
-     * cleos push action eosio.wps setproposer '["myaccount", [{"key":"region", value":"global"}]]' -p myaccount
-     * ```
-     */
-    [[eosio::action]]
-    void setproposer(const eosio::name proposer, const std::map<name, string> metadata_json );
 
     /**
      * TESTING ONLY
@@ -539,6 +567,7 @@ public:
     using modifydraft_action = eosio::action_wrapper<"modifydraft"_n, &wps::modifydraft>;
     using init_action = eosio::action_wrapper<"init"_n, &wps::init>;
     using setparams_action = eosio::action_wrapper<"setparams"_n, &wps::setparams>;
+    using setproposer_action = eosio::action_wrapper<"setproposer"_n, &wps::setproposer>;
 
 private:
     // local instances of the multi indexes
@@ -556,7 +585,6 @@ private:
     void setperiod();
     void move_to_locked_deposits( const eosio::asset quantity );
     void deposit_to_proposal( const eosio::name proposal_name, const eosio::asset quantity );
-    void check_title( const string title );
     void proposal_to_periods( const eosio::name proposal_name, const uint8_t duration, const eosio::name ram_payer );
     eosio::checksum256 get_tx_id();
 
@@ -571,6 +599,11 @@ private:
     void create_deposit_account( const eosio::name account );
     void add_liquid_deposits( const eosio::asset quantity );
     void sub_liquid_deposits( const eosio::asset quantity );
+
+    // drafts
+    void check_title( const string title );
+    void check_duration( const uint8_t duration );
+    void check_monthly_budget( const eosio::asset monthly_budget);
 };
 
 }
