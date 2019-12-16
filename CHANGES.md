@@ -1,3 +1,8 @@
+# 2019-12-16
+
+- added `modifybudget` ACTION
+- define `ram_payer` at begining of action
+
 # 2019-12-13
 
 - add `transfers` TABLE to track incoming funding & deposits transfers (for TESTING purposes)

@@ -23,6 +23,7 @@
 
 - [`submitdraft`](#action-submitdraft)
 - [`modifydraft`](#action-modifydraft)
+- [`modifybudget`](#action-modifybudget)
 - [`canceldraft`](#action-canceldraft)
 - [`vote`](#action-vote)
 - [`activate`](#action-activate)
