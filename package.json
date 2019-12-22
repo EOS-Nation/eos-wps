@@ -1,0 +1,13 @@
+{
+  "private": true,
+  "name": "eosio-wps",
+  "version": "0.1.0",
+  "description": "EOS WPS",
+  "main": "index.js",
+  "author": "Denis <denis@eosnation.io>",
+  "license": "MIT",
+  "dependencies": {
+    "eosjs": "^20.0.0",
+    "node-fetch": "^2.6.0"
+  }
+}
