@@ -12,7 +12,7 @@ const rpc = new JsonRpc(endpoint, { fetch });
   const scope = "eosio.wps";
   const proposer = "toaccount";
   const table = "proposals";
-  const index_position = 3; // proposer multi-index
+  const index_position = 3; // multi-index (2 = status, 3 = proposer)
   const key_type = "i64";
 
   // fetch data
