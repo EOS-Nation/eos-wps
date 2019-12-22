@@ -215,6 +215,15 @@ cleos push action eosio.wps setparams '[{"vote_margin": 15, "deposit_required": 
 
 ## TABLE `proposals`
 
+**multi-indexes**
+
+| `param`    | `index_position` | `key_type` |
+|------------|------------------|------------|
+| `status`   | 2                | i64        |
+| `proposer` | 3                | i64        |
+
+**params**
+
 - `{name} proposer` - proposer of proposal
 - `{name} proposal_name` - proposal name
 - `{string} title` - proposal title
