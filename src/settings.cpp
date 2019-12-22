@@ -10,6 +10,7 @@ void wps::init( const eosio::time_point_sec initial_voting_period )
     auto settings = _settings.get_or_default();
 
     state.current_voting_period = initial_voting_period;
+    state.next_voting_period = initial_voting_period + settings.voting_interval;
     state.liquid_deposits = asset{0, symbol{"EOS", 4}};
     state.locked_deposits = asset{0, symbol{"EOS", 4}};
     state.available_funding = asset{0, symbol{"EOS", 4}};

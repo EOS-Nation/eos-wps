@@ -7,6 +7,7 @@
 - add secondary index on `proposer` & `status` params for `proposals` TABLE
 - add `max_monthly_budget` check when submitting draft
 - add `setstate` ACTION (for TESTING purposes)
+- add `next_voting_period` param to `state`
 
 # 2019-12-16
 

@@ -294,6 +294,7 @@ cleos push action eosio.wps setparams '[{"vote_margin": 15, "deposit_required": 
 ## TABLE `state`
 
 - `{time_point_sec} current_voting_period` - current voting period
+- `{time_point_sec} next_voting_period` - next voting period
 - `{asset} [liquid_deposits="0.0000 EOS"]` - liquid deposits
 - `{asset} [locked_deposits="0.0000 EOS"]` - locked deposits
 - `{asset} [available_funding="0.0000 EOS"]` - available funding
@@ -302,7 +303,8 @@ cleos push action eosio.wps setparams '[{"vote_margin": 15, "deposit_required": 
 
 ```json
 {
-  "current_voting_period": "2019-11-01T00:00:00",
+  "current_voting_period": "2019-12-12T00:00:00",
+  "next_voting_period": "2020-01-11T00:00:00",
   "liquid_deposits": "100.0000 EOS",
   "locked_deposits": "200.0000 EOS",
   "available_funding": "50000.0000 EOS",
