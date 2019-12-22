@@ -19,6 +19,7 @@ void wps::proposal_to_periods( const eosio::name proposal_name, const eosio::tim
         } else {
             _periods.modify( periods_itr, ram_payer, [&]( auto& row ) {
                 row.proposals.insert( proposal_name );
+                check(row.proposals.size() <= 100, "cannot exceed 100 proposals per single voting period");
             });
         }
     }

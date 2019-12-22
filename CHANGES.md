@@ -1,5 +1,6 @@
 # 2019-12-22
 
+- add check for "cannot exceed 100 proposals per single voting period"
 - added `next` param to `activate` ACTION
 > (true/false) activate proposal at the next voting period
 
