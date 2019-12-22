@@ -27,8 +27,8 @@ cleos -v transfer toaccount eosio.wps "300.0000 EOS" ""
 # cleos -v push action eosio.wps refund '["myaccount"]' -p myaccount
 
 # activate
-cleos -v push action eosio.wps activate '["myaccount", "mywps"]' -p myaccount
-cleos -v push action eosio.wps activate '["toaccount", "towps"]' -p toaccount
+cleos -v push action eosio.wps activate '["myaccount", "mywps", false]' -p myaccount
+cleos -v push action eosio.wps activate '["toaccount", "towps", true]' -p toaccount
 
 # fund wps
 cleos -v transfer eosio.ramfee eosio.wps "50000.0000 EOS" ""

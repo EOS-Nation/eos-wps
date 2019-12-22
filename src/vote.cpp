@@ -9,6 +9,7 @@ void wps::vote( const eosio::name voter, const eosio::name proposal_name, const 
     auto votes_itr = _votes.find( proposal_name.value );
 
     check( proposals_itr != _proposals.end(), "[proposal_name] does not exists");
+    check( proposals_itr->start < current_time_point(), "[proposal_name] has not yet started");
     check( proposals_itr->end > current_time_point(), "[proposal_name] has ended");
     check( votes_itr != _votes.end(), "[proposal_name] votes does not exist");
     check( vote == "yes"_n || vote == "no"_n || vote == "abstain"_n, "[vote] invalid (ex: yes/no/abstain)");

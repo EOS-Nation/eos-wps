@@ -1,3 +1,8 @@
+# 2019-12-22
+
+- added `next` param to `activate` ACTION
+> (true/false) activate proposal at the next voting period
+
 # 2019-12-21
 
 - added `payments` (eosio::asset) param to `proposals` TABLE

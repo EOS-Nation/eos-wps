@@ -92,9 +92,10 @@ Activate WPS proposal
 
 - `{name} proposer` - proposer
 - `{name} proposal_name` - proposal name
+- `{bool} [next=false]` - (true/false) activate proposal at the next voting period
 
 ```bash
-cleos push action eosio.wps activate '["myaccount", "mywps"]' -p myaccount
+cleos push action eosio.wps activate '["myaccount", "mywps", false]' -p myaccount
 ```
 
 ## ACTION `refund`

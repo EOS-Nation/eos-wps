@@ -1,12 +1,12 @@
-void wps::proposal_to_periods( const eosio::name proposal_name, const uint8_t duration, const eosio::name ram_payer )
+void wps::proposal_to_periods( const eosio::name proposal_name, const eosio::time_point_sec start_voting_period, const uint8_t duration, const eosio::name ram_payer )
 {
     // settings
-    auto state = _state.get_or_default();
-    auto settings = _settings.get_or_default();
+    auto state = _state.get();
+    auto settings = _settings.get();
 
     // insert proposal name into multiple periods
     for (int i = 0; i < duration; i++) {
-        const eosio::time_point_sec period = time_point(state.current_voting_period) + time_point_sec(settings.voting_interval * i);
+        const eosio::time_point_sec period = time_point(start_voting_period) + time_point_sec(settings.voting_interval * i);
         auto periods_itr = _periods.find( period.sec_since_epoch() );
 
         // create new set of proposals

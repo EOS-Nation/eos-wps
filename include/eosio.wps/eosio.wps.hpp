@@ -407,13 +407,14 @@ public:
      *
      * - `{name} proposer` - proposer
      * - `{name} proposal_name` - proposal name
+     * - `{bool} [next=false]` - (true/false) activate proposal at the next voting period
      *
      * ```bash
-     * cleos push action eosio.wps activate '["myaccount", "mywps"]' -p myaccount
+     * cleos push action eosio.wps activate '["myaccount", "mywps", false]' -p myaccount
      * ```
      */
     [[eosio::action]]
-    void activate( const eosio::name proposer, const eosio::name proposal_name );
+    void activate( const eosio::name proposer, const eosio::name proposal_name, const bool next );
 
     /**
      * ## ACTION `refund`
@@ -601,8 +602,9 @@ private:
     void setperiod();
     void move_to_locked_deposits( const eosio::asset quantity );
     void deposit_to_proposal( const eosio::name proposal_name, const eosio::asset quantity );
-    void proposal_to_periods( const eosio::name proposal_name, const uint8_t duration, const eosio::name ram_payer );
+    void proposal_to_periods( const eosio::name proposal_name, const eosio::time_point_sec start_voting_period, const uint8_t duration, const eosio::name ram_payer );
     eosio::checksum256 get_tx_id();
+    void activate_proposal( const eosio::name proposer, const eosio::name proposal_name, const eosio::time_point_sec start_voting_period );
 
     // transfers
     void add_transfer( const eosio::name type, const eosio::name from, const eosio::name to, const eosio::asset quantity, const eosio::string memo );

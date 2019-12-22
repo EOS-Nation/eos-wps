@@ -1,12 +1,32 @@
 // @action
-void wps::activate( const eosio::name proposer, const eosio::name proposal_name )
+void wps::activate( const eosio::name proposer, const eosio::name proposal_name, const bool next )
 {
     require_auth( proposer );
+
+    // settings
+    auto settings = _settings.get();
+    auto state = _state.get();
+
+    if ( next ) {
+        // activate at next voting period
+        activate_proposal( proposer, proposal_name, state.next_voting_period );
+    } else {
+        // cannot activate within 24 hours of next voting period ending
+        const time_point end_voting_period = time_point(state.current_voting_period) + time_point_sec(settings.voting_interval);
+        check( current_time_point() + time_point_sec( DAY ) < end_voting_period, "cannot activate within 24 hours of next voting period ending");
+
+        // activate now
+        activate_proposal( proposer, proposal_name, state.current_voting_period );
+    }
+}
+
+void wps::activate_proposal( const eosio::name proposer, const eosio::name proposal_name, const eosio::time_point_sec start_voting_period )
+{
     const eosio::name ram_payer = get_self();
 
     // settings
-    auto settings = _settings.get_or_default();
-    auto state = _state.get_or_default();
+    auto settings = _settings.get();
+    auto state = _state.get();
 
     // get scoped draft
     drafts_table _drafts( get_self(), proposer.value );
@@ -23,12 +43,8 @@ void wps::activate( const eosio::name proposer, const eosio::name proposal_name 
     auto proposals_itr = _proposals.find( proposal_name.value );
     check( proposals_itr == _proposals.end(), "[proposal_name] unfortunately already exists, please `canceldraft` and try a using a new proposal_name");
 
-    // cannot activate within 24 hours of next voting period ending
-    const time_point end_voting_period = time_point(state.current_voting_period) + time_point_sec(settings.voting_interval);
-    check( current_time_point() + time_point_sec( DAY ) < end_voting_period, "cannot activate within 24 hours of next voting period ending");
-
     // duration of proposal
-    const time_point end = time_point(state.current_voting_period) + time_point_sec(settings.voting_interval * drafts_itr->duration);
+    const time_point end = time_point(start_voting_period) + time_point_sec(settings.voting_interval * drafts_itr->duration);
 
     // convert draft proposal to active
     _proposals.emplace( ram_payer, [&]( auto& row ) {
@@ -45,7 +61,7 @@ void wps::activate( const eosio::name proposer, const eosio::name proposal_name 
         row.total_net_votes = 0;
         row.payments        = asset{0, symbol{"EOS", 4}};
         row.created         = current_time_point();
-        row.start           = state.current_voting_period;
+        row.start           = start_voting_period;
         row.end             = end;
     });
 
@@ -58,5 +74,5 @@ void wps::activate( const eosio::name proposer, const eosio::name proposal_name 
     });
 
     // add proposal name to time periods
-    proposal_to_periods( proposal_name, drafts_itr->duration, ram_payer );
+    proposal_to_periods( proposal_name, start_voting_period, drafts_itr->duration, ram_payer );
 }
