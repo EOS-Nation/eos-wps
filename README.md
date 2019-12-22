@@ -50,8 +50,8 @@
 
 Submit a draft WPS proposal (create/modify)
 
-- authority: `proposer`
-- ram_payer: `proposer`
+**authority**: `proposer`
+**ram_payer**: `proposer`
 
 ### params
 
@@ -72,8 +72,8 @@ cleos push action eosio.wps submitdraft '["myaccount", "mywps", "My WPS", "500.0
 
 Vote for a WPS proposal
 
-- authority:  `voter`
-- ram_payer:  `get_self()`
+**authority**:  `voter`
+**ram_payer**:  `get_self()`
 
 - `{name} voter` - voter
 - `{name} proposal_name` - proposal name
@@ -87,8 +87,8 @@ cleos push action eosio.wps vote '["myaccount", "mywps", "yes"]' -p myaccount
 
 Activate WPS proposal
 
-- authority: `proposer`
-- ram_payer: `get_self()`
+**authority**: `proposer`
+**ram_payer**: `get_self()`
 
 - `{name} proposer` - proposer
 - `{name} proposal_name` - proposal name
@@ -102,7 +102,7 @@ cleos push action eosio.wps activate '["myaccount", "mywps", false]' -p myaccoun
 
 Refund any remaining deposit amount from requesting account
 
-- authority:  `account`
+**authority**:  `account`
 
 - `{name} account` - account requesting refund
 
@@ -114,7 +114,7 @@ cleos push action eosio.wps refund '["myaccount"]' -p myaccount
 
 Cancel draft WPS proposal
 
-- authority: `proposer`
+**authority**: `proposer`
 
 - `{name} proposer` - proposer
 - `{name} proposal_name` - proposal name
@@ -127,8 +127,8 @@ cleos push action eosio.wps canceldraft '["myaccount", "mywps"]' -p myaccount
 
 Modify draft WPS proposal
 
-- authority: `proposer`
-- ram_payer: `proposer`
+**authority**: `proposer`
+**ram_payer**: `proposer`
 
 ### params
 
@@ -147,8 +147,8 @@ cleos push action eosio.wps modifydraft '["myaccount", "mywps", "My WPS", [{"key
 
 Modify draft WPS proposal budget
 
-- authority: `proposer`
-- ram_payer: `proposer`
+**authority**: `proposer`
+**ram_payer**: `proposer`
 
 ### params
 
@@ -167,8 +167,8 @@ cleos push action eosio.wps modifybudget '["myaccount", "mywps", "500.0000 EOS",
 
 Set proposer's metadata
 
-- authority: `proposer`
-- ram_payer: `proposer`
+**authority**: `proposer`
+**ram_payer**: `proposer`
 
 ### params
 
@@ -185,8 +185,8 @@ cleos push action eosio.wps setproposer '["myaccount", [{"key":"region", value":
 
 Initialize WPS contract
 
-- authority: `get_self()`
-- ram_payer: `get_self()`
+**authority**: `get_self()`
+**ram_payer**: `get_self()`
 
 ### params
 
@@ -200,8 +200,8 @@ cleos push action eosio.wps init '["2019-11-25T00:00:00"]' -p eosio.wps
 
 Set paramaters for WPS contract
 
-- authority: `get_self()`
-- ram_payer: `get_self()`
+**authority**: `get_self()`
+**ram_payer**: `get_self()`
 
 ### params
 
