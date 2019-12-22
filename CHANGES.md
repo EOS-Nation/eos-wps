@@ -1,3 +1,12 @@
+# 2019-12-21
+
+- added `payments` (eosio::asset) param to `proposals` TABLE
+- move `total_net_votes` param from `votes` => `proposals` TABLE
+- added `status` (eosio::name) param to `proposals` TABLE
+- `vote` ACTION can only use `yes/no/abstain` as `vote` param value
+- add secondary index on `proposer` & `status` params for `proposals` TABLE
+- add `max_monthly_budget` check when submitting draft
+
 # 2019-12-16
 
 - added `modifybudget` ACTION

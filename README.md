@@ -222,6 +222,9 @@ cleos push action eosio.wps setparams '[{"vote_margin": 15, "deposit_required": 
 - `{uint8_t} duration` - monthly budget duration (maximum of 6 months)
 - `{asset} total_budget` - total budget payment request
 - `{map<name, string>} proposal_json` - a sorted container of <key, value>
+- `{name} status` - status of proposal (active/expired/completed)
+- `{int16_t} total_net_votes` - total net votes
+- `{asset} payments` - total payments received
 - `{time_point_sec} created` - time proposal was created (UTC)
 - `{time_point_sec} start` - start of voting period (UTC)
 - `{time_point_sec} end` - end of voting period (UTC)
@@ -240,7 +243,10 @@ cleos push action eosio.wps setparams '[{"vote_margin": 15, "deposit_required": 
     { "key": "category", "value": "other" },
     { "key": "region", "value": "global" }
   ],
-  "activated": "2019-11-05T12:10:00",
+  "status": "active",
+  "total_net_votes": 2,
+  "payments": "0.0000 EOS",
+  "created": "2019-11-05T12:10:00",
   "start": "2019-11-01T00:00:00",
   "end": "2019-12-01T00:00:00"
 }
@@ -257,7 +263,6 @@ cleos push action eosio.wps setparams '[{"vote_margin": 15, "deposit_required": 
 ```json
 {
   "proposal_name": "mywps",
-  "total_net_votes": 2,
   "votes": [
       { "key": "mybp1", "value": "yes" },
       { "key": "mybp2", "value": "no" },

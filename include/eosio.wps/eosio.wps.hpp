@@ -125,6 +125,9 @@ typedef eosio::multi_index< "proposers"_n, proposers_row> proposers_table;
  * - `{uint8_t} duration` - monthly budget duration (maximum of 6 months)
  * - `{asset} total_budget` - total budget payment request
  * - `{map<name, string>} proposal_json` - a sorted container of <key, value>
+ * - `{name} status` - status of proposal (active/expired/completed)
+ * - `{int16_t} total_net_votes` - total net votes
+ * - `{asset} payments` - total payments received
  * - `{time_point_sec} created` - time proposal was created (UTC)
  * - `{time_point_sec} start` - start of voting period (UTC)
  * - `{time_point_sec} end` - end of voting period (UTC)
@@ -143,6 +146,9 @@ typedef eosio::multi_index< "proposers"_n, proposers_row> proposers_table;
  *     { "key": "category", "value": "other" },
  *     { "key": "region", "value": "global" }
  *   ],
+ *   "status": "active",
+ *   "total_net_votes": 2,
+ *   "payments": "0.0000 EOS",
  *   "created": "2019-11-05T12:10:00",
  *   "start": "2019-11-01T00:00:00",
  *   "end": "2019-12-01T00:00:00"
@@ -150,27 +156,28 @@ typedef eosio::multi_index< "proposers"_n, proposers_row> proposers_table;
  * ```
  */
 struct [[eosio::table("proposals"), eosio::contract("eosio.wps")]] proposals_row : drafts_row {
-    eosio::name                             proposer;
-    eosio::name                             proposal_name;
-    eosio::string                           title;
-    eosio::asset                            monthly_budget;
-    uint8_t                                 duration;
-    eosio::asset                            total_budget;
-    std::map<eosio::name, eosio::string>    proposal_json;
+    // inherent from `drafts` TABLE
+    eosio::name                             status;
+    int16_t                                 total_net_votes;
+    eosio::asset                            payments;
     eosio::time_point_sec                   created;
     eosio::time_point_sec                   start;
     eosio::time_point_sec                   end;
 
     uint64_t primary_key() const { return proposal_name.value; }
+    uint64_t by_status() const { return status.value; }
+    uint64_t by_proposer() const { return proposer.value; }
 };
 
-typedef eosio::multi_index< "proposals"_n, proposals_row> proposals_table;
+typedef eosio::multi_index< "proposals"_n, proposals_row,
+    indexed_by<"bystatus"_n, const_mem_fun<proposals_row, uint64_t, &proposals_row::by_status>>,
+    indexed_by<"byproposer"_n, const_mem_fun<proposals_row, uint64_t, &proposals_row::by_proposer>>
+> proposals_table;
 
 /**
  * ## TABLE `votes`
  *
  * - `{name} proposal_name` - The proposal's name, its ID among all proposals
- * - `{int16_t} total_net_votes` - total net votes
  * - `{map<name, name>} votes` - a sorted container of <voter, vote>
  *
  * ### example
@@ -178,7 +185,6 @@ typedef eosio::multi_index< "proposals"_n, proposals_row> proposals_table;
  * ```json
  * {
  *   "proposal_name": "mywps",
- *   "total_net_votes": 2,
  *   "votes": [
  *      { "key": "mybp1", "value": "yes" },
  *      { "key": "mybp2", "value": "no" },
@@ -191,7 +197,6 @@ typedef eosio::multi_index< "proposals"_n, proposals_row> proposals_table;
  */
 struct [[eosio::table("votes"), eosio::contract("eosio.wps")]] votes_row {
     eosio::name                         proposal_name;
-    int16_t                             total_net_votes;
     std::map<eosio::name, eosio::name>  votes;
 
     uint64_t primary_key() const { return proposal_name.value; }

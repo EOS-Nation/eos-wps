@@ -34,11 +34,16 @@ void wps::activate( const eosio::name proposer, const eosio::name proposal_name 
     _proposals.emplace( ram_payer, [&]( auto& row ) {
         row.proposer        = proposer;
         row.proposal_name   = proposal_name;
+        // inherit from draft
         row.title           = drafts_itr->title;
         row.monthly_budget  = drafts_itr->monthly_budget;
         row.duration        = drafts_itr->duration;
         row.total_budget    = drafts_itr->total_budget;
         row.proposal_json   = drafts_itr->proposal_json;
+        // extras
+        row.status          = "active"_n;
+        row.total_net_votes = 0;
+        row.payments        = asset{0, symbol{"EOS", 4}};
         row.created         = current_time_point();
         row.start           = state.current_voting_period;
         row.end             = end;
