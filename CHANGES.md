@@ -6,6 +6,7 @@
 - `vote` ACTION can only use `yes/no/abstain` as `vote` param value
 - add secondary index on `proposer` & `status` params for `proposals` TABLE
 - add `max_monthly_budget` check when submitting draft
+- add `setstate` ACTION (for TESTING purposes)
 
 # 2019-12-16
 

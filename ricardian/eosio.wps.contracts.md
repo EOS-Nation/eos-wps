@@ -62,4 +62,10 @@ Set proposer metadata
 
 ## Description
 
-Clean table
+TESTING PURPOSES: Clean table
+
+<h1 class="contract">setstate</h1>
+
+## Description
+
+TESTING PURPOSES: Update state

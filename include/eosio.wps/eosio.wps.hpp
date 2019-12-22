@@ -13,8 +13,6 @@
 using namespace eosio;
 using namespace std;
 
-static constexpr bool TESTING = true;
-
 static constexpr uint64_t DAY = 86400; // 24 hours
 static constexpr uint64_t WEEK = 604800; // 7 days
 static constexpr uint64_t MONTH = 2592000; // 30 days
@@ -39,10 +37,10 @@ static constexpr uint64_t MONTH = 2592000; // 30 days
  * ```
  */
 struct [[eosio::table("settings"), eosio::contract("eosio.wps")]] wps_parameters {
-    int16_t             vote_margin = 15;
-    eosio::asset        deposit_required = asset{ 1000000, symbol{"EOS", 4}};
-    uint64_t            voting_interval = 2592000;
-    eosio::asset        max_monthly_budget = asset{ 500000000, symbol{"EOS", 4}};
+    int16_t                 vote_margin = 15;
+    eosio::asset            deposit_required = asset{ 1000000, symbol{"EOS", 4}};
+    uint64_t                voting_interval = 2592000;
+    eosio::asset            max_monthly_budget = asset{ 500000000, symbol{"EOS", 4}};
 };
 
 typedef eosio::singleton< "settings"_n, wps_parameters> settings_table;
@@ -564,6 +562,9 @@ public:
      */
     [[eosio::action]]
     void clean( const eosio::name table, const std::optional<eosio::name> scope );
+
+    [[eosio::action]]
+    void setstate( const state_row params );
 
     [[eosio::on_notify("eosio.token::transfer")]]
     void transfer( const eosio::name&    from,

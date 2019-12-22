@@ -4,7 +4,7 @@ void wps::init( const eosio::time_point_sec initial_voting_period )
     require_auth( get_self() );
     const eosio::name ram_payer = get_self();
 
-    if ( !TESTING ) check( !_state.exists(), "already initialized" );
+    check( !_state.exists(), "already initialized" );
 
     auto state = _state.get_or_default();
     auto settings = _settings.get_or_default();
@@ -25,4 +25,17 @@ void wps::setparams( const wps_parameters params )
     const eosio::name ram_payer = get_self();
 
     _settings.set( params, ram_payer );
+}
+
+/**
+ * TESTING ONLY
+ *
+ * Should be removed in production
+ */
+void wps::setstate( const state_row params )
+{
+    require_auth( get_self() );
+    const eosio::name ram_payer = get_self();
+
+    _state.set( params, ram_payer );
 }
