@@ -2,6 +2,7 @@
 void wps::activate( const eosio::name proposer, const eosio::name proposal_name, const eosio::time_point_sec voting_period )
 {
     require_auth( proposer );
+    const eosio::name ram_payer = get_self();
 
     // settings
     auto settings = _settings.get();
@@ -16,18 +17,6 @@ void wps::activate( const eosio::name proposer, const eosio::name proposal_name,
 
     // cannot activate during completed voting period phase
     check_completed();
-
-    // activate now
-    activate_proposal( proposer, proposal_name, voting_period );
-}
-
-void wps::activate_proposal( const eosio::name proposer, const eosio::name proposal_name, const eosio::time_point_sec start_voting_period )
-{
-    const eosio::name ram_payer = get_self();
-
-    // settings
-    auto settings = _settings.get();
-    auto state = _state.get();
 
     // get scoped draft
     drafts_table _drafts( get_self(), proposer.value );

@@ -621,15 +621,21 @@ private:
     transfers_table             _transfers;
 
     // private helpers
-    int16_t calculate_total_net_votes( const std::map<eosio::name, eosio::name> votes );
-    void setperiod();
-    void move_to_locked_deposits( const eosio::asset quantity );
-    void deposit_to_proposal( const eosio::name proposal_name, const eosio::asset quantity );
+    // ===============
+
+    // periods
     void proposal_to_periods( const eosio::name proposal_name, const eosio::time_point_sec start_voting_period, const uint8_t duration, const eosio::name ram_payer );
+
+    // vote
+    int16_t calculate_total_net_votes( const std::map<eosio::name, eosio::name> votes );
+
+    // utils
     eosio::checksum256 get_tx_id();
-    void activate_proposal( const eosio::name proposer, const eosio::name proposal_name, const eosio::time_point_sec start_voting_period );
     void send_deferred( const eosio::action action, const uint64_t key, const uint64_t interval );
+
+    // complete
     void check_completed();
+    void auto_complete();
 
     // transfers
     void add_transfer( const eosio::name type, const eosio::name from, const eosio::name to, const eosio::asset quantity, const eosio::string memo );
@@ -642,6 +648,8 @@ private:
     void create_deposit_account( const eosio::name account, const eosio::name ram_payer );
     void add_liquid_deposits( const eosio::asset quantity );
     void sub_liquid_deposits( const eosio::asset quantity );
+    void deposit_to_proposal( const eosio::name proposal_name, const eosio::asset quantity );
+    void move_to_locked_deposits( const eosio::asset quantity );
 
     // drafts
     void check_title( const string title );
