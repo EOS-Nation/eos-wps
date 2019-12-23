@@ -1,5 +1,4 @@
 // @action
-// ram_payer: proposer
 void wps::setproposer(const eosio::name proposer, const std::map<name, string> metadata_json )
 {
     require_auth( proposer );

@@ -29,7 +29,11 @@
 - [`activate`](#action-activate)
 - [`refund`](#action-refund)
 
-## ACTION - ADMIN
+## ACTION - ANY
+
+- [`complete`](#action-complete)
+
+## ACTION - CONTRACT
 
 - [`setparams`](#action-setparams)
 - [`init`](#action-init)
@@ -87,18 +91,17 @@ cleos push action eosio.wps vote '["myaccount", "mywps", "yes"]' -p myaccount
 
 ## ACTION `activate`
 
-Activate WPS proposal
+Activate WPS proposal at a specified voting period
 
-**authority**: `proposer`
-
-**ram_payer**: `get_self()`
+- authority: `proposer`
+- ram_payer: `get_self()`
 
 - `{name} proposer` - proposer
 - `{name} proposal_name` - proposal name
-- `{bool} [next=false]` - (true/false) activate proposal at the next voting period
+- `{bool} voting_period` - activate proposal at the specified voting period (must be current or next)
 
 ```bash
-cleos push action eosio.wps activate '["myaccount", "mywps", false]' -p myaccount
+cleos push action eosio.wps activate '["myaccount", "mywps", "2019-11-25T00:00:00"]' -p myaccount
 ```
 
 ## ACTION `refund`
@@ -203,6 +206,20 @@ Initialize WPS contract
 cleos push action eosio.wps init '["2019-11-25T00:00:00"]' -p eosio.wps
 ```
 
+## ACTION `complete`
+
+Complete WPS voting period
+
+- authority: `any`
+
+### params
+
+- `{time_point_sec} voting_period` - voting period to complete
+
+```bash
+cleos push action eosio.wps complete '["2019-11-25T00:00:00"]' -p eosio.wps
+```
+
 ## ACTION `setparams`
 
 Set paramaters for WPS contract
@@ -273,7 +290,6 @@ cleos push action eosio.wps setparams '[{"vote_margin": 15, "deposit_required": 
 ## TABLE `votes`
 
 - `{name} proposal_name` - The proposal's name, its ID among all proposals
-- `{int16_t} total_net_votes` - total net votes
 - `{map<name, name>} votes` - a sorted container of <voter, vote>
 
 ### example
