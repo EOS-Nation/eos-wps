@@ -21,17 +21,20 @@ void wps::activate( const eosio::name proposer, const eosio::name proposal_name,
     // get scoped draft
     drafts_table _drafts( get_self(), proposer.value );
     auto drafts_itr = _drafts.find( proposal_name.value );
-    check( drafts_itr != _drafts.end(), "[proposal_name] draft does not exists");
+    auto proposals_itr = _proposals.find( proposal_name.value );
+
+    // handle proposals that already exists
+    if ( drafts_itr == _drafts.end() ) {
+        check( proposals_itr == _proposals.end(), "[proposal_name] is already activated");
+        check( false, "[proposal_name] draft does not exists");
+    }
+    check( proposals_itr == _proposals.end(), "[proposal_name] unfortunately already exists, please `canceldraft` and use a different proposal name");
 
     // get user deposit balance & substract amount
     auto deposits_itr = _deposits.find( proposer.value );
     check( deposits_itr->balance >= settings.deposit_required, "proposer's deposit balance does not meet minimum required amount of " + settings.deposit_required.to_string());
     sub_deposit( proposer, settings.deposit_required );
     move_to_locked_deposits( settings.deposit_required );
-
-    // make sure proposal name is unique
-    auto proposals_itr = _proposals.find( proposal_name.value );
-    check( proposals_itr == _proposals.end(), "[proposal_name] unfortunately already exists, please `canceldraft` and try a using a new proposal_name");
 
     // duration of proposal
     const time_point end = time_point(voting_period) + time_point_sec(settings.voting_interval * drafts_itr->duration);
