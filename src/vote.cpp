@@ -4,15 +4,19 @@ void wps::vote( const eosio::name voter, const eosio::name proposal_name, const 
     require_auth( voter );
     const eosio::name ram_payer = get_self();
 
-    // validation
+    // validate proposal
     auto proposals_itr = _proposals.find( proposal_name.value );
-    auto votes_itr = _votes.find( proposal_name.value );
-
     check( proposals_itr != _proposals.end(), "[proposal_name] does not exists");
     check( proposals_itr->start < current_time_point(), "[proposal_name] has not yet started");
     check( proposals_itr->end > current_time_point(), "[proposal_name] has ended");
+
+    // validate vote
+    auto votes_itr = _votes.find( proposal_name.value );
     check( votes_itr != _votes.end(), "[proposal_name] votes does not exist");
     check( vote == "yes"_n || vote == "no"_n || vote == "abstain"_n, "[vote] invalid (ex: yes/no/abstain)");
+
+    // cannot vote during completed voting period phase
+    check_completed();
 
     // update vote
     _votes.modify( votes_itr, ram_payer, [&]( auto& vote_row ) {

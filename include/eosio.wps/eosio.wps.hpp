@@ -629,6 +629,7 @@ private:
     eosio::checksum256 get_tx_id();
     void activate_proposal( const eosio::name proposer, const eosio::name proposal_name, const eosio::time_point_sec start_voting_period );
     void send_deferred( const eosio::action action, const uint64_t key, const uint64_t interval );
+    void check_completed();
 
     // transfers
     void add_transfer( const eosio::name type, const eosio::name from, const eosio::name to, const eosio::asset quantity, const eosio::string memo );

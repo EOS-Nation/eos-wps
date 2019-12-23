@@ -1,5 +1,6 @@
 # 2019-12-22
 
+- add `check_completed` check, cannot perform `activate`/`vote` ACTIONS during completed voting period phase
 - add check for "cannot exceed 100 proposals per single voting period"
 - added `voting_period` param to `activate` ACTION (must be current or next)
 

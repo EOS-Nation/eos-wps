@@ -14,6 +14,9 @@ void wps::activate( const eosio::name proposer, const eosio::name proposal_name,
     const time_point end_voting_period = time_point( voting_period ) + time_point_sec(settings.voting_interval);
     check( current_time_point() + time_point_sec( DAY ) < end_voting_period, "cannot activate within 24 hours of next voting period ending");
 
+    // cannot activate during completed voting period phase
+    check_completed();
+
     // activate now
     activate_proposal( proposer, proposal_name, voting_period );
 }
