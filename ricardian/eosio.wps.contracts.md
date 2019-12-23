@@ -58,6 +58,12 @@ Modify draft proposal budget
 
 Set proposer metadata
 
+<h1 class="contract">complete</h1>
+
+## Description
+
+Complete WPS voting period
+
 <h1 class="contract">clean</h1>
 
 ## Description

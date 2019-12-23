@@ -608,6 +608,7 @@ public:
     using init_action = eosio::action_wrapper<"init"_n, &wps::init>;
     using setparams_action = eosio::action_wrapper<"setparams"_n, &wps::setparams>;
     using setproposer_action = eosio::action_wrapper<"setproposer"_n, &wps::setproposer>;
+    using complete_action = eosio::action_wrapper<"complete"_n, &wps::complete>;
 
 private:
     // local instances of the multi indexes

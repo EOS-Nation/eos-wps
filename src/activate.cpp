@@ -34,7 +34,7 @@ void wps::activate( const eosio::name proposer, const eosio::name proposal_name,
     check( proposals_itr == _proposals.end(), "[proposal_name] unfortunately already exists, please `canceldraft` and try a using a new proposal_name");
 
     // duration of proposal
-    const time_point end = time_point(start_voting_period) + time_point_sec(settings.voting_interval * drafts_itr->duration);
+    const time_point end = time_point(voting_period) + time_point_sec(settings.voting_interval * drafts_itr->duration);
 
     // convert draft proposal to active
     _proposals.emplace( ram_payer, [&]( auto& row ) {
@@ -51,7 +51,7 @@ void wps::activate( const eosio::name proposer, const eosio::name proposal_name,
         row.total_net_votes = 0;
         row.payments        = asset{0, symbol{"EOS", 4}};
         row.created         = current_time_point();
-        row.start           = start_voting_period;
+        row.start           = voting_period;
         row.end             = end;
     });
 
@@ -64,5 +64,5 @@ void wps::activate( const eosio::name proposer, const eosio::name proposal_name,
     });
 
     // add proposal name to time periods
-    proposal_to_periods( proposal_name, start_voting_period, drafts_itr->duration, ram_payer );
+    proposal_to_periods( proposal_name, voting_period, drafts_itr->duration, ram_payer );
 }
