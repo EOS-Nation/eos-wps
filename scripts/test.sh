@@ -1,16 +1,18 @@
 #!/bin/bash
 
-# init
-cleos -v push action eosio.wps init '["2019-11-25T00:00:00"]' -p eosio.wps
-
-# setparams (optional)
+# setparams
+# 1 day   = 86400
+# 30 days = 2592000
 cleos push action eosio.wps setparams '[{"vote_margin": 15, "deposit_required": "100.0000 EOS", "voting_interval": 2592000, "max_monthly_budget": "50000.0000 EOS"}]' -p eosio.wps
+
+# init
+cleos -v push action eosio.wps init '["2020-01-01T00:00:00"]' -p eosio.wps
 
 # set proposer
 cleos -v push action eosio.wps setproposer '["myaccount", [{"key":"region", "value":"global"}]]' -p myaccount
 
 # propose draft
-cleos -v push action eosio.wps submitdraft '["myaccount", "mywps", "My WPS", "500.0000 EOS", 2, [{"key":"region", "value":"global"}]]' -p myaccount
+cleos -v push action eosio.wps submitdraft '["myaccount", "mywps", "My WPS", "500.0000 EOS", 3, [{"key":"region", "value":"global"}]]' -p myaccount
 cleos -v push action eosio.wps submitdraft '["toaccount", "towps", "To WPS", "100.0000 EOS", 6, [{"key":"category", "value":"other"}]]' -p toaccount
 
 # # cancel draft
@@ -27,8 +29,8 @@ cleos -v transfer toaccount eosio.wps "300.0000 EOS" ""
 # cleos -v push action eosio.wps refund '["myaccount"]' -p myaccount
 
 # activate
-cleos -v push action eosio.wps activate '["myaccount", "mywps", "2019-11-25T00:00:00"]' -p myaccount
-cleos -v push action eosio.wps activate '["toaccount", "towps", "2019-12-25T00:00:00"]' -p toaccount
+cleos -v push action eosio.wps activate '["myaccount", "mywps", "2020-01-01T00:00:00"]' -p myaccount
+cleos -v push action eosio.wps activate '["toaccount", "towps", "2020-01-31T00:00:00"]' -p toaccount
 
 # fund wps
 cleos -v transfer eosio.ramfee eosio.wps "50000.0000 EOS" ""

@@ -54,9 +54,8 @@
 
 Submit a draft WPS proposal (create/modify)
 
-**authority**: `proposer`
-
-**ram_payer**: `proposer`
+- **authority**: `proposer`
+- **ram_payer**: `proposer`
 
 ### params
 
@@ -77,9 +76,10 @@ cleos push action eosio.wps submitdraft '["myaccount", "mywps", "My WPS", "500.0
 
 Vote for a WPS proposal
 
-**authority**:  `voter`
+- **authority**:  `voter`
+- **ram_payer**:  `get_self()`
 
-**ram_payer**:  `get_self()`
+### params
 
 - `{name} voter` - voter
 - `{name} proposal_name` - proposal name
@@ -93,12 +93,14 @@ cleos push action eosio.wps vote '["myaccount", "mywps", "yes"]' -p myaccount
 
 Activate WPS proposal at a specified voting period
 
-- authority: `proposer`
-- ram_payer: `get_self()`
+- **authority**: `proposer`
+- **ram_payer**: `get_self()`
+
+### params
 
 - `{name} proposer` - proposer
 - `{name} proposal_name` - proposal name
-- `{bool} voting_period` - activate proposal at the specified voting period (must be current or next)
+- `{bool} start_voting_period` - activate proposal at the specified voting period (must be current or next)
 
 ```bash
 cleos push action eosio.wps activate '["myaccount", "mywps", "2019-11-25T00:00:00"]' -p myaccount
@@ -108,7 +110,9 @@ cleos push action eosio.wps activate '["myaccount", "mywps", "2019-11-25T00:00:0
 
 Refund any remaining deposit amount from requesting account
 
-**authority**:  `account`
+- **authority**:  `account`
+
+### params
 
 - `{name} account` - account requesting refund
 
@@ -120,7 +124,9 @@ cleos push action eosio.wps refund '["myaccount"]' -p myaccount
 
 Cancel draft WPS proposal
 
-**authority**: `proposer`
+- **authority**: `proposer`
+
+### params
 
 - `{name} proposer` - proposer
 - `{name} proposal_name` - proposal name
@@ -133,9 +139,8 @@ cleos push action eosio.wps canceldraft '["myaccount", "mywps"]' -p myaccount
 
 Modify draft WPS proposal
 
-**authority**: `proposer`
-
-**ram_payer**: `proposer`
+- **authority**: `proposer`
+- **ram_payer**: `proposer`
 
 ### params
 
@@ -154,9 +159,8 @@ cleos push action eosio.wps modifydraft '["myaccount", "mywps", "My WPS", [{"key
 
 Modify draft WPS proposal budget
 
-**authority**: `proposer`
-
-**ram_payer**: `proposer`
+- **authority**: `proposer`
+- **ram_payer**: `proposer`
 
 ### params
 
@@ -175,9 +179,8 @@ cleos push action eosio.wps modifybudget '["myaccount", "mywps", "500.0000 EOS",
 
 Set proposer's metadata
 
-**authority**: `proposer`
-
-**ram_payer**: `proposer`
+- **authority**: `proposer`
+- **ram_payer**: `proposer`
 
 ### params
 
@@ -194,9 +197,8 @@ cleos push action eosio.wps setproposer '["myaccount", [{"key":"region", value":
 
 Initialize WPS contract
 
-**authority**: `get_self()`
-
-**ram_payer**: `get_self()`
+- **authority**: `get_self()`
+- **ram_payer**: `get_self()`
 
 ### params
 
@@ -210,7 +212,7 @@ cleos push action eosio.wps init '["2019-11-25T00:00:00"]' -p eosio.wps
 
 Complete WPS voting period
 
-- authority: `any`
+- **authority**: `any`
 
 ### params
 
@@ -224,9 +226,8 @@ cleos push action eosio.wps complete '["2019-11-25T00:00:00"]' -p eosio.wps
 
 Set paramaters for WPS contract
 
-**authority**: `get_self()`
-
-**ram_payer**: `get_self()`
+- **authority**: `get_self()`
+- **ram_payer**: `get_self()`
 
 ### params
 
@@ -261,8 +262,8 @@ cleos push action eosio.wps setparams '[{"vote_margin": 15, "deposit_required": 
 - `{int16_t} total_net_votes` - total net votes
 - `{asset} payments` - total payments received
 - `{time_point_sec} created` - time proposal was created (UTC)
-- `{time_point_sec} start` - start of voting period (UTC)
-- `{time_point_sec} end` - end of voting period (UTC)
+- `{time_point_sec} start_voting_period` - start of voting period (UTC)
+- `{time_point_sec} end` - end of proposal (UTC)
 
 ### example
 
@@ -282,7 +283,7 @@ cleos push action eosio.wps setparams '[{"vote_margin": 15, "deposit_required": 
   "total_net_votes": 2,
   "payments": "0.0000 EOS",
   "created": "2019-11-05T12:10:00",
-  "start": "2019-11-01T00:00:00",
+  "start_voting_period": "2019-11-01T00:00:00",
   "end": "2019-12-01T00:00:00"
 }
 ```
@@ -406,14 +407,14 @@ cleos push action eosio.wps setparams '[{"vote_margin": 15, "deposit_required": 
 
 ## TABLE `periods`
 
-- `{time_point_sec} period` - current voting period
+- `{time_point_sec} voting_period` - voting period
 - `{set<name>} proposals` - set of proposal names
 
 ### example
 
 ```json
 {
-  "period": "2019-11-01T00:00:00",
+  "voting_period": "2019-11-01T00:00:00",
   "proposals": ["mywps"],
 }
 ```

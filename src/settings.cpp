@@ -5,9 +5,10 @@ void wps::init( const eosio::time_point_sec initial_voting_period )
     const eosio::name ram_payer = get_self();
 
     check( !_state.exists(), "already initialized" );
+    check( _settings.exists(), "settings are missing" );
 
     auto state = _state.get_or_default();
-    auto settings = _settings.get_or_default();
+    auto settings = _settings.get();
 
     state.current_voting_period = initial_voting_period;
     state.next_voting_period = initial_voting_period + settings.voting_interval;
@@ -17,6 +18,9 @@ void wps::init( const eosio::time_point_sec initial_voting_period )
 
     _state.set( state, ram_payer );
     _settings.set( settings, ram_payer );
+
+    // push deferred transaction using `next_voting_period` as the delay
+    auto_complete();
 }
 
 // @action

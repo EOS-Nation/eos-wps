@@ -127,8 +127,8 @@ typedef eosio::multi_index< "proposers"_n, proposers_row> proposers_table;
  * - `{int16_t} total_net_votes` - total net votes
  * - `{asset} payments` - total payments received
  * - `{time_point_sec} created` - time proposal was created (UTC)
- * - `{time_point_sec} start` - start of voting period (UTC)
- * - `{time_point_sec} end` - end of voting period (UTC)
+ * - `{time_point_sec} start_voting_period` - start of voting period (UTC)
+ * - `{time_point_sec} end` - end of proposal (UTC)
  *
  * ### example
  *
@@ -148,7 +148,7 @@ typedef eosio::multi_index< "proposers"_n, proposers_row> proposers_table;
  *   "total_net_votes": 2,
  *   "payments": "0.0000 EOS",
  *   "created": "2019-11-05T12:10:00",
- *   "start": "2019-11-01T00:00:00",
+ *   "start_voting_period": "2019-11-01T00:00:00",
  *   "end": "2019-12-01T00:00:00"
  * }
  * ```
@@ -159,7 +159,7 @@ struct [[eosio::table("proposals"), eosio::contract("eosio.wps")]] proposals_row
     int16_t                                 total_net_votes;
     eosio::asset                            payments;
     eosio::time_point_sec                   created;
-    eosio::time_point_sec                   start;
+    eosio::time_point_sec                   start_voting_period;
     eosio::time_point_sec                   end;
 
     uint64_t primary_key() const { return proposal_name.value; }
@@ -258,6 +258,30 @@ struct [[eosio::table("deposits"), eosio::contract("eosio.wps")]] deposits_row {
 typedef eosio::multi_index< "deposits"_n, deposits_row > deposits_table;
 
 /**
+ * ## TABLE `periods`
+ *
+ * - `{time_point_sec} voting_period` - voting period
+ * - `{set<name>} proposals` - set of proposal names
+ *
+ * ### example
+ *
+ * ```json
+ * {
+ *   "voting_period": "2019-11-01T00:00:00",
+ *   "proposals": ["mywps"],
+ * }
+ * ```
+ */
+struct [[eosio::table("periods"), eosio::contract("eosio.wps")]] periods_row {
+    eosio::time_point_sec       voting_period;
+    std::set<eosio::name>       proposals;
+
+    uint64_t primary_key() const { return period.sec_since_epoch(); }
+};
+
+typedef eosio::multi_index< "periods"_n, periods_row > periods_table;
+
+/**
  * ## TABLE `transfers` (TESTING ONLY)
  *
  * - `{uint64_t} id` - incoming transfer identifier
@@ -298,30 +322,6 @@ struct [[eosio::table("transfers"), eosio::contract("eosio.wps")]] transfers_row
 
 typedef eosio::multi_index< "transfers"_n, transfers_row > transfers_table;
 
-/**
- * ## TABLE `periods`
- *
- * - `{time_point_sec} period` - current voting period
- * - `{set<name>} proposals` - set of proposal names
- *
- * ### example
- *
- * ```json
- * {
- *   "period": "2019-11-01T00:00:00",
- *   "proposals": ["mywps"],
- * }
- * ```
- */
-struct [[eosio::table("periods"), eosio::contract("eosio.wps")]] periods_row {
-    eosio::time_point_sec       period;
-    std::set<eosio::name>       proposals;
-
-    uint64_t primary_key() const { return period.sec_since_epoch(); }
-};
-
-typedef eosio::multi_index< "periods"_n, periods_row > periods_table;
-
 namespace eosio {
 
 class [[eosio::contract("eosio.wps")]] wps : public contract {
@@ -352,8 +352,8 @@ public:
      *
      * Submit a WPS proposal
      *
-     * - authority: `proposer`
-     * - ram_payer: `proposer`
+     * - **authority**: `proposer`
+     * - **ram_payer**: `proposer`
      *
      * ### params
      *
@@ -371,20 +371,22 @@ public:
      * ```
      */
     [[eosio::action]]
-    void submitdraft(const eosio::name proposer,
-                     const eosio::name proposal_name,
-                     const eosio::string title,
-                     const eosio::asset monthly_budget,
-                     const uint8_t duration,
-                     const std::map<eosio::name, eosio::string> proposal_json );
+    void submitdraft( const eosio::name proposer,
+                      const eosio::name proposal_name,
+                      const eosio::string title,
+                      const eosio::asset monthly_budget,
+                      const uint8_t duration,
+                      const std::map<eosio::name, eosio::string> proposal_json );
 
     /**
      * ## ACTION `vote`
      *
      * Vote for a WPS proposal
      *
-     * - authority: `voter`
-     * - ram_payer: `get_self()`
+     * - **authority**: `voter`
+     * - **ram_payer**: `get_self()`
+     *
+     * ### params
      *
      * - `{name} voter` - voter
      * - `{name} proposal_name` - proposal name
@@ -400,28 +402,32 @@ public:
     /**
      * ## ACTION `activate`
      *
-     * Activate WPS proposal
+     * Activate WPS proposal at a specified voting period
      *
-     * - authority: `proposer`
-     * - ram_payer: `get_self()`
+     * - **authority**: `proposer`
+     * - **ram_payer**: `get_self()`
+     *
+     * ### params
      *
      * - `{name} proposer` - proposer
      * - `{name} proposal_name` - proposal name
-     * - `{bool} voting_period` - activate proposal at the specified voting period (must be current or next)
+     * - `{bool} start_voting_period` - activate proposal at the specified voting period (must be current or next)
      *
      * ```bash
      * cleos push action eosio.wps activate '["myaccount", "mywps", "2019-11-25T00:00:00"]' -p myaccount
      * ```
      */
     [[eosio::action]]
-    void activate( const eosio::name proposer, const eosio::name proposal_name, const eosio::time_point_sec voting_period );
+    void activate( const eosio::name proposer, const eosio::name proposal_name, const eosio::time_point_sec start_voting_period );
 
     /**
      * ## ACTION `refund`
      *
      * Refund any remaining deposit amount from requesting account
      *
-     * - authority: `account`
+     * - **authority**: `account`
+     *
+     * ### params
      *
      * - `{name} account` - account requesting refund
      *
@@ -437,7 +443,9 @@ public:
      *
      * Cancel draft WPS proposal
      *
-     * - authority: `proposer`
+     * - **authority**: `proposer`
+     *
+     * ### params
      *
      * - `{name} proposer` - proposer
      * - `{name} proposal_name` - proposal name
@@ -454,8 +462,8 @@ public:
      *
      * Modify draft WPS proposal
      *
-     * - authority: `proposer`
-     * - ram_payer: `proposer`
+     * - **authority**: `proposer`
+     * - **ram_payer**: `proposer`
      *
      * ### params
      *
@@ -478,8 +486,8 @@ public:
      *
      * Modify draft WPS proposal budget
      *
-     * - authority:  `proposer`
-     * - ram_payer: `proposer`
+     * - **authority**:  `proposer`
+     * - **ram_payer**: `proposer`
      *
      * ### params
      *
@@ -502,8 +510,8 @@ public:
      *
      * Set proposer's metadata
      *
-     * - authority: `proposer`
-     * - ram_payer: `proposer`
+     * - **authority**: `proposer`
+     * - **ram_payer**: `proposer`
      *
      * ### params
      *
@@ -524,8 +532,8 @@ public:
      *
      * Initialize WPS contract
      *
-     * - authority: `get_self()`
-     * - ram_payer: `get_self()`
+     * - **authority**: `get_self()`
+     * - **ram_payer**: `get_self()`
      *
      * ### params
      *
@@ -543,8 +551,8 @@ public:
      *
      * Set paramaters for WPS contract
      *
-     * - authority: `get_self()`
-     * - ram_payer: `get_self()`
+     * - **authority**: `get_self()`
+     * - **ram_payer**: `get_self()`
      *
      * ### params
      *
@@ -564,7 +572,7 @@ public:
      *
      * Complete WPS voting period
      *
-     * - authority: `any`
+     * - **authority**: `any`
      *
      * ### params
      *
