@@ -16,7 +16,7 @@ void wps::vote( const eosio::name voter, const eosio::name proposal_name, const 
     check( vote == "yes"_n || vote == "no"_n || vote == "abstain"_n, "[vote] invalid (ex: yes/no/abstain)");
 
     // cannot vote during completed voting period phase
-    check_completed();
+    check_voting_period_completed();
 
     // update vote
     _votes.modify( votes_itr, ram_payer, [&]( auto& vote_row ) {

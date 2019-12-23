@@ -42,10 +42,8 @@ void wps::auto_complete()
     send_deferred( complete.to_action( state.current_voting_period ), key, delay_sec );
 }
 
-void wps::check_completed()
+void wps::check_voting_period_completed()
 {
-    // settings
     auto state = _state.get();
-
     check( current_time_point() < time_point( state.next_voting_period ), "[current_voting_period] is completed, any account must execute [complete] ACTION to continue");
 }

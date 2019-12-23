@@ -632,8 +632,14 @@ private:
     // private helpers
     // ===============
 
-    // periods
-    void proposal_to_periods( const eosio::name proposal_name, const eosio::time_point_sec start_voting_period, const uint8_t duration, const eosio::name ram_payer );
+    // activate
+    void proposal_to_periods( const eosio::name proposal_name, const eosio::name ram_payer );
+    void check_min_safety_threshold( const eosio::time_point_sec start_voting_period );
+    void check_draft_proposal_exists( const eosio::name proposer, const eosio::name proposal_name );
+    void deduct_proposal_activate_fee( const eosio::name proposer );
+    void emplace_proposal_from_draft( const eosio::name proposer, const eosio::name proposal_name, const eosio::time_point_sec start_voting_period, const eosio::name ram_payer );
+    void emplace_empty_votes( const eosio::name proposal_name, const eosio::name ram_payer );
+    void check_start_vote_period( const eosio::time_point_sec start_voting_period );
 
     // vote
     int16_t calculate_total_net_votes( const std::map<eosio::name, eosio::name> votes );
@@ -643,7 +649,7 @@ private:
     void send_deferred( const eosio::action action, const uint64_t key, const uint64_t interval );
 
     // complete
-    void check_completed();
+    void check_voting_period_completed();
     void auto_complete();
 
     // transfers
