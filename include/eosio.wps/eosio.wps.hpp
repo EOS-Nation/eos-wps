@@ -276,7 +276,7 @@ struct [[eosio::table("periods"), eosio::contract("eosio.wps")]] periods_row {
     eosio::time_point_sec       voting_period;
     std::set<eosio::name>       proposals;
 
-    uint64_t primary_key() const { return period.sec_since_epoch(); }
+    uint64_t primary_key() const { return voting_period.sec_since_epoch(); }
 };
 
 typedef eosio::multi_index< "periods"_n, periods_row > periods_table;
