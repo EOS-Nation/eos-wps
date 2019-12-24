@@ -24,6 +24,7 @@ static constexpr uint64_t MONTH = 2592000; // 30 days
  * - `{asset} [deposit_required="100.0000 EOS"]` - deposit required to active proposal
  * - `{uint64_t} [voting_interval=2592000]` -  election interval in seconds
  * - `{asset} [max_monthly_budget="50000.0000 EOS"]` - maximum monthly budget
+ * - `{uint64_t} [min_time_voting_end=86400]` - minimum time required to activate at the end of the current voting period
  *
  * ### example
  *
@@ -32,7 +33,8 @@ static constexpr uint64_t MONTH = 2592000; // 30 days
  *   "vote_margin": 15,
  *   "deposit_required": "100.0000 EOS",
  *   "voting_interval": 2592000,
- *   "max_monthly_budget": "50000.0000 EOS"
+ *   "max_monthly_budget": "50000.0000 EOS",
+ *   "min_time_voting_end": 86400
  * }
  * ```
  */
@@ -41,6 +43,7 @@ struct [[eosio::table("settings"), eosio::contract("eosio.wps")]] wps_parameters
     eosio::asset            deposit_required = asset{ 1000000, symbol{"EOS", 4}};
     uint64_t                voting_interval = 2592000;
     eosio::asset            max_monthly_budget = asset{ 500000000, symbol{"EOS", 4}};
+    uint64_t                min_time_voting_end = 86400;
 };
 
 typedef eosio::singleton< "settings"_n, wps_parameters> settings_table;
@@ -634,7 +637,7 @@ private:
 
     // activate
     void proposal_to_periods( const eosio::name proposal_name, const eosio::name ram_payer );
-    void check_min_safety_threshold( const eosio::time_point_sec start_voting_period );
+    void check_min_time_voting_end( const eosio::time_point_sec start_voting_period );
     void check_draft_proposal_exists( const eosio::name proposer, const eosio::name proposal_name );
     void deduct_proposal_activate_fee( const eosio::name proposer );
     void emplace_proposal_from_draft( const eosio::name proposer, const eosio::name proposal_name, const eosio::time_point_sec start_voting_period, const eosio::name ram_payer );

@@ -1,5 +1,6 @@
 # 2019-12-23
 
+- added `min_time_voting_end` to `settings` TABLE
 - added `voting_period` param to `activate` ACTION (must be current or next)
 - add `auto_complete` which pushes `complete` deferred transaction using `next_voting_period` as the delay
 - add additional check "[proposal_name] is already activated" message when activating a draft for the second time

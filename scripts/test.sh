@@ -3,7 +3,7 @@
 # setparams
 # 1 day   = 86400
 # 30 days = 2592000
-cleos push action eosio.wps setparams '[{"vote_margin": 15, "deposit_required": "100.0000 EOS", "voting_interval": 2592000, "max_monthly_budget": "50000.0000 EOS"}]' -p eosio.wps
+cleos push action eosio.wps setparams '[{"vote_margin": 15, "deposit_required": "100.0000 EOS", "voting_interval": 2592000, "max_monthly_budget": "50000.0000 EOS", "min_time_voting_end": 86400}]' -p eosio.wps
 
 # init
 cleos -v push action eosio.wps init '["2020-01-01T00:00:00"]' -p eosio.wps

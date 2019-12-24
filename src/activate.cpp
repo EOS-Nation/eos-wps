@@ -7,8 +7,8 @@ void wps::activate( const eosio::name proposer, const eosio::name proposal_name,
     // voting period must be current or next
     check_start_vote_period( start_voting_period );
 
-    // ex: cannot activate within 24 hours of next voting period ending
-    check_min_safety_threshold( start_voting_period );
+    // minimum time required to activate at the end of the current voting period
+    check_min_time_voting_end( start_voting_period );
 
     // cannot activate during completed voting period phase
     check_voting_period_completed();
@@ -29,7 +29,7 @@ void wps::activate( const eosio::name proposer, const eosio::name proposal_name,
     proposal_to_periods( proposal_name, ram_payer );
 }
 
-void wps::check_min_safety_threshold( const eosio::time_point_sec start_voting_period )
+void wps::check_min_time_voting_end( const eosio::time_point_sec start_voting_period )
 {
     auto settings = _settings.get();
     const time_point end_voting_period = time_point( start_voting_period ) + time_point_sec(settings.voting_interval);
