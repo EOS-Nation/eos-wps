@@ -1,5 +1,5 @@
 // @action
-void wps::init( const eosio::time_point_sec initial_voting_period )
+void wps::init( eosio::time_point_sec initial_voting_period )
 {
     require_auth( get_self() );
     const eosio::name ram_payer = get_self();
@@ -9,6 +9,10 @@ void wps::init( const eosio::time_point_sec initial_voting_period )
 
     auto state = _state.get_or_default();
     auto settings = _settings.get();
+
+    // TESTING PURPOSES
+    // set inital voting period to current time if defined as null
+    if ( initial_voting_period.sec_since_epoch() == 0 ) initial_voting_period = current_time_point();
 
     state.current_voting_period = initial_voting_period;
     state.next_voting_period = initial_voting_period + settings.voting_interval;

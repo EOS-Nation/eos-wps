@@ -5,26 +5,20 @@ mkdir -p dist
 GREEN='\033[0;32m'
 NC='\033[0m'
 
-if [[ $1 == "wps" || $1 == "" ]]
-then
-  # eosio.wps
-  echo -e "${GREEN}Compiling eosio.wps...${NC}"
-  eosio-cpp -abigen \
-    ./src/eosio.wps.cpp \
-    -contract eosio.wps \
-    -R ./ricardian \
-    -o ./dist/eosio.wps.wasm \
-    -I ./include \
-    -I ./external/eosio.token/include
-fi
+# eosio.wps
+echo -e "${GREEN}Compiling eosio.wps...${NC}"
+eosio-cpp -abigen \
+  ./src/eosio.wps.cpp \
+  -contract eosio.wps \
+  -R ./ricardian \
+  -o ./dist/eosio.wps.wasm \
+  -I ./include \
+  -I ./external/eosio.token/include
 
-if [[ $1 == "token" || $1 == "" ]]
-then
-  # eosio.token
-  echo -e "${GREEN}Compiling eosio.token...${NC}"
-  eosio-cpp -abigen \
-    external/eosio.token/src/eosio.token.cpp \
-    -contract eosio.token \
-    -o ./dist/eosio.token.wasm \
-    -I external/eosio.token/include
-fi
+# # eosio.token
+# echo -e "${GREEN}Compiling eosio.token...${NC}"
+# eosio-cpp -abigen \
+#   external/eosio.token/src/eosio.token.cpp \
+#   -contract eosio.token \
+#   -o ./dist/eosio.token.wasm \
+#   -I external/eosio.token/include

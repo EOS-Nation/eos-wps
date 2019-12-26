@@ -14,6 +14,7 @@ void wps::complete( const eosio::time_point_sec voting_period )
 
     // TO-DO
     // HANDLE PAYMENTS TO PROPOSALS
+    set_pending_to_active();
 
     // update current & next voting period
     state.current_voting_period = state.next_voting_period;
@@ -22,6 +23,18 @@ void wps::complete( const eosio::time_point_sec voting_period )
 
     // push deferred transaction using `next_voting_period` as the delay
     auto_complete();
+}
+
+void wps::set_pending_to_active()
+{
+    auto index = _proposals.get_index<"bystatus"_n>();
+    auto itr = index.find("pending"_n.value);
+
+    if (itr == index.end()) return;
+
+    index.modify( itr, same_payer, [&]( auto& row ) {
+        row.status = "active"_n;
+    });
 }
 
 void wps::auto_complete()

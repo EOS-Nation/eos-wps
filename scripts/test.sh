@@ -6,7 +6,7 @@
 cleos push action eosio.wps setparams '[{"vote_margin": 15, "deposit_required": "100.0000 EOS", "voting_interval": 2592000, "max_monthly_budget": "50000.0000 EOS", "min_time_voting_end": 86400}]' -p eosio.wps
 
 # init
-cleos -v push action eosio.wps init '["2020-01-01T00:00:00"]' -p eosio.wps
+cleos -v push action eosio.wps init '["1970-01-01T00:00:00"]' -p eosio.wps
 
 # set proposer
 cleos -v push action eosio.wps setproposer '["myaccount", [{"key":"region", "value":"global"}]]' -p myaccount
@@ -29,8 +29,8 @@ cleos -v transfer toaccount eosio.wps "300.0000 EOS" ""
 # cleos -v push action eosio.wps refund '["myaccount"]' -p myaccount
 
 # activate
-cleos -v push action eosio.wps activate '["myaccount", "mywps", "2020-01-01T00:00:00"]' -p myaccount
-cleos -v push action eosio.wps activate '["toaccount", "towps", "2020-01-31T00:00:00"]' -p toaccount
+cleos -v push action eosio.wps activate '["myaccount", "mywps", "1970-01-01T00:00:00"]' -p myaccount
+cleos -v push action eosio.wps activate '["toaccount", "towps", "1970-01-01T00:00:00"]' -p toaccount
 
 # fund wps
 cleos -v transfer eosio.ramfee eosio.wps "50000.0000 EOS" ""
@@ -48,3 +48,6 @@ cleos -v push action eosio.wps vote '["mybp5", "mywps", "yes"]' -p mybp5
 cleos -v push action eosio.wps vote '["mybp1", "towps", "yes"]' -p mybp1
 cleos -v push action eosio.wps vote '["mybp3", "towps", "yes"]' -p mybp3
 cleos -v push action eosio.wps vote '["mybp5", "towps", "yes"]' -p mybp5
+
+# complete
+cleos push action eosio.wps complete '["2019-12-25T00:00:00"]' -p eosio.wps

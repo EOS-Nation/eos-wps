@@ -100,7 +100,7 @@ Activate WPS proposal at a specified voting period
 
 - `{name} proposer` - proposer
 - `{name} proposal_name` - proposal name
-- `{bool} start_voting_period` - activate proposal at the specified voting period (must be current or next)
+- `{time_point_sec} start_voting_period` - activate proposal at the specified voting period (must be current or next)
 
 ```bash
 cleos push action eosio.wps activate '["myaccount", "mywps", "2019-11-25T00:00:00"]' -p myaccount

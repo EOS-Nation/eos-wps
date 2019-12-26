@@ -1,8 +1,12 @@
 // @action
-void wps::activate( const eosio::name proposer, const eosio::name proposal_name, const eosio::time_point_sec start_voting_period )
+void wps::activate( const eosio::name proposer, const eosio::name proposal_name, eosio::time_point_sec start_voting_period )
 {
     require_auth( proposer );
     const eosio::name ram_payer = get_self();
+
+    // TESTING PURPOSES
+    // set start voting period to current voting period if defined as null
+    if ( start_voting_period.sec_since_epoch() == 0 ) start_voting_period = _state.get().current_voting_period;
 
     // voting period must be current or next
     check_start_vote_period( start_voting_period );
@@ -93,6 +97,7 @@ void wps::emplace_proposal_from_draft( const eosio::name proposer, const eosio::
 {
     // settings
     auto settings = _settings.get();
+    auto state = _state.get();
     drafts_table _drafts( get_self(), proposer.value );
     auto drafts_itr = _drafts.find( proposal_name.value );
 
@@ -109,8 +114,12 @@ void wps::emplace_proposal_from_draft( const eosio::name proposer, const eosio::
         row.duration            = drafts_itr->duration;
         row.total_budget        = drafts_itr->total_budget;
         row.proposal_json       = drafts_itr->proposal_json;
+
+        // active/pending status
+        if ( start_voting_period == time_point(state.current_voting_period) ) row.status = "active"_n;
+        else row.status = "pending"_n;
+
         // extras
-        row.status              = "active"_n;
         row.total_net_votes     = 0;
         row.payments            = asset{0, symbol{"EOS", 4}};
         row.created             = current_time_point();

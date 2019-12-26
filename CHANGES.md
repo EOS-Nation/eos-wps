@@ -1,3 +1,8 @@
+# 2019-12-26
+
+- add `pending` status for proposals that use the `activte` next voting period feature
+- `complete` action sets all `pending` proposals to `active`
+
 # 2019-12-23
 
 - added `min_time_voting_end` to `settings` TABLE

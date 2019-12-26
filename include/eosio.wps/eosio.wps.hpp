@@ -414,14 +414,14 @@ public:
      *
      * - `{name} proposer` - proposer
      * - `{name} proposal_name` - proposal name
-     * - `{bool} start_voting_period` - activate proposal at the specified voting period (must be current or next)
+     * - `{time_point_sec} start_voting_period` - activate proposal at the specified voting period (must be current or next)
      *
      * ```bash
      * cleos push action eosio.wps activate '["myaccount", "mywps", "2019-11-25T00:00:00"]' -p myaccount
      * ```
      */
     [[eosio::action]]
-    void activate( const eosio::name proposer, const eosio::name proposal_name, const eosio::time_point_sec start_voting_period );
+    void activate( const eosio::name proposer, const eosio::name proposal_name, eosio::time_point_sec start_voting_period );
 
     /**
      * ## ACTION `refund`
@@ -547,7 +547,7 @@ public:
      * ```
      */
     [[eosio::action]]
-    void init( const eosio::time_point_sec current_voting_period );
+    void init( eosio::time_point_sec initial_voting_period );
 
     /**
      * ## ACTION `setparams`
@@ -654,6 +654,7 @@ private:
     // complete
     void check_voting_period_completed();
     void auto_complete();
+    void set_pending_to_active();
 
     // transfers
     void add_transfer( const eosio::name type, const eosio::name from, const eosio::name to, const eosio::asset quantity, const eosio::string memo );
