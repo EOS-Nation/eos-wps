@@ -7,7 +7,7 @@ void wps::vote( const eosio::name voter, const eosio::name proposal_name, const 
     // validate proposal
     auto proposals_itr = _proposals.find( proposal_name.value );
     check( proposals_itr != _proposals.end(), "[proposal_name] does not exists");
-    check( proposals_itr->start_voting_period < current_time_point(), "[proposal_name] has not yet started");
+    check( proposals_itr->start_voting_period <= current_time_point(), "[proposal_name] has not yet started");
     check( proposals_itr->end > current_time_point(), "[proposal_name] has ended");
 
     // validate vote

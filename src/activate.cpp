@@ -37,7 +37,7 @@ void wps::check_min_time_voting_end( const eosio::time_point_sec start_voting_pe
 {
     auto settings = _settings.get();
     const time_point end_voting_period = time_point( start_voting_period ) + time_point_sec(settings.voting_interval);
-    check( current_time_point() + time_point_sec( DAY ) < end_voting_period, "cannot activate within 24 hours of next voting period ending");
+    check( current_time_point() + time_point_sec( settings.min_time_voting_end ) < end_voting_period, "cannot activate within " + to_string(settings.min_time_voting_end) + " seconds of next voting period ending");
 }
 
 void wps::proposal_to_periods( const eosio::name proposal_name, const eosio::name ram_payer )
@@ -121,7 +121,9 @@ void wps::emplace_proposal_from_draft( const eosio::name proposer, const eosio::
 
         // extras
         row.total_net_votes     = 0;
-        row.payments            = asset{0, symbol{"EOS", 4}};
+        row.eligible            = false;
+        row.payouts             = asset{0, symbol{"EOS", 4}};
+        row.claimable           = asset{0, symbol{"EOS", 4}};
         row.created             = current_time_point();
         row.start_voting_period = start_voting_period;
         row.end                 = end;

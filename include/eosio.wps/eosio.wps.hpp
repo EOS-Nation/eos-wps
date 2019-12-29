@@ -128,7 +128,9 @@ typedef eosio::multi_index< "proposers"_n, proposers_row> proposers_table;
  * - `{map<name, string>} proposal_json` - a sorted container of <key, value>
  * - `{name} status` - status of proposal (active/expired/completed)
  * - `{int16_t} total_net_votes` - total net votes
- * - `{asset} payments` - total payments received
+ * - `{bool} eligible` - (true/false) eligible for current voting period payout
+ * - `{asset} payouts` - total payouts received
+ * - `{asset} claimable` - available amount to claim
  * - `{time_point_sec} created` - time proposal was created (UTC)
  * - `{time_point_sec} start_voting_period` - start of voting period (UTC)
  * - `{time_point_sec} end` - end of proposal (UTC)
@@ -149,7 +151,9 @@ typedef eosio::multi_index< "proposers"_n, proposers_row> proposers_table;
  *   ],
  *   "status": "active",
  *   "total_net_votes": 2,
- *   "payments": "0.0000 EOS",
+ *   "eligible": false,
+ *   "payouts": "0.0000 EOS",
+ *   "claimable": "0.0000 EOS",
  *   "created": "2019-11-05T12:10:00",
  *   "start_voting_period": "2019-11-01T00:00:00",
  *   "end": "2019-12-01T00:00:00"
@@ -157,10 +161,12 @@ typedef eosio::multi_index< "proposers"_n, proposers_row> proposers_table;
  * ```
  */
 struct [[eosio::table("proposals"), eosio::contract("eosio.wps")]] proposals_row : drafts_row {
-    // inherent from `drafts` TABLE
+    // inherent fields from `drafts` TABLE
     eosio::name                             status;
     int16_t                                 total_net_votes;
-    eosio::asset                            payments;
+    bool                                    eligible;
+    eosio::asset                            payouts;
+    eosio::asset                            claimable;
     eosio::time_point_sec                   created;
     eosio::time_point_sec                   start_voting_period;
     eosio::time_point_sec                   end;
@@ -579,14 +585,32 @@ public:
      *
      * ### params
      *
-     * - `{time_point_sec} voting_period` - voting period to complete
+     * N/A
      *
      * ```bash
-     * cleos push action eosio.wps complete '["2019-11-25T00:00:00"]' -p eosio.wps
+     * cleos push action eosio.wps complete '[]' -p eosio.wps
      * ```
      */
     [[eosio::action]]
-    void complete( const eosio::time_point_sec voting_period );
+    void complete( );
+
+    /**
+     * ## ACTION `claim`
+     *
+     * Claim remaining proposal amount, transfer amount to proposer
+     *
+     * - **authority**: `any`
+     *
+     * ### params
+     *
+     * - `{name} proposal_name` - proposal name to claim
+     *
+     * ```bash
+     * cleos push action eosio.wps claim '["mywps"]' -p myaccount
+     * ```
+     */
+    [[eosio::action]]
+    void claim( const eosio::name proposal_name );
 
     /**
      * TESTING ONLY
@@ -620,6 +644,7 @@ public:
     using setparams_action = eosio::action_wrapper<"setparams"_n, &wps::setparams>;
     using setproposer_action = eosio::action_wrapper<"setproposer"_n, &wps::setproposer>;
     using complete_action = eosio::action_wrapper<"complete"_n, &wps::complete>;
+    using claim_action = eosio::action_wrapper<"claim"_n, &wps::claim>;
 
 private:
     // local instances of the multi indexes
@@ -655,6 +680,12 @@ private:
     void check_voting_period_completed();
     void auto_complete();
     void set_pending_to_active();
+    void handle_payouts();
+    bool proposal_exists_per_voting_period( const eosio::name proposal_name, const eosio::time_point_sec voting_period );
+    void update_proposal_status( const eosio::name proposal_name );
+    std::map<int16_t, std::set<eosio::name>> sort_proposals_by_net_votes( const eosio::name status );
+    void update_to_next_voting_period();
+    void check_voting_period_complete();
 
     // transfers
     void add_transfer( const eosio::name type, const eosio::name from, const eosio::name to, const eosio::asset quantity, const eosio::string memo );

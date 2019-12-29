@@ -1,3 +1,21 @@
+# 2019-12-29
+
+- add `claim` ACTION - to receive claimable amount from proposal to proposer
+- add `{asset} proposals::claimable` - available amount to claim
+- add `{bool} proposals::eligible` - (true/false) eligible for current voting period payout
+
+## TO-DO
+
+- add `claims` TABLE
+- drop `transfers` TABLE
+- add `voting_period` param to `complete`
+- update `eligible` logic on `vote` ACTION
+- use `eligible` field on `complete` ACTION
+
+# 2019-12-28
+
+- rename `proposals::payments` => `proposals::payouts`
+
 # 2019-12-26
 
 - add `pending` status for proposals that use the `activte` next voting period feature
@@ -11,11 +29,6 @@
 - add additional check "[proposal_name] is already activated" message when activating a draft for the second time
 - renamed `proposals::start` => `proposals::start_voting_period`
 - rename `periods::period` => `periods::voting_period`
-
-## TO-DO
-
-- add minimum time before ending to `settings`
-- handle `votes` TABLE when `activate`
 
 # 2019-12-22
 

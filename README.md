@@ -32,6 +32,7 @@
 ## ACTION - ANY
 
 - [`complete`](#action-complete)
+- [`claim`](#action-claim)
 
 ## ACTION - CONTRACT
 
@@ -104,6 +105,20 @@ Activate WPS proposal at a specified voting period
 
 ```bash
 cleos push action eosio.wps activate '["myaccount", "mywps", "2019-11-25T00:00:00"]' -p myaccount
+```
+
+## ACTION `claim`
+
+Claim remaining proposal amount, transfer amount to proposer
+
+- **authority**: `any`
+
+### params
+
+- `{name} proposal_name` - proposal name to claim
+
+```bash
+cleos push action eosio.wps claim '["mywps"]' -p myaccount
 ```
 
 ## ACTION `refund`
@@ -216,10 +231,10 @@ Complete WPS voting period
 
 ### params
 
-- `{time_point_sec} voting_period` - voting period to complete
+N/A
 
 ```bash
-cleos push action eosio.wps complete '["2019-11-25T00:00:00"]' -p eosio.wps
+cleos push action eosio.wps complete '[]' -p eosio.wps
 ```
 
 ## ACTION `setparams`
@@ -260,7 +275,9 @@ cleos push action eosio.wps setparams '[{"vote_margin": 15, "deposit_required": 
 - `{map<name, string>} proposal_json` - a sorted container of <key, value>
 - `{name} status` - status of proposal (active/expired/completed)
 - `{int16_t} total_net_votes` - total net votes
-- `{asset} payments` - total payments received
+- `{bool} eligible` - (true/false) eligible for current voting period payout
+- `{asset} payouts` - total payouts received
+- `{asset} claimable` - available amount to claim
 - `{time_point_sec} created` - time proposal was created (UTC)
 - `{time_point_sec} start_voting_period` - start of voting period (UTC)
 - `{time_point_sec} end` - end of proposal (UTC)
@@ -281,7 +298,9 @@ cleos push action eosio.wps setparams '[{"vote_margin": 15, "deposit_required": 
   ],
   "status": "active",
   "total_net_votes": 2,
-  "payments": "0.0000 EOS",
+  "eligible": true,
+  "payouts": "0.0000 EOS",
+  "claimable": "0.0000 EOS",
   "created": "2019-11-05T12:10:00",
   "start_voting_period": "2019-11-01T00:00:00",
   "end": "2019-12-01T00:00:00"

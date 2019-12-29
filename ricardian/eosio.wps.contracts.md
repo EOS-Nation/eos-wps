@@ -64,6 +64,12 @@ Set proposer metadata
 
 Complete WPS voting period
 
+<h1 class="contract">claim</h1>
+
+## Description
+
+Claim remaining proposal amount, transfer amount to proposer
+
 <h1 class="contract">clean</h1>
 
 ## Description
