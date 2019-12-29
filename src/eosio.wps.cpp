@@ -18,3 +18,4 @@
 #include "vote.cpp"
 #include "proposers.cpp"
 #include "complete.cpp"
+#include "claims.cpp"

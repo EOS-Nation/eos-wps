@@ -4,7 +4,7 @@ void wps::complete( )
     // no authorization required (can be executed by any account)
 
     // // check if current voting period is completed
-    // check_voting_period_complete();
+    // check( is_voting_period_complete(), "[current_voting_period] is not completed");
 
     // payouts of active proposals
     handle_payouts();
@@ -19,36 +19,9 @@ void wps::complete( )
     auto_complete();
 }
 
-// @action
-void wps::claim( const eosio::name proposal_name )
+bool wps::is_voting_period_complete()
 {
-    // no authorization required (can be executed by any account)
-
-    // static actions
-    token::transfer_action transfer( "eosio.token"_n, { get_self(), "active"_n });
-
-    auto proposals_itr = _proposals.find( proposal_name.value );
-    check( proposals_itr != _proposals.end(), "[proposal_name] does not exists" );
-    check( proposals_itr->claimable.amount > 0, "no claimable amount" );
-
-    transfer.send( get_self(), proposals_itr->proposer, proposals_itr->claimable, "wps" );
-
-    // TESTING PURPOSES
-    add_transfer( "claim"_n, get_self(), proposals_itr->proposer, proposals_itr->claimable, "wps" );
-
-    _proposals.modify( proposals_itr, same_payer, [&]( auto& row ) {
-        row.claimable.amount = 0;
-    });
-}
-
-void wps::check_voting_period_complete()
-{
-    // settings
-    auto state = _state.get();
-    auto settings = _settings.get();
-
-    // check if current voting period is completed
-    check( current_time_point() >= time_point( state.next_voting_period ), "[current_voting_period] is not completed");
+    return current_time_point() >= time_point( _state.get().next_voting_period );
 }
 
 void wps::update_to_next_voting_period()

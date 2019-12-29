@@ -1,18 +1,20 @@
 // @action
-void wps::activate( const eosio::name proposer, const eosio::name proposal_name, eosio::time_point_sec start_voting_period )
+void wps::activate( const eosio::name proposer, const eosio::name proposal_name, std::optional<eosio::time_point_sec> start_voting_period )
 {
     require_auth( proposer );
     const eosio::name ram_payer = get_self();
 
     // TESTING PURPOSES
+    eosio::time_point_sec voting_period = time_point_sec( start_voting_period->sec_since_epoch() );
+
     // set start voting period to current voting period if defined as null
-    if ( start_voting_period.sec_since_epoch() == 0 ) start_voting_period = _state.get().current_voting_period;
+    if ( start_voting_period->sec_since_epoch() == 0 ) voting_period = _state.get().current_voting_period;
 
     // voting period must be current or next
-    check_start_vote_period( start_voting_period );
+    check_start_vote_period( voting_period );
 
     // minimum time required to activate at the end of the current voting period
-    check_min_time_voting_end( start_voting_period );
+    check_min_time_voting_end( voting_period );
 
     // cannot activate during completed voting period phase
     check_voting_period_completed();
@@ -24,7 +26,7 @@ void wps::activate( const eosio::name proposer, const eosio::name proposal_name,
     deduct_proposal_activate_fee( proposer );
 
     // create proposal
-    emplace_proposal_from_draft( proposer, proposal_name, start_voting_period, ram_payer );
+    emplace_proposal_from_draft( proposer, proposal_name, voting_period, ram_payer );
 
     // add empty votes for proposal
     emplace_empty_votes( proposal_name, ram_payer );
@@ -108,6 +110,7 @@ void wps::emplace_proposal_from_draft( const eosio::name proposer, const eosio::
     _proposals.emplace( ram_payer, [&]( auto& row ) {
         row.proposer            = proposer;
         row.proposal_name       = proposal_name;
+
         // inherit from draft
         row.title               = drafts_itr->title;
         row.monthly_budget      = drafts_itr->monthly_budget;

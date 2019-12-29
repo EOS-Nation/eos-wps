@@ -291,6 +291,48 @@ struct [[eosio::table("periods"), eosio::contract("eosio.wps")]] periods_row {
 typedef eosio::multi_index< "periods"_n, periods_row > periods_table;
 
 /**
+ * ## TABLE `claims`
+ *
+ * - `{uint64_t} id` - claim identifier
+ * - `{name} proposer` - proposer
+ * - `{name} proposal_name` - proposal name
+ * - `{asset} quantity` - claim quantity amount
+ * - `{time_point_sec} timestamp` - timestamp of claim transfer
+ * - `{checksum256} tx_id` - transaction ID
+ *
+ * ### example
+ *
+ * ```json
+ * {
+ *   "id": 0,
+ *   "proposer": "myaccount",
+ *   "proposal_name": "mywps",
+ *   "quantity": "100.0000 EOS",
+ *   "timestamp": "2019-12-01T00:00:00",
+ *   "tx_id": "<TRANSACTION ID>"
+ * }
+ * ```
+ */
+struct [[eosio::table("claims"), eosio::contract("eosio.wps")]] claims_row {
+    uint64_t                id;
+    eosio::name             proposer;
+    eosio::name             proposal_name;
+    eosio::asset            quantity;
+    eosio::time_point_sec   timestamp;
+    eosio::checksum256      tx_id;
+
+    uint64_t primary_key() const { return id; }
+    uint64_t by_proposer() const { return proposer.value; }
+    uint64_t by_proposal_name() const { return proposal_name.value; }
+};
+
+typedef eosio::multi_index< "claims"_n, claims_row,
+    indexed_by<"byproposer"_n, const_mem_fun<claims_row, uint64_t, &claims_row::by_proposer>>,
+    indexed_by<"byproposal"_n, const_mem_fun<claims_row, uint64_t, &claims_row::by_proposal_name>>
+> claims_table;
+
+
+/**
  * ## TABLE `transfers` (TESTING ONLY)
  *
  * - `{uint64_t} id` - incoming transfer identifier
@@ -353,7 +395,8 @@ public:
             _deposits( get_self(), get_self().value ),
             _proposers( get_self(), get_self().value ),
             _periods( get_self(), get_self().value ),
-            _transfers( get_self(), get_self().value )
+            _transfers( get_self(), get_self().value ),
+            _claims( get_self(), get_self().value )
     {}
 
     /**
@@ -420,14 +463,14 @@ public:
      *
      * - `{name} proposer` - proposer
      * - `{name} proposal_name` - proposal name
-     * - `{time_point_sec} start_voting_period` - activate proposal at the specified voting period (must be current or next)
+     * - `{time_point_sec} [start_voting_period=null]` - (optional) activate proposal at the specified voting period (must be current or next)
      *
      * ```bash
      * cleos push action eosio.wps activate '["myaccount", "mywps", "2019-11-25T00:00:00"]' -p myaccount
      * ```
      */
     [[eosio::action]]
-    void activate( const eosio::name proposer, const eosio::name proposal_name, eosio::time_point_sec start_voting_period );
+    void activate( const eosio::name proposer, const eosio::name proposal_name, const std::optional<eosio::time_point_sec> start_voting_period );
 
     /**
      * ## ACTION `refund`
@@ -655,6 +698,7 @@ private:
     deposits_table              _deposits;
     proposers_table             _proposers;
     periods_table               _periods;
+    claims_table                _claims;
     transfers_table             _transfers;
 
     // private helpers
@@ -685,7 +729,10 @@ private:
     void update_proposal_status( const eosio::name proposal_name );
     std::map<int16_t, std::set<eosio::name>> sort_proposals_by_net_votes( const eosio::name status );
     void update_to_next_voting_period();
-    void check_voting_period_complete();
+    bool is_voting_period_complete();
+
+    // claims
+    void add_claim( const eosio::name proposer, const eosio::name proposal_name, const eosio::asset quantity );
 
     // transfers
     void add_transfer( const eosio::name type, const eosio::name from, const eosio::name to, const eosio::asset quantity, const eosio::string memo );

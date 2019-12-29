@@ -3,14 +3,16 @@
 - add `claim` ACTION - to receive claimable amount from proposal to proposer
 - add `{asset} proposals::claimable` - available amount to claim
 - add `{bool} proposals::eligible` - (true/false) eligible for current voting period payout
+- define `voting_period` param as OPTIONAL for `activate` ACTION
+- add `claims` TABLE
 
 ## TO-DO
 
-- add `claims` TABLE
 - drop `transfers` TABLE
 - add `voting_period` param to `complete`
 - update `eligible` logic on `vote` ACTION
 - use `eligible` field on `complete` ACTION
+- add `vote_period` to `complete` ACTION
 
 # 2019-12-28
 
