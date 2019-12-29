@@ -17,9 +17,6 @@ void wps::transfer( const eosio::name&    from,
     // funding WPS using donations (memo="donate")
     if ( memo == "donate" || from == "eosio.saving"_n || from == "eosio.names"_n || from == "eosio.ramfee"_n ) {
         add_funding( quantity );
-
-        // TESTING PURPOSES
-        add_transfer( "funding"_n, from, to, quantity, memo );
         return;
     }
 
@@ -29,7 +26,4 @@ void wps::transfer( const eosio::name&    from,
 
     add_deposit( from, quantity, ram_payer );
     add_liquid_deposits( quantity );
-
-    // TESTING PURPOSES
-    add_transfer( "deposit"_n, from, to, quantity, memo );
 }

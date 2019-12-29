@@ -5,14 +5,14 @@
 - add `{bool} proposals::eligible` - (true/false) eligible for current voting period payout
 - define `voting_period` param as OPTIONAL for `activate` ACTION
 - add `claims` TABLE
+- drop `transfers` TABLE
 
 ## TO-DO
 
-- drop `transfers` TABLE
-- add `voting_period` param to `complete`
 - update `eligible` logic on `vote` ACTION
 - use `eligible` field on `complete` ACTION
 - add `vote_period` to `complete` ACTION
+- check `max_monthly_budget` when performing `complete` ACTION
 
 # 2019-12-28
 

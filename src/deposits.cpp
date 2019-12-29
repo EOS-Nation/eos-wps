@@ -14,9 +14,6 @@ void wps::refund( const eosio::name account )
     token::transfer_action transfer( "eosio.token"_n, { get_self(), "active"_n });
     transfer.send( get_self(), account, remaining_balance, "refund" );
 
-    // TESTING PURPOSES
-    add_transfer("refund"_n, get_self(), account, remaining_balance, "refund" );
-
     // substract deposits
     sub_liquid_deposits( remaining_balance );
     sub_deposit( account, remaining_balance );

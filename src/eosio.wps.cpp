@@ -5,7 +5,6 @@
 #include "./utils/deferred.cpp"
 
 // testing
-#include "./testing/transfers.cpp"
 #include "./testing/setstate.cpp"
 #include "./testing/clean.cpp"
 

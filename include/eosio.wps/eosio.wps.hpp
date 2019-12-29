@@ -331,48 +331,6 @@ typedef eosio::multi_index< "claims"_n, claims_row,
     indexed_by<"byproposal"_n, const_mem_fun<claims_row, uint64_t, &claims_row::by_proposal_name>>
 > claims_table;
 
-
-/**
- * ## TABLE `transfers` (TESTING ONLY)
- *
- * - `{uint64_t} id` - incoming transfer identifier
- * - `{name} from` - sender of transfer
- * - `{name} to` - receiver of transfer
- * - `{asset} quantity` - transfer quantity amount
- * - `{string} memo` - transfer memo
- * - `{time_point_sec} timestamp` - timestamp of transfer
- * - `{checksum256} tx_id` - transaction ID
- *
- * ### example
- *
- * ```json
- * {
- *   "id": 0,
- *   "type": "donation",
- *   "from": "myaccount",
- *   "to": "eosio.wps",
- *   "quantity": "50.0000 EOS",
- *   "memo": "donation",
- *   "timestamp": "2019-11-01T00:00:00",
- *   "tx_id": "<TRANSACTION ID>"
- * }
- * ```
- */
-struct [[eosio::table("transfers"), eosio::contract("eosio.wps")]] transfers_row {
-    uint64_t                id;
-    eosio::name             type;
-    eosio::name             from;
-    eosio::name             to;
-    eosio::asset            quantity;
-    eosio::string           memo;
-    eosio::time_point_sec   timestamp;
-    eosio::checksum256      tx_id;
-
-    uint64_t primary_key() const { return id; }
-};
-
-typedef eosio::multi_index< "transfers"_n, transfers_row > transfers_table;
-
 namespace eosio {
 
 class [[eosio::contract("eosio.wps")]] wps : public contract {
@@ -395,7 +353,6 @@ public:
             _deposits( get_self(), get_self().value ),
             _proposers( get_self(), get_self().value ),
             _periods( get_self(), get_self().value ),
-            _transfers( get_self(), get_self().value ),
             _claims( get_self(), get_self().value )
     {}
 
@@ -699,7 +656,6 @@ private:
     proposers_table             _proposers;
     periods_table               _periods;
     claims_table                _claims;
-    transfers_table             _transfers;
 
     // private helpers
     // ===============
@@ -734,8 +690,7 @@ private:
     // claims
     void add_claim( const eosio::name proposer, const eosio::name proposal_name, const eosio::asset quantity );
 
-    // transfers
-    void add_transfer( const eosio::name type, const eosio::name from, const eosio::name to, const eosio::asset quantity, const eosio::string memo );
+    // settings
     void add_funding( const eosio::asset quantity );
     void sub_funding( const eosio::asset quantity );
 
