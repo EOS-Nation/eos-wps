@@ -13,12 +13,12 @@ cleos push action $CONTRACT submitdraft '["deniscarrier", "mywps", "My WPS", "10
 cleos transfer deniscarrier $CONTRACT "100.0000 EOS" ""
 
 # activate
-cleos push action $CONTRACT activate '["deniscarrier", "mywps"]' -p deniscarrier
+cleos push action $CONTRACT activate '["deniscarrier", "mywps", null]' -p deniscarrier
 
 # vote
 cleos push action $CONTRACT vote '["deniscarrier", "mywps", "yes"]' -p deniscarrier
 
-# vote
+# setproposer
 cleos push action $CONTRACT setproposer '["deniscarrier", [{"key":"region", "value":"global"}]]' -p deniscarrier
 
 # # init

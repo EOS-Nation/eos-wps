@@ -671,6 +671,10 @@ private:
 
     // vote
     int16_t calculate_total_net_votes( const std::map<eosio::name, eosio::name> votes );
+    void update_vote( const eosio::name voter, const eosio::name proposal_name, const eosio::name vote );
+    void update_eligible_proposals( );
+    void check_proposal_can_vote( const eosio::name proposal_name );
+    std::map<int16_t, std::set<eosio::name>> sort_proposals_by_net_votes( const eosio::name status );
 
     // utils
     eosio::checksum256 get_tx_id();
@@ -683,9 +687,9 @@ private:
     void handle_payouts();
     bool proposal_exists_per_voting_period( const eosio::name proposal_name, const eosio::time_point_sec voting_period );
     void update_proposal_status( const eosio::name proposal_name );
-    std::map<int16_t, std::set<eosio::name>> sort_proposals_by_net_votes( const eosio::name status );
     void update_to_next_voting_period();
     bool is_voting_period_complete();
+    std::set<eosio::name> group_proposals( const eosio::name status );
 
     // claims
     void add_claim( const eosio::name proposer, const eosio::name proposal_name, const eosio::asset quantity );

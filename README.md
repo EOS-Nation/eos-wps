@@ -264,6 +264,15 @@ cleos push action eosio.wps setparams '[{"vote_margin": 15, "deposit_required": 
 | `status`   | 2                | i64        |
 | `proposer` | 3                | i64        |
 
+**status**
+
+| `param`     | `value`                                 |
+|-------------|-----------------------------------------|
+| `active`    | available for current voting period     |
+| `completed` | proposal completed and payout in full   |
+| `partial`   | proposal completed and partial payout   |
+| `expired`   | proposal expired without any payout     |
+
 **params**
 
 - `{name} proposer` - proposer of proposal

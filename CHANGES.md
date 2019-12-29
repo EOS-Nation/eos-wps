@@ -6,13 +6,12 @@
 - define `voting_period` param as OPTIONAL for `activate` ACTION
 - add `claims` TABLE
 - drop `transfers` TABLE
+- update `eligible` logic on `vote` ACTION
+- use `eligible` field on `complete` ACTION
 
 ## TO-DO
 
-- update `eligible` logic on `vote` ACTION
-- use `eligible` field on `complete` ACTION
 - add `vote_period` to `complete` ACTION
-- check `max_monthly_budget` when performing `complete` ACTION
 
 # 2019-12-28
 

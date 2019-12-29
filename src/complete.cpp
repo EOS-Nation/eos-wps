@@ -3,8 +3,11 @@ void wps::complete( )
 {
     // no authorization required (can be executed by any account)
 
-    // check if current voting period is completed
-    check( is_voting_period_complete(), "[current_voting_period] is not completed");
+    // // check if current voting period is completed
+    // check( is_voting_period_complete(), "[current_voting_period] is not completed");
+
+    // update `proposals::eligible` field for all active proposals
+    update_eligible_proposals();
 
     // payouts of active proposals
     handle_payouts();
@@ -14,6 +17,9 @@ void wps::complete( )
 
     // update current & next voting period
     update_to_next_voting_period();
+
+    // re-update `proposals::eligible`
+    update_eligible_proposals();
 
     // push deferred transaction using `next_voting_period` as the delay
     auto_complete();
@@ -43,80 +49,67 @@ void wps::handle_payouts()
     // static actions
     wps::claim_action claim( get_self(), { get_self(), "active"_n });
 
-    // containers
-    eosio::asset total_payout = asset{ 0, symbol{ "EOS", 4 }};
+    // iterate proposals by active status
+    for ( auto proposal_name : group_proposals( "active"_n ) ) {
+        auto proposals_itr = _proposals.find( proposal_name.value );
+        const eosio::asset monthly_budget = proposals_itr->monthly_budget;
 
-    // available EOS balance of wps contract
-    eosio::asset wps_balance = token::get_balance( "eosio.token"_n, get_self(), symbol_code("EOS") );
+        // only payout eligible (true) proposals
+        if ( proposals_itr->eligible ) {
 
-    // filter out min voting threshold proposals
-    std::map<int16_t, std::set<eosio::name>> proposals = sort_proposals_by_net_votes( "active"_n );
+            // check internal available funding
+            check( state.available_funding >= monthly_budget, "insufficient `available_funding`");
+            sub_funding( monthly_budget );
 
-    // iterate proposals from highest to lowest net votes
-    for ( auto itr = proposals.rbegin(); itr != proposals.rend(); ++itr ) {
+            // update proposal payouts
+            _proposals.modify( proposals_itr, same_payer, [&]( auto& row ) {
+                row.payouts += monthly_budget;
+                row.claimable += monthly_budget;
+            });
 
-        // iterate over proposals
-        for ( auto proposal_name : itr->second ) {
-            // proposal variables
-            auto proposal_itr = _proposals.find( proposal_name.value );
-            int16_t total_net_votes = itr->first;
-            const eosio::asset monthly_budget = proposal_itr->monthly_budget;
-            const eosio::name proposer = proposal_itr->proposer;
-
-            // min requirements for payouts
-            const bool is_min_vote_margin = total_net_votes >= settings.vote_margin;
-            const bool is_enough_budget = (total_payout + monthly_budget) <= settings.max_monthly_budget;
-
-            // payout following proposal
-            if ( is_enough_budget && is_min_vote_margin ) {
-                total_payout += monthly_budget;
-
-                // check internal funding
-                check( state.available_funding >= monthly_budget, "insufficient `available_funding`");
-                sub_funding( monthly_budget );
-
-                // check eosio.wps balance
-                wps_balance -= monthly_budget;
-                check( wps_balance.amount >= 0, "insufficient balance");
-
-                // update proposal payouts
-                _proposals.modify( proposal_itr, same_payer, [&]( auto& row ) {
-                    row.payouts += monthly_budget;
-                    row.claimable += monthly_budget;
-                });
-
-                // push 0 second deferred transaction to auto-execute claim
-                send_deferred( claim.to_action( proposal_name ), proposal_name.value + "claim"_n.value, 0 );
-            }
-            // set payout as completed/expired/active based on payout received
-            update_proposal_status( proposal_name );
+            // push 0 second deferred transaction to auto-execute claim
+            const uint64_t key = proposal_name.value + "claim"_n.value;
+            send_deferred( claim.to_action( proposal_name ), key, 0 );
         }
+
+        // set proposals to `completed/partial/expired/active`
+        update_proposal_status( proposal_name );
     }
 }
 
-std::map<int16_t, std::set<eosio::name>> wps::sort_proposals_by_net_votes( const eosio::name status )
+std::set<eosio::name> wps::group_proposals( const eosio::name status )
 {
     auto index = _proposals.get_index<"bystatus"_n>();
 
     // add proposals to ordered map
-    std::map<int16_t, std::set<eosio::name>> proposals;
+    std::set<eosio::name> proposals;
 
     for ( auto itr = index.lower_bound(status.value); itr != index.upper_bound(status.value); ++itr ) {
-        proposals[itr->total_net_votes].insert(itr->proposal_name);
+        proposals.insert(itr->proposal_name);
     }
     return proposals;
 }
 
+/**
+ * status
+ *
+ * `active` => proposal still available for next voting period
+ * `completed` => proposal payout in full
+ * `partial` => proposal payout partially
+ * `expired` => proposal did not receive any payout
+ */
 void wps::update_proposal_status( const eosio::name proposal_name )
 {
     auto state = _state.get();
     auto proposal_itr = _proposals.find( proposal_name.value );
 
     _proposals.modify( proposal_itr, same_payer, [&]( auto& row ) {
+        // proposal which are no longer active during the next voting period
         if ( !proposal_exists_per_voting_period( proposal_name, state.next_voting_period )) {
             if ( row.payouts == row.total_budget ) row.status = "completed"_n;
             else if ( row.payouts.amount > 0 ) row.status = "partial"_n;
             else row.status = "expired"_n;
+            row.eligible = false;
         }
     });
 }
