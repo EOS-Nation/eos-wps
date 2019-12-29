@@ -3,8 +3,8 @@ void wps::complete( )
 {
     // no authorization required (can be executed by any account)
 
-    // // check if current voting period is completed
-    // check( is_voting_period_complete(), "[current_voting_period] is not completed");
+    // check if current voting period is completed
+    check( is_voting_period_complete(), "[current_voting_period] is not completed");
 
     // update `proposals::eligible` field for all active proposals
     update_eligible_proposals();
