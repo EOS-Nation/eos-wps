@@ -8,16 +8,20 @@ void wps::claim( const eosio::name proposal_name )
 
     auto proposals_itr = _proposals.find( proposal_name.value );
     const eosio::name proposer = proposals_itr->proposer;
-    const eosio::asset quantity = proposals_itr->claimable;
+    const eosio::asset payouts = proposals_itr->payouts;
+    const eosio::asset claimed = proposals_itr->claimed;
+
+    // calculate claimable amount
+    const eosio::asset claimable = payouts + claimed;
 
     check( proposals_itr != _proposals.end(), "[proposal_name] does not exists" );
-    check( quantity.amount > 0, "no claimable amount" );
+    check( claimable.amount > 0, "no claimable amount" );
 
-    transfer.send( get_self(), proposer, quantity, "wps" );
-    add_claim( proposer, proposal_name, quantity );
+    transfer.send( get_self(), proposer, claimable, "wps" );
+    add_claim( proposer, proposal_name, claimable );
 
     _proposals.modify( proposals_itr, same_payer, [&]( auto& row ) {
-        row.claimable.amount = 0;
+        row.claimed -= claimable;
     });
 }
 

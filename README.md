@@ -285,8 +285,8 @@ cleos push action eosio.wps setparams '[{"vote_margin": 15, "deposit_required": 
 - `{name} status` - status of proposal (active/expired/completed)
 - `{int16_t} total_net_votes` - total net votes
 - `{bool} eligible` - (true/false) eligible for current voting period payout
-- `{asset} payouts` - total payouts received
-- `{asset} claimable` - available amount to claim
+- `{asset} payouts` - total payouts amount received
+- `{asset} claimed` - total claimed amount
 - `{time_point_sec} created` - time proposal was created (UTC)
 - `{time_point_sec} start_voting_period` - start of voting period (UTC)
 - `{time_point_sec} end` - end of proposal (UTC)
@@ -309,7 +309,7 @@ cleos push action eosio.wps setparams '[{"vote_margin": 15, "deposit_required": 
   "total_net_votes": 2,
   "eligible": true,
   "payouts": "0.0000 EOS",
-  "claimable": "0.0000 EOS",
+  "claimed": "0.0000 EOS",
   "created": "2019-11-05T12:10:00",
   "start_voting_period": "2019-11-01T00:00:00",
   "end": "2019-12-01T00:00:00"

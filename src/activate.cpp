@@ -126,7 +126,7 @@ void wps::emplace_proposal_from_draft( const eosio::name proposer, const eosio::
         row.total_net_votes     = 0;
         row.eligible            = false;
         row.payouts             = asset{0, symbol{"EOS", 4}};
-        row.claimable           = asset{0, symbol{"EOS", 4}};
+        row.claimed             = asset{0, symbol{"EOS", 4}};
         row.created             = current_time_point();
         row.start_voting_period = start_voting_period;
         row.end                 = end;

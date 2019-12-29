@@ -64,7 +64,6 @@ void wps::handle_payouts()
             // update proposal payouts
             _proposals.modify( proposals_itr, same_payer, [&]( auto& row ) {
                 row.payouts += monthly_budget;
-                row.claimable += monthly_budget;
             });
 
             // push 0 second deferred transaction to auto-execute claim
