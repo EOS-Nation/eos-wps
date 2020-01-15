@@ -1,3 +1,8 @@
+# 2020-01-15
+
+- add `check_voter_eligible` check, must be producer and claimed producer rewards within the last 24 hours
+- `voteproducer` action (TESTING PURPOSES) to vote as eligible BP voter
+
 # 2019-12-29
 
 - add `claim` ACTION - to receive claimable amount from proposal to proposer

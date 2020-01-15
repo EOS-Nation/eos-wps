@@ -16,6 +16,28 @@ void wps::vote( const eosio::name voter, const eosio::name proposal_name, const 
     update_eligible_proposals();
 }
 
+// TESTING PURPOSES: to test voting as producer
+// @action
+void wps::voteproducer( const eosio::name voter, const eosio::name proposal_name, const eosio::name vote )
+{
+    require_auth( voter );
+
+    // must be producer & claimed within last 24 hours
+    check_voter_eligible( voter );
+
+    wps::vote( voter, proposal_name, vote );
+}
+
+void wps::check_voter_eligible( const eosio::name voter )
+{
+    producers_table _producers( "eosio"_n, "eosio"_n.value );
+    auto producers_itr = _producers.find( voter.value );
+
+    const eosio::time_point last_24h = time_point(current_time_point() - time_point_sec(DAY));
+    check( producers_itr != _producers.end(), "[voter] must be registered as a producer");
+    check( producers_itr->last_claim_time >= last_24h, "[voter] must have claimed producer rewards within the last 24 hours");
+}
+
 void wps::check_proposal_can_vote( const eosio::name proposal_name )
 {
     auto proposals_itr = _proposals.find( proposal_name.value );

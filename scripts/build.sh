@@ -13,7 +13,8 @@ eosio-cpp -abigen \
   -R ./ricardian \
   -o ./dist/eosio.wps.wasm \
   -I ./include \
-  -I ./external/eosio.token/include
+  -I ./external/eosio.token/include \
+  -I ./external/eosio.system/include
 
 # # eosio.token
 # echo -e "${GREEN}Compiling eosio.token...${NC}"

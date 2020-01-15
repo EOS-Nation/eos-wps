@@ -9,6 +9,7 @@
 #include <optional>
 
 #include <eosio.token/eosio.token.hpp>
+#include <eosio.system/eosio.system.hpp>
 
 using namespace eosio;
 using namespace std;
@@ -613,20 +614,22 @@ public:
     void claim( const eosio::name proposal_name );
 
     /**
-     * TESTING ONLY
-     *
-     * Should be removed in production
+     * TESTING ONLY - Should be removed in production
      */
     [[eosio::action]]
     void clean( const eosio::name table, const std::optional<eosio::name> scope );
 
     /**
-     * TESTING ONLY
-     *
-     * Should be removed in production
+     * TESTING ONLY - Should be removed in production
      */
     [[eosio::action]]
     void setstate( const state_row params );
+
+    /**
+     * TESTING ONLY - to test voting as producer
+     */
+    [[eosio::action]]
+    void voteproducer( const eosio::name voter, const eosio::name proposal_name, const eosio::name vote );
 
     [[eosio::on_notify("eosio.token::transfer")]]
     void transfer( const eosio::name&    from,
@@ -675,6 +678,7 @@ private:
     void update_eligible_proposals( );
     void check_proposal_can_vote( const eosio::name proposal_name );
     std::map<int16_t, std::set<eosio::name>> sort_proposals_by_net_votes( const eosio::name status );
+    void check_voter_eligible( const eosio::name voter );
 
     // utils
     eosio::checksum256 get_tx_id();
