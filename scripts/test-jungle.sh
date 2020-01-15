@@ -24,8 +24,9 @@ cleos push action $CONTRACT setproposer '["deniscarrier", [{"key":"region", "val
 # # init
 # cleos push action $CONTRACT init '["2019-12-12T00:00:00"]' -p $CONTRACT
 
-# # setparams (optional)
-# cleos push action $CONTRACT setparams '[{"vote_margin": 15, "deposit_required": "100.0000 EOS", "voting_interval": 2592000, "max_monthly_budget": "50000.0000 EOS"}]' -p $CONTRACT
+# setparams (optional)
+# cleos push action $CONTRACT setparams '[{"vote_margin": 3, "deposit_required": "100.0000 EOS", "voting_interval": 2592000, "max_monthly_budget": "50000.0000 EOS"}]' -p $CONTRACT
+cleos push action $CONTRACT setparams '[{"vote_margin": 2, "deposit_required": "100.0000 EOS", "voting_interval": 86400, "max_monthly_budget": "50000.0000 EOS", "min_time_voting_end": 0}]' -p $CONTRACT
 
 # # setstate (TESTING PURPOSES)
 # cleos push action $CONTRACT setstate '[{"current_voting_period": "2019-12-12T00:00:00", "next_voting_period": "2020-01-11T00:00:00" "liquid_deposits": "100.0000 EOS", "locked_deposits": "500.0000 EOS", "available_funding": "150.0000 EOS"}]' -p $CONTRACT

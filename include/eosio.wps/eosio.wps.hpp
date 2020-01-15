@@ -235,9 +235,9 @@ typedef eosio::multi_index< "votes"_n, votes_row> votes_table;
 struct [[eosio::table("state"), eosio::contract("eosio.wps")]] state_row {
     eosio::time_point_sec       current_voting_period;
     eosio::time_point_sec       next_voting_period;
-    eosio::asset                liquid_deposits;
-    eosio::asset                locked_deposits;
-    eosio::asset                available_funding;
+    eosio::asset                liquid_deposits = asset{0, symbol{"EOS", 4}};
+    eosio::asset                locked_deposits = asset{0, symbol{"EOS", 4}};
+    eosio::asset                available_funding = asset{0, symbol{"EOS", 4}};
 };
 
 typedef eosio::singleton< "state"_n, state_row> state_table;
