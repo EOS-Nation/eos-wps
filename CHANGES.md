@@ -1,3 +1,7 @@
+# 2020-01-16
+
+- update `memo` for `claim` action => `wps::<proposal_name>`
+
 # 2020-01-15
 
 - add `check_voter_eligible` check, must be producer and claimed producer rewards within the last 24 hours

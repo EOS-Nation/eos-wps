@@ -17,7 +17,7 @@ void wps::claim( const eosio::name proposal_name )
     check( proposals_itr != _proposals.end(), "[proposal_name] does not exists" );
     check( claimable.amount > 0, "no claimable amount" );
 
-    transfer.send( get_self(), proposer, claimable, "wps" );
+    transfer.send( get_self(), proposer, claimable, "wps::" + proposal_name.to_string() );
     add_claim( proposer, proposal_name, claimable );
 
     _proposals.modify( proposals_itr, same_payer, [&]( auto& row ) {
