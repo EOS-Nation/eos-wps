@@ -1,0 +1,4 @@
+- if proposal doesn't met threshold, cancel all subsequent proposals
+- 24 hour BP threshold & vote weight of min 100 EOS
+- `producers` TABLE
+- add comment on `vote`

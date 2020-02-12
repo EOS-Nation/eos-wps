@@ -9,6 +9,9 @@ void wps::vote( const eosio::name voter, const eosio::name proposal_name, const 
     // cannot vote during completed voting period phase
     check_voting_period_completed();
 
+    // get BP stats
+    update_producer( voter );
+
     // update `votes` table
     update_vote( voter, proposal_name, vote );
 
@@ -21,6 +24,9 @@ void wps::vote( const eosio::name voter, const eosio::name proposal_name, const 
 void wps::voteproducer( const eosio::name voter, const eosio::name proposal_name, const eosio::name vote )
 {
     require_auth( voter );
+
+    // get BP stats
+    update_producer( voter );
 
     // must be producer & claimed within last 24 hours
     check_voter_eligible( voter );

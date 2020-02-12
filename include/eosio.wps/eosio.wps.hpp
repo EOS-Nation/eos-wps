@@ -213,6 +213,35 @@ struct [[eosio::table("votes"), eosio::contract("eosio.wps")]] votes_row {
 typedef eosio::multi_index< "votes"_n, votes_row> votes_table;
 
 /**
+ * ## TABLE `producers`
+ *
+ * - `{name} producer` - BP producer account name
+ * - `{bool} eligible` - (true/false) eligible to vote on proposals
+ * - `{double} total_votes` - total votes
+ * - `{time_point} last_claim_time` - last claim time
+ *
+ * ### example
+ *
+ * ```json
+ * {
+ *   "producer": "mybp",
+ *   "eligible": true,
+ *   "total_votes": 100000,
+ *   "last_claim_time": "2020-02-12T02:42:49.500"
+ * }
+ * ```
+ */
+struct [[eosio::table("producers"), eosio::contract("eosio.wps")]] producers_row {
+    name        producer;
+    bool        eligible;
+    double      total_votes;
+    time_point  last_claim_time;
+
+    uint64_t primary_key() const { return producer.value; }
+};
+typedef eosio::multi_index< "producers"_n, producers_row> wps_producers_table;
+
+/**
  * ## TABLE `state`
  *
  * - `{time_point_sec} current_voting_period` - current voting period
@@ -354,7 +383,8 @@ public:
             _deposits( get_self(), get_self().value ),
             _proposers( get_self(), get_self().value ),
             _periods( get_self(), get_self().value ),
-            _claims( get_self(), get_self().value )
+            _claims( get_self(), get_self().value ),
+            _producers( get_self(), get_self().value )
     {}
 
     /**
@@ -659,6 +689,7 @@ private:
     proposers_table             _proposers;
     periods_table               _periods;
     claims_table                _claims;
+    wps_producers_table         _producers;
 
     // private helpers
     // ===============
@@ -715,6 +746,9 @@ private:
     void check_title( const string title );
     void check_duration( const uint8_t duration );
     void check_monthly_budget( const eosio::asset monthly_budget);
+
+    // producers
+    void update_producer( const eosio::name producer );
 };
 
 }
