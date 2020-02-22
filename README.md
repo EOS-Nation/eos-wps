@@ -443,7 +443,7 @@ cleos push action eosio.wps setparams '[{"vote_margin": 15, "deposit_required": 
 ```json
 {
   "voting_period": "2019-11-01T00:00:00",
-  "proposals": ["mywps"],
+  "proposals": ["mywps"]
 }
 ```
 

@@ -17,11 +17,12 @@ using namespace std;
 static constexpr uint64_t DAY = 86400; // 24 hours
 static constexpr uint64_t WEEK = 604800; // 7 days
 static constexpr uint64_t MONTH = 2592000; // 30 days
+static constexpr symbol CORE_SYMBOL = symbol{"EOS", 4};
 
 /**
  * ## TABLE `settings`
  *
- * - `{int16_t} [vote_margin=15]` - minimum BP vote margin threshold to reach for proposals
+ * - `{int16_t} [vote_margin=16]` - minimum BP vote margin threshold to reach for proposals
  * - `{asset} [deposit_required="100.0000 EOS"]` - deposit required to active proposal
  * - `{uint64_t} [voting_interval=2592000]` -  election interval in seconds
  * - `{asset} [max_monthly_budget="50000.0000 EOS"]` - maximum monthly budget
@@ -31,7 +32,7 @@ static constexpr uint64_t MONTH = 2592000; // 30 days
  *
  * ```json
  * {
- *   "vote_margin": 15,
+ *   "vote_margin": 16,
  *   "deposit_required": "100.0000 EOS",
  *   "voting_interval": 2592000,
  *   "max_monthly_budget": "50000.0000 EOS",
@@ -40,11 +41,11 @@ static constexpr uint64_t MONTH = 2592000; // 30 days
  * ```
  */
 struct [[eosio::table("settings"), eosio::contract("eosio.wps")]] wps_parameters {
-    int16_t                 vote_margin = 15;
-    eosio::asset            deposit_required = asset{ 1000000, symbol{"EOS", 4}};
-    uint64_t                voting_interval = 2592000;
-    eosio::asset            max_monthly_budget = asset{ 500000000, symbol{"EOS", 4}};
-    uint64_t                min_time_voting_end = 86400;
+    int16_t                 vote_margin = 16;
+    asset                   deposit_required = asset{ 1000000, CORE_SYMBOL};
+    uint64_t                voting_interval = MONTH;
+    asset                   max_monthly_budget = asset{ 250000000, CORE_SYMBOL};
+    uint64_t                min_time_voting_end = DAY;
 };
 
 typedef eosio::singleton< "settings"_n, wps_parameters> settings_table;
@@ -80,13 +81,13 @@ typedef eosio::singleton< "settings"_n, wps_parameters> settings_table;
  * ```
  */
 struct [[eosio::table("drafts"), eosio::contract("eosio.wps")]] drafts_row {
-    eosio::name                             proposer;
-    eosio::name                             proposal_name;
-    eosio::string                           title;
-    eosio::asset                            monthly_budget;
-    uint8_t                                 duration;
-    eosio::asset                            total_budget;
-    std::map<eosio::name, eosio::string>    proposal_json;
+    name                        proposer;
+    name                        proposal_name;
+    string                      title;
+    asset                       monthly_budget;
+    uint8_t                     duration;
+    asset                       total_budget;
+    map<name, string>           proposal_json;
 
     uint64_t primary_key() const { return proposal_name.value; }
 };
@@ -110,8 +111,8 @@ typedef eosio::multi_index< "drafts"_n, drafts_row> drafts_table;
  * ```
  */
 struct [[eosio::table("proposers"), eosio::contract("eosio.wps")]] proposers_row {
-    eosio::name                             proposer;
-    std::map<eosio::name, eosio::string>    metadata_json;
+    name                    proposer;
+    map<name, string>       metadata_json;
 
     uint64_t primary_key() const { return proposer.value; }
 };
@@ -163,14 +164,14 @@ typedef eosio::multi_index< "proposers"_n, proposers_row> proposers_table;
  */
 struct [[eosio::table("proposals"), eosio::contract("eosio.wps")]] proposals_row : drafts_row {
     // inherent fields from `drafts` TABLE
-    eosio::name                             status;
-    int16_t                                 total_net_votes;
-    bool                                    eligible;
-    eosio::asset                            payouts;
-    eosio::asset                            claimed;
-    eosio::time_point_sec                   created;
-    eosio::time_point_sec                   start_voting_period;
-    eosio::time_point_sec                   end;
+    name                    status;
+    int16_t                 total_net_votes;
+    bool                    eligible;
+    asset                   payouts;
+    asset                   claimed;
+    time_point_sec          created;
+    time_point_sec          start_voting_period;
+    time_point_sec          end;
 
     uint64_t primary_key() const { return proposal_name.value; }
     uint64_t by_status() const { return status.value; }
@@ -204,8 +205,8 @@ typedef eosio::multi_index< "proposals"_n, proposals_row,
  * ```
  */
 struct [[eosio::table("votes"), eosio::contract("eosio.wps")]] votes_row {
-    eosio::name                         proposal_name;
-    std::map<eosio::name, eosio::name>  votes;
+    name                proposal_name;
+    map<name, name>     votes;
 
     uint64_t primary_key() const { return proposal_name.value; }
 };
@@ -263,11 +264,11 @@ typedef eosio::multi_index< "producers"_n, producers_row> wps_producers_table;
  * ```
  */
 struct [[eosio::table("state"), eosio::contract("eosio.wps")]] state_row {
-    eosio::time_point_sec       current_voting_period;
-    eosio::time_point_sec       next_voting_period;
-    eosio::asset                liquid_deposits = asset{0, symbol{"EOS", 4}};
-    eosio::asset                locked_deposits = asset{0, symbol{"EOS", 4}};
-    eosio::asset                available_funding = asset{0, symbol{"EOS", 4}};
+    time_point_sec       current_voting_period;
+    time_point_sec       next_voting_period;
+    asset                liquid_deposits = asset{0, CORE_SYMBOL};
+    asset                locked_deposits = asset{0, CORE_SYMBOL};
+    asset                available_funding = asset{0, CORE_SYMBOL};
 };
 
 typedef eosio::singleton< "state"_n, state_row> state_table;
@@ -288,8 +289,8 @@ typedef eosio::singleton< "state"_n, state_row> state_table;
  * ```
  */
 struct [[eosio::table("deposits"), eosio::contract("eosio.wps")]] deposits_row {
-    eosio::name         account;
-    eosio::asset        balance;
+    name         account;
+    asset        balance;
 
     uint64_t primary_key() const { return account.value; }
 };
@@ -312,8 +313,8 @@ typedef eosio::multi_index< "deposits"_n, deposits_row > deposits_table;
  * ```
  */
 struct [[eosio::table("periods"), eosio::contract("eosio.wps")]] periods_row {
-    eosio::time_point_sec       voting_period;
-    std::set<eosio::name>       proposals;
+    time_point_sec      voting_period;
+    set<name>           proposals;
 
     uint64_t primary_key() const { return voting_period.sec_since_epoch(); }
 };
@@ -345,11 +346,11 @@ typedef eosio::multi_index< "periods"_n, periods_row > periods_table;
  */
 struct [[eosio::table("claims"), eosio::contract("eosio.wps")]] claims_row {
     uint64_t                id;
-    eosio::name             proposer;
-    eosio::name             proposal_name;
-    eosio::asset            quantity;
-    eosio::time_point_sec   timestamp;
-    eosio::checksum256      tx_id;
+    name             proposer;
+    name             proposal_name;
+    asset            quantity;
+    time_point_sec   timestamp;
+    checksum256      tx_id;
 
     uint64_t primary_key() const { return id; }
     uint64_t by_proposer() const { return proposer.value; }
@@ -411,12 +412,12 @@ public:
      * ```
      */
     [[eosio::action]]
-    void submitdraft( const eosio::name proposer,
-                      const eosio::name proposal_name,
-                      const eosio::string title,
-                      const eosio::asset monthly_budget,
+    void submitdraft( const name proposer,
+                      const name proposal_name,
+                      const string title,
+                      const asset monthly_budget,
                       const uint8_t duration,
-                      const std::map<eosio::name, eosio::string> proposal_json );
+                      const map<name, string> proposal_json );
 
     /**
      * ## ACTION `vote`
@@ -437,7 +438,7 @@ public:
      * ```
      */
     [[eosio::action]]
-    void vote( const eosio::name voter, const eosio::name proposal_name, const eosio::name vote );
+    void vote( const name voter, const name proposal_name, const name vote );
 
     /**
      * ## ACTION `activate`
@@ -458,7 +459,7 @@ public:
      * ```
      */
     [[eosio::action]]
-    void activate( const eosio::name proposer, const eosio::name proposal_name, const std::optional<eosio::time_point_sec> start_voting_period );
+    void activate( const name proposer, const name proposal_name, const optional<time_point_sec> start_voting_period );
 
     /**
      * ## ACTION `refund`
@@ -476,7 +477,7 @@ public:
      * ```
      */
     [[eosio::action]]
-    void refund( const eosio::name account );
+    void refund( const name account );
 
     /**
      * ## ACTION `canceldraft`
@@ -495,7 +496,7 @@ public:
      * ```
      */
     [[eosio::action]]
-    void canceldraft( const eosio::name proposer, const eosio::name proposal_name );
+    void canceldraft( const name proposer, const name proposal_name );
 
     /**
      * ## ACTION `modifydraft`
@@ -519,7 +520,7 @@ public:
      * ```
      */
     [[eosio::action]]
-    void modifydraft(const eosio::name proposer, const eosio::name proposal_name, const string title, const std::map<name, string> proposal_json );
+    void modifydraft(const name proposer, const name proposal_name, const string title, const map<name, string> proposal_json );
 
     /**
      * ## ACTION `modifybudget`
@@ -543,7 +544,7 @@ public:
      * ```
      */
     [[eosio::action]]
-    void modifybudget(const eosio::name proposer, const eosio::name proposal_name, const eosio::asset monthly_budget, const uint8_t duration );
+    void modifybudget(const name proposer, const name proposal_name, const asset monthly_budget, const uint8_t duration );
 
     /**
      * ## ACTION `setproposer`
@@ -565,7 +566,7 @@ public:
      * ```
      */
     [[eosio::action]]
-    void setproposer(const eosio::name proposer, const std::map<name, string> metadata_json );
+    void setproposer(const name proposer, const map<name, string> metadata_json );
 
     /**
      * ## ACTION `init`
@@ -584,7 +585,7 @@ public:
      * ```
      */
     [[eosio::action]]
-    void init( eosio::time_point_sec initial_voting_period );
+    void init( time_point_sec initial_voting_period );
 
     /**
      * ## ACTION `setparams`
@@ -641,13 +642,13 @@ public:
      * ```
      */
     [[eosio::action]]
-    void claim( const eosio::name proposal_name );
+    void claim( const name proposal_name );
 
     /**
      * TESTING ONLY - Should be removed in production
      */
     [[eosio::action]]
-    void clean( const eosio::name table, const std::optional<eosio::name> scope );
+    void clean( const name table, const optional<name> scope );
 
     /**
      * TESTING ONLY - Should be removed in production
@@ -659,13 +660,13 @@ public:
      * TESTING ONLY - to test voting as producer
      */
     [[eosio::action]]
-    void voteproducer( const eosio::name voter, const eosio::name proposal_name, const eosio::name vote );
+    void voteproducer( const name voter, const name proposal_name, const name vote );
 
     [[eosio::on_notify("eosio.token::transfer")]]
-    void transfer( const eosio::name&    from,
-                   const eosio::name&    to,
-                   const eosio::asset&   quantity,
-                   const eosio::string&  memo );
+    void transfer( const name&    from,
+                   const name&    to,
+                   const asset&   quantity,
+                   const string&  memo );
 
     using vote_action = eosio::action_wrapper<"vote"_n, &wps::vote>;
     using submitdraft_action = eosio::action_wrapper<"submitdraft"_n, &wps::submitdraft>;
@@ -695,59 +696,59 @@ private:
     // ===============
 
     // activate
-    void proposal_to_periods( const eosio::name proposal_name, const eosio::name ram_payer );
-    void check_min_time_voting_end( const eosio::time_point_sec start_voting_period );
-    void check_draft_proposal_exists( const eosio::name proposer, const eosio::name proposal_name );
-    void deduct_proposal_activate_fee( const eosio::name proposer );
-    void emplace_proposal_from_draft( const eosio::name proposer, const eosio::name proposal_name, const eosio::time_point_sec start_voting_period, const eosio::name ram_payer );
-    void emplace_empty_votes( const eosio::name proposal_name, const eosio::name ram_payer );
-    void check_start_vote_period( const eosio::time_point_sec start_voting_period );
+    void proposal_to_periods( const name proposal_name, const name ram_payer );
+    void check_min_time_voting_end( const time_point_sec start_voting_period );
+    void check_draft_proposal_exists( const name proposer, const name proposal_name );
+    void deduct_proposal_activate_fee( const name proposer );
+    void emplace_proposal_from_draft( const name proposer, const name proposal_name, const time_point_sec start_voting_period, const name ram_payer );
+    void emplace_empty_votes( const name proposal_name, const name ram_payer );
+    void check_start_vote_period( const time_point_sec start_voting_period );
 
     // vote
-    int16_t calculate_total_net_votes( const std::map<eosio::name, eosio::name> votes );
-    void update_vote( const eosio::name voter, const eosio::name proposal_name, const eosio::name vote );
+    int16_t calculate_total_net_votes( const map<name, name> votes );
+    void update_vote( const name voter, const name proposal_name, const name vote );
     void update_eligible_proposals( );
-    void check_proposal_can_vote( const eosio::name proposal_name );
-    std::map<int16_t, std::set<eosio::name>> sort_proposals_by_net_votes( const eosio::name status );
-    void check_voter_eligible( const eosio::name voter );
+    void check_proposal_can_vote( const name proposal_name );
+    map<int16_t, set<name>> sort_proposals_by_net_votes( const name status );
+    void check_voter_eligible( const name voter );
 
     // utils
-    eosio::checksum256 get_tx_id();
-    void send_deferred( const eosio::action action, const uint64_t key, const uint64_t interval );
+    checksum256 get_tx_id();
+    void send_deferred( const action action, const uint64_t key, const uint64_t interval );
 
     // complete
     void check_voting_period_completed();
     void set_pending_to_active();
     void handle_payouts();
-    bool proposal_exists_per_voting_period( const eosio::name proposal_name, const eosio::time_point_sec voting_period );
-    void update_proposal_status( const eosio::name proposal_name );
+    bool proposal_exists_per_voting_period( const name proposal_name, const time_point_sec voting_period );
+    void update_proposal_status( const name proposal_name );
     void update_to_next_voting_period();
     bool is_voting_period_complete();
-    std::set<eosio::name> group_proposals( const eosio::name status );
+    set<name> group_proposals( const name status );
 
     // claims
-    void add_claim( const eosio::name proposer, const eosio::name proposal_name, const eosio::asset quantity );
+    void add_claim( const name proposer, const name proposal_name, const asset quantity );
 
     // settings
-    void add_funding( const eosio::asset quantity );
-    void sub_funding( const eosio::asset quantity );
+    void add_funding( const asset quantity );
+    void sub_funding( const asset quantity );
 
     // deposits
-    void add_deposit( const eosio::name account, const eosio::asset quantity, const eosio::name ram_payer );
-    void sub_deposit( const eosio::name account, const eosio::asset quantity );
-    void create_deposit_account( const eosio::name account, const eosio::name ram_payer );
-    void add_liquid_deposits( const eosio::asset quantity );
-    void sub_liquid_deposits( const eosio::asset quantity );
-    void deposit_to_proposal( const eosio::name proposal_name, const eosio::asset quantity );
-    void move_to_locked_deposits( const eosio::asset quantity );
+    void add_deposit( const name account, const asset quantity, const name ram_payer );
+    void sub_deposit( const name account, const asset quantity );
+    void create_deposit_account( const name account, const name ram_payer );
+    void add_liquid_deposits( const asset quantity );
+    void sub_liquid_deposits( const asset quantity );
+    void deposit_to_proposal( const name proposal_name, const asset quantity );
+    void move_to_locked_deposits( const asset quantity );
 
     // drafts
     void check_title( const string title );
     void check_duration( const uint8_t duration );
-    void check_monthly_budget( const eosio::asset monthly_budget);
+    void check_monthly_budget( const asset monthly_budget);
 
     // producers
-    void update_producer( const eosio::name producer );
+    void update_producer( const name producer );
 };
 
 }
