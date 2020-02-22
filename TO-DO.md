@@ -1,3 +1,4 @@
+
 - if proposal doesn't met threshold, cancel all subsequent proposals
 - 24 hour BP threshold & vote weight of min 100 EOS
 - `producers` TABLE
@@ -8,8 +9,11 @@
 
 ## Deploy Workflow
 
+MSIG #1
 1. create `eosio.wsp` account
 2. deploy smart contract
+
+MSIG #2
 3. `init` contract parameters
 4. send EOS funds to contract
 5. `start` voting period

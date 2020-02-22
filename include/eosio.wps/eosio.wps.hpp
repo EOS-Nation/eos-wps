@@ -717,7 +717,6 @@ private:
 
     // complete
     void check_voting_period_completed();
-    void auto_complete();
     void set_pending_to_active();
     void handle_payouts();
     bool proposal_exists_per_voting_period( const eosio::name proposal_name, const eosio::time_point_sec voting_period );

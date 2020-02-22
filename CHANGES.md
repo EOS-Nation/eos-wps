@@ -1,3 +1,7 @@
+# 2020-02-22
+
+- remove `auto-complete` which uses deferred transactions to execute at the next voting period (background script must be used to execute `complete` action).
+
 # 2020-01-16
 
 - update `memo` for `claim` action => `wps::<proposal_name>`
