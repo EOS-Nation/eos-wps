@@ -14,7 +14,13 @@ Vote for a WPS proposal
 
 ## Description
 
-Initialize settings
+Initialize WPS
+
+<h1 class="contract">start</h1>
+
+## Description
+
+Start WPS voting period
 
 <h1 class="contract">setparams</h1>
 

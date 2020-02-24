@@ -1,5 +1,11 @@
 # 2020-02-22
 
+- add `CORE_SYMBOL` ("EOS,4")
+- add `start` ACTION to initiate voting periods
+- modify `init` ACTION to only initialize `state` & `settings` paramaters (other logic has been moved to `start` action)
+
+# 2020-02-22
+
 - remove `auto-complete` which uses deferred transactions to execute at the next voting period (background script must be used to execute `complete` action).
 
 # 2020-01-16

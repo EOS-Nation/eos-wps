@@ -578,14 +578,29 @@ public:
      *
      * ### params
      *
-     * - `{time_point_sec} initial_voting_period` - initial voting period
-     *
      * ```bash
-     * cleos push action eosio.wps init '["2019-11-25T00:00:00"]' -p eosio.wps
+     * cleos push action eosio.wps init '[]' -p eosio.wps
      * ```
      */
     [[eosio::action]]
-    void init( time_point_sec initial_voting_period );
+    void init( );
+
+    /**
+     * ## ACTION `start`
+     *
+     * Start WPS voting period
+     *
+     * - **authority**: `get_self()`
+     * - **ram_payer**: `get_self()`
+     *
+     * ### params
+     *
+     * ```bash
+     * cleos push action eosio.wps start '[]' -p eosio.wps
+     * ```
+     */
+    [[eosio::action]]
+    void start( );
 
     /**
      * ## ACTION `setparams`
@@ -625,6 +640,8 @@ public:
      */
     [[eosio::action]]
     void complete( );
+
+
 
     /**
      * ## ACTION `claim`

@@ -1,13 +1,13 @@
 [[eosio::action]]
-void wps::submitdraft(const eosio::name proposer,
-                      const eosio::name proposal_name,
+void wps::submitdraft(const name proposer,
+                      const name proposal_name,
                       const string title,
-                      const eosio::asset monthly_budget,
+                      const asset monthly_budget,
                       const uint8_t duration,
-                      const std::map<name, string> proposal_json )
+                      const map<name, string> proposal_json )
 {
     require_auth( proposer );
-    const eosio::name ram_payer = proposer;
+    const name ram_payer = proposer;
 
     // get scoped draft
     drafts_table _drafts( get_self(), proposer.value );
@@ -38,10 +38,10 @@ void wps::submitdraft(const eosio::name proposer,
 }
 
 [[eosio::action]]
-void wps::modifydraft(const eosio::name proposer,
-                      const eosio::name proposal_name,
+void wps::modifydraft(const name proposer,
+                      const name proposal_name,
                       const string title,
-                      const std::map<name, string> proposal_json )
+                      const map<name, string> proposal_json )
 {
     require_auth( proposer );
 
@@ -60,9 +60,9 @@ void wps::modifydraft(const eosio::name proposer,
 }
 
 [[eosio::action]]
-void wps::modifybudget(const eosio::name proposer,
-                       const eosio::name proposal_name,
-                       const eosio::asset monthly_budget,
+void wps::modifybudget(const name proposer,
+                       const name proposal_name,
+                       const asset monthly_budget,
                        const uint8_t duration )
 {
     require_auth( proposer );
@@ -87,7 +87,7 @@ void wps::modifybudget(const eosio::name proposer,
 }
 
 [[eosio::action]]
-void wps::canceldraft( const eosio::name proposer, const eosio::name proposal_name )
+void wps::canceldraft( const name proposer, const name proposal_name )
 {
     require_auth( proposer );
 
@@ -118,7 +118,7 @@ void wps::check_monthly_budget( const eosio::asset monthly_budget )
     check( _settings.exists(), "settings must first be initialized");
     auto settings = _settings.get_or_default();
 
-    check( monthly_budget.symbol == symbol{"EOS", 4}, "[monthly_budget] must use EOS symbol" );
+    check( monthly_budget.symbol == CORE_SYMBOL, "[monthly_budget] invalid CORE_SYMBOL" );
     check( monthly_budget >= settings.deposit_required, "[monthly_budget] must be a minimum of " + settings.deposit_required.to_string());
     check( monthly_budget <= settings.max_monthly_budget, "[monthly_budget] cannot be greater than [max_monthly_budget] of " + settings.max_monthly_budget.to_string());
 }
