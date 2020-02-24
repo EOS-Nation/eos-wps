@@ -1,4 +1,4 @@
-// @action
+[[eosio::action]]
 void wps::complete( )
 {
     // no authorization required (can be executed by any account)

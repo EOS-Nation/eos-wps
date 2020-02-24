@@ -1,4 +1,4 @@
-// @action
+[[eosio::action]]
 void wps::vote( const eosio::name voter, const eosio::name proposal_name, const eosio::name vote )
 {
     require_auth( voter );
@@ -20,7 +20,7 @@ void wps::vote( const eosio::name voter, const eosio::name proposal_name, const 
 }
 
 // TESTING PURPOSES: to test voting as producer
-// @action
+[[eosio::action]]
 void wps::voteproducer( const eosio::name voter, const eosio::name proposal_name, const eosio::name vote )
 {
     require_auth( voter );

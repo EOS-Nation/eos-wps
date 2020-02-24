@@ -1,4 +1,4 @@
-// @action
+[[eosio::action]]
 void wps::refund( const eosio::name account )
 {
     require_auth( account );

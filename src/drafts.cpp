@@ -1,4 +1,4 @@
-// @action
+[[eosio::action]]
 void wps::submitdraft(const eosio::name proposer,
                       const eosio::name proposal_name,
                       const string title,
@@ -37,7 +37,7 @@ void wps::submitdraft(const eosio::name proposer,
     create_deposit_account( proposer, ram_payer );
 }
 
-// @action
+[[eosio::action]]
 void wps::modifydraft(const eosio::name proposer,
                       const eosio::name proposal_name,
                       const string title,
@@ -59,7 +59,7 @@ void wps::modifydraft(const eosio::name proposer,
     });
 }
 
-// @action
+[[eosio::action]]
 void wps::modifybudget(const eosio::name proposer,
                        const eosio::name proposal_name,
                        const eosio::asset monthly_budget,
@@ -86,7 +86,7 @@ void wps::modifybudget(const eosio::name proposer,
     });
 }
 
-// @action
+[[eosio::action]]
 void wps::canceldraft( const eosio::name proposer, const eosio::name proposal_name )
 {
     require_auth( proposer );

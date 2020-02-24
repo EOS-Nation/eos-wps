@@ -1,4 +1,4 @@
-// @action
+[[eosio::action]]
 void wps::activate( const eosio::name proposer, const eosio::name proposal_name, std::optional<eosio::time_point_sec> start_voting_period )
 {
     require_auth( proposer );

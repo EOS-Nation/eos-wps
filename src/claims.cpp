@@ -1,4 +1,4 @@
-// @action
+[[eosio::action]]
 void wps::claim( const eosio::name proposal_name )
 {
     // no authorization required (can be executed by any account)
