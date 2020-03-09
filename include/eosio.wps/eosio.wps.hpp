@@ -32,20 +32,20 @@ static constexpr symbol CORE_SYMBOL = symbol{"EOS", 4};
  *
  * ```json
  * {
- *   "vote_margin": 16,
+ *   "vote_margin": 20,
  *   "deposit_required": "100.0000 EOS",
  *   "voting_interval": 2592000,
- *   "max_monthly_budget": "50000.0000 EOS",
- *   "min_time_voting_end": 86400
+ *   "max_monthly_budget": "25000.0000 EOS",
+ *   "min_time_voting_end": 432000
  * }
  * ```
  */
 struct [[eosio::table("settings"), eosio::contract("eosio.wps")]] wps_parameters {
-    int16_t                 vote_margin = 16;
+    int16_t                 vote_margin = 20;
     asset                   deposit_required = asset{ 1000000, CORE_SYMBOL};
     uint64_t                voting_interval = MONTH;
     asset                   max_monthly_budget = asset{ 250000000, CORE_SYMBOL};
-    uint64_t                min_time_voting_end = DAY;
+    uint64_t                min_time_voting_end = DAY * 5;
 };
 
 typedef eosio::singleton< "settings"_n, wps_parameters> settings_table;
@@ -672,12 +672,6 @@ public:
      */
     [[eosio::action]]
     void setstate( const state_row params );
-
-    /**
-     * TESTING ONLY - to test voting as producer
-     */
-    [[eosio::action]]
-    void voteproducer( const name voter, const name proposal_name, const name vote );
 
     [[eosio::on_notify("eosio.token::transfer")]]
     void transfer( const name&    from,
