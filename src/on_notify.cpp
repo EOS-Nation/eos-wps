@@ -21,9 +21,17 @@ void wps::transfer( const eosio::name&    from,
     }
 
     // deposit quantity to account
-    auto deposits_itr = _deposits.find( from.value );
+    eosio::name deposit_to = from;
+
+    // accept deposits from alternate account
+    if ( memo.size() ) {
+        check( is_account( name{ memo } ), "memo must be an active account name");
+        deposit_to = name{ memo };
+    }
+
+    auto deposits_itr = _deposits.find( deposit_to.value );
     check( deposits_itr != _deposits.end(), "deposit account does not exist, must `submitdraft` action before sending funds to " + get_self().to_string());
 
-    add_deposit( from, quantity, ram_payer );
+    add_deposit( deposit_to, quantity, ram_payer );
     add_liquid_deposits( quantity );
 }
