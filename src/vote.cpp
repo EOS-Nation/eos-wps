@@ -15,23 +15,11 @@ void wps::vote( const eosio::name voter, const eosio::name proposal_name, const 
     // update `votes` table
     update_vote( voter, proposal_name, vote );
 
-    // update `proposals::eligible` field for all active proposals
-    update_eligible_proposals();
-}
-
-// TESTING PURPOSES: to test voting as producer
-[[eosio::action]]
-void wps::voteproducer( const eosio::name voter, const eosio::name proposal_name, const eosio::name vote )
-{
-    require_auth( voter );
-
-    // get BP stats
-    update_producer( voter );
-
     // must be producer & claimed within last 24 hours
     check_voter_eligible( voter );
 
-    wps::vote( voter, proposal_name, vote );
+    // update `proposals::eligible` field for all active proposals
+    update_eligible_proposals();
 }
 
 void wps::check_voter_eligible( const eosio::name voter )
