@@ -316,7 +316,7 @@ typedef eosio::multi_index< "periods"_n, periods_row > periods_table;
  * ```
  */
 struct [[eosio::table("claims"), eosio::contract("eosio.wps")]] claims_row {
-    uint64_t                id;
+    uint64_t         id;
     name             proposer;
     name             proposal_name;
     asset            quantity;

@@ -12,7 +12,7 @@ void wps::vote( const eosio::name voter, const eosio::name proposal_name, const 
     // update `votes` table
     update_vote( voter, proposal_name, vote );
 
-    // must be producer & claimed within last 24 hours
+    // must be producer with over 100 EOS in vpay
     check_voter_eligible( voter );
 
     // update `proposals::eligible` field for all active proposals
