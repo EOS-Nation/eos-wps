@@ -9,9 +9,6 @@ void wps::vote( const eosio::name voter, const eosio::name proposal_name, const 
     // cannot vote during completed voting period phase
     check_voting_period_completed();
 
-    // get BP stats
-    update_producer( voter );
-
     // update `votes` table
     update_vote( voter, proposal_name, vote );
 
@@ -24,12 +21,17 @@ void wps::vote( const eosio::name voter, const eosio::name proposal_name, const 
 
 void wps::check_voter_eligible( const eosio::name voter )
 {
-    producers_table _producers( "eosio"_n, "eosio"_n.value );
-    auto producers_itr = _producers.find( voter.value );
+    eosiosystem::producers_table _producers( "eosio"_n, "eosio"_n.value );
+    eosiosystem::global_state_singleton _gstate( "eosio"_n, "eosio"_n.value );
 
-    const eosio::time_point last_24h = time_point(current_time_point() - time_point_sec(DAY));
-    check( producers_itr != _producers.end(), "[voter] must be registered as a producer");
-    check( producers_itr->last_claim_time >= last_24h, "[voter] must have claimed producer rewards within the last 24 hours");
+    auto prod = _producers.get( voter.value, "[voter] must be registered as a producer" );
+    auto gstate = _gstate.get();
+
+    const time_point last_24h = time_point(current_time_point() - time_point_sec(DAY));
+    const int64_t producer_per_vote_pay = int64_t((gstate.pervote_bucket * prod.total_votes) / gstate.total_producer_vote_weight);
+
+    check( prod.last_claim_time >= last_24h, "[voter] must have claimed producer rewards within the last 24 hours");
+    check( producer_per_vote_pay >= 1000000, "[voter] must be have a vpay of 100 EOS or above");
 }
 
 void wps::check_proposal_can_vote( const eosio::name proposal_name )

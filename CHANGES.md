@@ -1,3 +1,10 @@
+# 2020-03-09
+
+- Add support to add deposit from alternative account
+  - Send EOS token transfer using `memo` of deposit account
+- change default vote margin to 20
+- change default minimum time required to activate to 5 days
+
 # 2020-02-22
 
 - add `CORE_SYMBOL` ("EOS,4")
