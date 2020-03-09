@@ -4,7 +4,7 @@ void wps::activate( const eosio::name proposer, const eosio::name proposal_name,
     require_auth( proposer );
     const eosio::name ram_payer = get_self();
 
-    // TESTING PURPOSES
+    // [optional] start voting period
     eosio::time_point_sec voting_period = time_point_sec( start_voting_period->sec_since_epoch() );
 
     // set start voting period to current voting period if defined as null
@@ -13,11 +13,11 @@ void wps::activate( const eosio::name proposer, const eosio::name proposal_name,
     // voting period must be current or next
     check_start_vote_period( voting_period );
 
-    // minimum time required to activate at the end of the current voting period
-    check_min_time_voting_end( voting_period );
-
     // cannot activate during completed voting period phase
     check_voting_period_completed();
+
+    // minimum time required to activate at the end of the current voting period
+    check_min_time_voting_end( voting_period );
 
     // can't create proposal that already exists
     check_draft_proposal_exists( proposer, proposal_name );
