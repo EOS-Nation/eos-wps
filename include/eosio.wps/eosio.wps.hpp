@@ -729,6 +729,9 @@ private:
     void check_title( const string title );
     void check_duration( const uint8_t duration );
     void check_monthly_budget( const asset monthly_budget);
+
+    // start
+    void check_available_funding();
 };
 
 }

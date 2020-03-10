@@ -23,3 +23,12 @@ eosio-cpp -abigen \
 #   -contract eosio.token \
 #   -o ./dist/eosio.token.wasm \
 #   -I external/eosio.token/include
+
+
+# # eosio.system
+# echo -e "${GREEN}Compiling eosio.system...${NC}"
+# eosio-cpp -abigen \
+#   external/eosio.system/src/eosio.system.cpp \
+#   -contract eosio.system \
+#   -o ./dist/eosio.system.wasm \
+#   -I external/eosio.system/include

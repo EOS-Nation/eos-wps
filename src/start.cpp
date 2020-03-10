@@ -9,10 +9,23 @@ void wps::init()
     auto state = _state.get_or_default();
     auto settings = _settings.get_or_default();
 
+    // open token balance if does not exists
+    token::accounts _accounts( "eosio.token"_n, "eosio.token"_n.value );
+    auto accounts_itr = _accounts.find( get_self().value );
+
+    // open token balance
+    if ( accounts_itr == _accounts.end() ) {
+        token::open_action open( "eosio.token"_n, { get_self(), "active"_n });
+        open.send( get_self(), CORE_SYMBOL, get_self() );
+    } else {
+        // set any remaining EOS as `available_funding`
+        state.available_funding = token::get_balance( "eosio.token"_n, get_self(), CORE_SYMBOL.code() );
+    }
+
     _state.set( state, ram_payer );
     _settings.set( settings, ram_payer );
 
-    // must manually execute the `start` action to begin voting period
+    // must manually execute the `start` action after `init` to begin voting period
 }
 
 [[eosio::action]]
@@ -24,11 +37,11 @@ void wps::start()
     check( _state.exists(), "contract not yet initialized" );
     check( _settings.exists(), "settings are missing" );
 
-    // TO-DO add checks
+    // check if account has enough funding
+    check_available_funding();
 
     auto state = _state.get();
     auto settings = _settings.get();
-
 
     // start of voting period will start at the nearest 00:00UTC
     const uint64_t now = current_time_point().sec_since_epoch();
@@ -43,4 +56,14 @@ void wps::start()
     _state.set( state, ram_payer );
 
     // must manually execute the `complete` action to finish voting period
+}
+
+void wps::check_available_funding()
+{
+    auto state = _state.get();
+    auto settings = _settings.get();
+
+    const asset balance = token::get_balance( "eosio.token"_n, get_self(), CORE_SYMBOL.code() );
+    check( state.available_funding >= settings.max_monthly_budget, "[available_funding] must be equal or greater than [max_monthly_budget]");
+    check( balance >= settings.max_monthly_budget, "[balance] must be equal or greater than [max_monthly_budget]");
 }

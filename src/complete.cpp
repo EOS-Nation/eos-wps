@@ -6,6 +6,9 @@ void wps::complete( )
     // check if current voting period is completed
     check( is_voting_period_complete(), "[current_voting_period] is not completed");
 
+    // check if account has enough funding
+    check_available_funding();
+
     // update `proposals::eligible` field for all active proposals
     update_eligible_proposals();
 

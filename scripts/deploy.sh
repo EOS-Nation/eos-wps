@@ -13,6 +13,7 @@ cleos wallet import --private-key 5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79z
 # create accounts
 echo -e "${CYAN}-----------------------CREATING ACCOUNTS-----------------------${NC}"
 cleos create account eosio eosio.wps EOS6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5GDW5CV
+cleos create account eosio eosio.names EOS6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5GDW5CV
 cleos create account eosio eosio.ramfee EOS6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5GDW5CV
 cleos create account eosio eosio.token EOS6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5GDW5CV
 cleos create account eosio myaccount EOS6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5GDW5CV
@@ -28,6 +29,7 @@ cleos set account permission eosio.wps active --add-code
 echo -e "${CYAN}-----------------------DEPLOYING CONTRACTS-----------------------${NC}"
 cleos set contract eosio.wps ./dist eosio.wps.wasm eosio.wps.abi
 cleos set contract eosio.token ./dist eosio.token.wasm eosio.token.abi
+cleos set contract eosio ./dist eosio.system.wasm eosio.system.abi
 
 # create token
 echo -e "${CYAN}-----------------------CREATE EOS TOKEN-----------------------${NC}"
@@ -35,6 +37,6 @@ cleos push action eosio.token create '["eosio", "1000000000.0000 EOS"]' -p eosio
 cleos push action eosio.token issue '["eosio", "1000000000.0000 EOS", "init"]' -p eosio
 cleos transfer eosio myaccount "1000.0000 EOS"
 cleos transfer eosio toaccount "1000.0000 EOS"
-cleos transfer eosio eosio.ramfee "50000.0000 EOS"
+cleos transfer eosio eosio.names "50000.0000 EOS"
 
 echo -e "${GREEN}--> Done${NC}"

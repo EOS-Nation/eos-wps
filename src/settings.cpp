@@ -27,3 +27,4 @@ void wps::sub_funding( const asset quantity )
     state.available_funding -= quantity;
     _state.set( state, ram_payer );
 }
+
