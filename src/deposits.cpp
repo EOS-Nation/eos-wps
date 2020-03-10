@@ -85,5 +85,6 @@ void wps::move_to_locked_deposits( const eosio::asset quantity )
     auto state = _state.get_or_default();
     state.liquid_deposits -= quantity;
     state.locked_deposits += quantity;
+    state.available_funding += quantity;
     _state.set( state, ram_payer );
 }
