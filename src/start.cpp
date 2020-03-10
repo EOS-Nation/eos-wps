@@ -10,8 +10,8 @@ void wps::init()
     auto settings = _settings.get_or_default();
 
     // open token balance if does not exists
-    token::accounts _accounts( "eosio.token"_n, "eosio.token"_n.value );
-    auto accounts_itr = _accounts.find( get_self().value );
+    token::accounts _accounts( "eosio.token"_n, get_self().value );
+    auto accounts_itr = _accounts.find( CORE_SYMBOL.code().raw() );
 
     // open token balance
     if ( accounts_itr == _accounts.end() ) {
