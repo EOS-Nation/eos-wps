@@ -10,6 +10,31 @@ void wps::setparams( const wps_parameters params )
     _settings.set( params, ram_payer );
 }
 
+[[eosio::action]]
+void wps::pause( const bool paused )
+{
+    require_auth( get_self() );
+
+    auto settings = _settings.get();
+
+    check( settings.paused != paused, "nothing modified");
+    settings.paused = paused;
+    _settings.set( settings, get_self() );
+}
+
+void wps::check_contract_paused()
+{
+    auto settings = _settings.get();
+    check( !settings.paused, "contract is currently paused");
+}
+
+void wps::check_contract_active()
+{
+    check( _state.exists(), "contract not yet initialized" );
+    check( _settings.exists(), "settings are missing" );
+    check_contract_paused();
+}
+
 void wps::add_funding( const asset quantity )
 {
     const name ram_payer = get_self();

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-# init & start
+# init, fund & start
 cleos -v push action eosio.wps init '[]' -p eosio.wps
 cleos transfer eosio.names eosio.wps "25000.0000 EOS"
 cleos -v push action eosio.wps start '[]' -p eosio.wps
@@ -39,9 +39,6 @@ cleos -v push action eosio.wps activate '["myaccount", "mywps", null]' -p myacco
 cleos -v push action eosio.wps activate '["toaccount", "towps", null]' -p toaccount
 cleos -v push action eosio.wps activate '["toaccount", "short", null]' -p toaccount
 cleos -v push action eosio.wps activate '["toaccount", "novote", null]' -p toaccount
-
-# fund wps
-cleos -v transfer eosio.ramfee eosio.wps "50000.0000 EOS" ""
 
 # # cancel
 # cleos -v push action eosio.wps canceldraft '["myaccount", "mywps"]' -p myaccount

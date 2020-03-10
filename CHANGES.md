@@ -4,6 +4,18 @@
   - Send EOS token transfer using `memo` of deposit account
 - change default vote margin to 20
 - change default minimum time required to activate to 5 days
+- when activating proposal, deposit amount gets allocated towards `state::available_funding`
+  - `locked_deposits` is informational data (not being used by contract)
+- `start()` initiates at 00:00 UTC
+- added `check_available_funding()` to prevent executing `start` & `complete` due to lack of funds
+- enforce `vote` for producers to a minimum of 100 EOS as vote total
+  - vote errors:
+    - not claimed for the last 24 hours
+    - not enough 100 EOS votes
+    - nothing changed
+- added `pause` functionality
+  - **disabled**:  `complete()`, `start()` & incoming prevent deposits
+  - **available**: `refund()` & `claim()` & `submitdraft()`
 
 # 2020-02-22
 

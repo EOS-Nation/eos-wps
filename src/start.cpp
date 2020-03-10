@@ -34,8 +34,8 @@ void wps::start()
     require_auth( get_self() );
     const name ram_payer = get_self();
 
-    check( _state.exists(), "contract not yet initialized" );
-    check( _settings.exists(), "settings are missing" );
+    // is contract paused or not
+    check_contract_active();
 
     // check if account has enough funding
     check_available_funding();

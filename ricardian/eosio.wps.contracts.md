@@ -76,6 +76,15 @@ Complete WPS voting period
 
 Claim remaining proposal amount, transfer amount to proposer
 
+<h1 class="contract">pause</h1>
+
+## Description
+
+Pause contract
+
+- disabled:  `complete()`, `start()` & incoming prevent deposits
+- available: `refund()` & `claim()` & `submitdraft()`
+
 <h1 class="contract">clean</h1>
 
 ## Description

@@ -7,8 +7,8 @@ void wps::transfer( const eosio::name&    from,
     require_auth( from );
     const eosio::name ram_payer = from;
 
-    check( _state.exists(), "contract not yet initialized" );
-    check( _settings.exists(), "settings are missing" );
+    // is contract paused or not
+    check_contract_active();
 
     // Only monitor incoming transfers to get_self() account
     if ( to != get_self() ) return;

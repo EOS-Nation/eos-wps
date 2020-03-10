@@ -4,6 +4,9 @@ void wps::activate( const eosio::name proposer, const eosio::name proposal_name,
     require_auth( proposer );
     const eosio::name ram_payer = get_self();
 
+    // is contract paused or not
+    check_contract_active();
+
     // [optional] start voting period
     eosio::time_point_sec voting_period = time_point_sec( start_voting_period->sec_since_epoch() );
 

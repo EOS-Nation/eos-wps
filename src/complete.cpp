@@ -3,6 +3,9 @@ void wps::complete( )
 {
     // no authorization required (can be executed by any account)
 
+    // is contract paused or not
+    check_contract_active();
+
     // check if current voting period is completed
     check( is_voting_period_complete(), "[current_voting_period] is not completed");
 
