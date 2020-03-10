@@ -1,5 +1,6 @@
 #pragma once
 
+#include <eosio/eosio.hpp>
 #include <eosio/producer_schedule.hpp>
 #include <eosio/singleton.hpp>
 #include <eosio/system.hpp>
@@ -79,4 +80,13 @@ namespace eosiosystem {
     };
 
     typedef eosio::singleton< "global"_n, eosio_global_state >  global_state_singleton;
+
+    // Local testing purposes
+    class [[eosio::contract("eosio.system")]] system : public contract {
+      public:
+        using contract::contract;
+
+        [[eosio::action]]
+        void setproducer( const eosio::name producer );
+    };
 }

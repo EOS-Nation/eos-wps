@@ -30,6 +30,7 @@ void wps::check_voter_eligible( const eosio::name voter )
     const time_point last_24h = time_point(current_time_point() - time_point_sec(DAY));
     const int64_t producer_per_vote_pay = int64_t((gstate.pervote_bucket * prod.total_votes) / gstate.total_producer_vote_weight);
 
+    check( producer_per_vote_pay > 0, "[voter] must have votes");
     check( prod.last_claim_time >= last_24h, "[voter] must have claimed producer rewards within the last 24 hours");
     check( producer_per_vote_pay >= 1000000, "[voter] must be have a vpay of 100 EOS or above");
 }
