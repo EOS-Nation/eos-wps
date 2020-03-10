@@ -1,11 +1,10 @@
+## To-Dos
+
 - add `refresh()` action to re-calculate votes from a particular BP
 - if proposal doesn't met threshold, cancel all subsequent proposals
 - add comment on `vote`
-- check `balance`
-- add `pause` ACTION to stop all actions except for `withdraw`
-
-- add `comments` TABLE
-- add `comment` OPTIONAL param in `vote`
+    - add `comments` TABLE
+    - add `comment` OPTIONAL param in `vote`
 
 ## Deploy Workflow
 
