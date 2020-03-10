@@ -8,11 +8,13 @@
 
 ## Deploy Workflow
 
-MSIG #1
-1. create `eosio.wps` account
-2. deploy smart contract
+**MSIG #1**
 
-MSIG #2
-3. `init` contract parameters
-4. send EOS funds to contract
-5. `start` voting period
+- Action 1: create `eosio.wps` account
+- Action 2: deploy smart contract
+
+**MSIG #2**
+
+- Action 1: `init` contract parameters
+- Action 2: send EOS funds to contract
+- Action 3: `start` voting period
