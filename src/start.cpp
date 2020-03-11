@@ -31,7 +31,6 @@ void wps::init()
 [[eosio::action]]
 void wps::start()
 {
-    require_auth( get_self() );
     const name ram_payer = get_self();
 
     // is contract paused or not

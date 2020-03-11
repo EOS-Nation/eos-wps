@@ -575,7 +575,7 @@ public:
      *
      * Start WPS voting period
      *
-     * - **authority**: `get_self()`
+     * - **authority**: `any`
      * - **ram_payer**: `get_self()`
      *
      * ### params

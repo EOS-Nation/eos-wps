@@ -1,3 +1,7 @@
+# 2020-03-11
+
+- remove `require_auth(get_self())` from `start` ACTION
+
 # 2020-03-10
 
 - add `refresh()` ACTION to re-calculate votes from a particular voter
