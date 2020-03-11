@@ -85,6 +85,12 @@ Pause contract
 - disabled:  `complete()`, `start()` & incoming prevent deposits
 - available: `refund()` & `claim()` & `submitdraft()`
 
+<h1 class="contract">refresh</h1>
+
+## Description
+
+Refresh voter account, if not eligible, active votes will be ignored
+
 <h1 class="contract">clean</h1>
 
 ## Description

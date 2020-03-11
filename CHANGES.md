@@ -1,3 +1,11 @@
+# 2020-03-10
+
+- add `refresh()` ACTION to re-calculate votes from a particular voter
+  - check if voter is still eligible as a voter
+  - set vote to `ignore` if not eligible and voting on proposals
+  - re-calculate total net votes & eligible proposals
+- removed last 24 hour claim requirement ( already being solved by minimum of 100 EOS requirement )
+
 # 2020-03-09
 
 - Add support to add deposit from alternative account

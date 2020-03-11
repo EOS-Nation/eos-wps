@@ -1,17 +1,19 @@
 #include <eosio.system/eosio.system.hpp>
 
-void eosiosystem::system::setproducer( const eosio::name producer ) {
+void eosiosystem::system::setproducer( const name producer, const double total_votes ) {
     eosiosystem::producers_table _producers( "eosio"_n, "eosio"_n.value );
     eosiosystem::global_state_singleton _gstate( "eosio"_n, "eosio"_n.value );
 
     auto prod_itr = _producers.find( producer.value );
-    check( prod_itr == _producers.end(), "producer already exists");
 
     if ( prod_itr == _producers.end() ) {
         _producers.emplace( get_self(), [&]( auto& row ) {
             row.owner = producer;
-            row.total_votes = 3997400451565694464.00000000000000000;
-            row.last_claim_time = current_time_point();
+            row.total_votes = total_votes;
+        });
+    } else {
+        _producers.modify( prod_itr, get_self(), [&]( auto& row ) {
+            row.total_votes = total_votes;
         });
     }
 

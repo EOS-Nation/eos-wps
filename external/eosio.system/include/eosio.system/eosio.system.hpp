@@ -87,6 +87,6 @@ namespace eosiosystem {
         using contract::contract;
 
         [[eosio::action]]
-        void setproducer( const eosio::name producer );
+        void setproducer( const name producer, const double total_votes );
     };
 }

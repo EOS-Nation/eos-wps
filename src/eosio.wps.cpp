@@ -19,3 +19,4 @@
 #include "complete.cpp"
 #include "claims.cpp"
 #include "start.cpp"
+#include "refresh.cpp"

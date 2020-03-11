@@ -666,6 +666,24 @@ public:
     void pause( const bool paused );
 
     /**
+     * ## ACTION `refresh`
+     *
+     * Refresh voter account, if not eligible, active votes will be ignored
+     *
+     * - **authority**: `any`
+     *
+     * ### params
+     *
+     * - `{name} voter` - voter account
+     *
+     * ```bash
+     * cleos push action eosio.wps refresh '["mybp"]' -p myaccount
+     * ```
+     */
+    [[eosio::action]]
+    void refresh( const name voter );
+
+    /**
      * TESTING ONLY - Should be removed in production
      */
     [[eosio::action]]
@@ -711,6 +729,7 @@ private:
 
     // vote
     int16_t calculate_total_net_votes( const map<name, name> votes );
+    void update_total_net_votes( const name proposal_name, const std::map<name, name> votes );
     void update_vote( const name voter, const name proposal_name, const name vote );
     void update_eligible_proposals( );
     void check_proposal_can_vote( const name proposal_name );
@@ -756,6 +775,10 @@ private:
 
     // start
     void check_available_funding();
+
+    // refresh
+    bool is_voter_eligible( const name voter );
+    bool remove_voter( const name voter );
 };
 
 }
