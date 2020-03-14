@@ -14,6 +14,6 @@
 
 **MSIG #2**
 
-- Action 1: `init` contract parameters
-- Action 2: send EOS funds to contract
-- Action 3: `start` voting period
+- Action 1: send EOS funds to contract
+- Action 2: `init` contract parameters
+

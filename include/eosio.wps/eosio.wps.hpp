@@ -22,10 +22,10 @@ static constexpr symbol CORE_SYMBOL = symbol{"EOS", 4};
 /**
  * ## TABLE `settings`
  *
- * - `{int16_t} [vote_margin=16]` - minimum BP vote margin threshold to reach for proposals
+ * - `{int16_t} [vote_margin=20]` - minimum BP vote margin threshold to reach for proposals
  * - `{asset} [deposit_required="100.0000 EOS"]` - deposit required to active proposal
  * - `{uint64_t} [voting_interval=2592000]` -  election interval in seconds
- * - `{asset} [max_monthly_budget="50000.0000 EOS"]` - maximum monthly budget
+ * - `{asset} [max_monthly_budget="25000.0000 EOS"]` - maximum monthly budget
  * - `{uint64_t} [min_time_voting_end=86400]` - minimum time required to activate at the end of the current voting period
  * - `{bool} [paused=false] - [true/false] contract is paused
  *
@@ -563,29 +563,14 @@ public:
      *
      * ### params
      *
+     * - `{wps_parameters} params` - EOSIO WPS parameters
+     *
      * ```bash
-     * cleos push action eosio.wps init '[]' -p eosio.wps
+     * cleos push action eosio.wps init '[{}]' -p eosio.wps
      * ```
      */
     [[eosio::action]]
-    void init( );
-
-    /**
-     * ## ACTION `start`
-     *
-     * Start WPS voting period
-     *
-     * - **authority**: `any`
-     * - **ram_payer**: `get_self()`
-     *
-     * ### params
-     *
-     * ```bash
-     * cleos push action eosio.wps start '[]' -p eosio.wps
-     * ```
-     */
-    [[eosio::action]]
-    void start( );
+    void init( const wps_parameters params );
 
     /**
      * ## ACTION `setparams`
@@ -597,12 +582,10 @@ public:
      *
      * ### params
      *
-     * - `{int16_t} [vote_margin=15]` - minimum BP vote margin threshold to reach for proposals
-     * - `{asset} [deposit_required="100.0000 EOS"]` - deposit required to active proposal
-     * - `{uint64_t} [voting_interval=2592000]` -  election interval in seconds
+     * - `{wps_parameters} params` - EOSIO WPS parameters
      *
      * ```bash
-     * cleos push action eosio.wps setparams '[15, "100.0000 EOS", 2592000]' -p eosio.wps
+     * cleos push action eosio.wps setparams '[{}]' -p eosio.wps
      * ```
      */
     [[eosio::action]]
