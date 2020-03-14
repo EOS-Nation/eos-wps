@@ -1,3 +1,8 @@
+# 2020-03-14
+
+- add `wps_parameters` to `init()`
+- merge `start()` => `init()`
+
 # 2020-03-11
 
 - remove `require_auth(get_self())` from `start` ACTION
