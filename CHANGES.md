@@ -4,6 +4,7 @@
 - remove `pause` param in settings
 - `vote` added check for `active` proposals
 - if proposal doesn't met threshold, set `status` to `expired` (cancels all subsequent periods for proposal)
+- re-order `on_notify::transfer` to allow donation deposits prior to contract being initialized
 
 # 2020-03-14
 

@@ -6,24 +6,25 @@ void wps::init( const wps_parameters params )
 
     check( !_state.exists(), "already initialized" );
 
-    auto state = _state.get_or_default();
+    // define `settings`
     auto settings = params;
+    _settings.set( settings, ram_payer );
 
     // set available EOS as `available_funding`
+    auto state = _state.get_or_default();
     state.available_funding = token::get_balance( "eosio.token"_n, get_self(), CORE_SYMBOL.code() );
-
-    // check if account has enough funding
-    check_available_funding();
 
     // start of voting period will start at the nearest 00:00UTC
     const uint64_t now = current_time_point().sec_since_epoch();
     const time_point_sec current_voting_period = time_point_sec(now - now % DAY);
 
+    // define `state`
     state.current_voting_period = current_voting_period;
     state.next_voting_period = state.current_voting_period + settings.voting_interval;
-
     _state.set( state, ram_payer );
-    _settings.set( settings, ram_payer );
+
+    // check if account has enough funding
+    check_available_funding();
 
     // must manually execute the `start` action after `init` to begin voting period
 }

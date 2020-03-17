@@ -2,14 +2,13 @@
 
 
 # init, fund & start
-cleos -v push action eosio.wps init '[]' -p eosio.wps
 cleos transfer eosio.names eosio.wps "25000.0000 EOS"
-cleos -v push action eosio.wps start '[]' -p eosio.wps
+cleos -v push action eosio.wps init '[{"vote_margin": 2, "deposit_required": "100.0000 EOS", "voting_interval": 86400, "max_monthly_budget": "25000.0000 EOS", "min_time_voting_end": 3600 }]' -p eosio.wps
 
 # setparams
 # 1 day   = 86400
 # 30 days = 2592000
-# cleos push action eosio.wps setparams '[{"vote_margin": 2, "deposit_required": "100.0000 EOS", "voting_interval": 86400, "max_monthly_budget": "25000.0000 EOS", "min_time_voting_end": 3600, "paused": false}]' -p eosio.wps
+# cleos push action eosio.wps setparams '[{"vote_margin": 2, "deposit_required": "100.0000 EOS", "voting_interval": 86400, "max_monthly_budget": "25000.0000 EOS", "min_time_voting_end": 3600 }]' -p eosio.wps
 
 # set proposer
 cleos -v push action eosio.wps setproposer '["myaccount", [{"key":"region", "value":"global"}]]' -p myaccount

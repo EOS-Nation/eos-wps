@@ -7,9 +7,6 @@ void wps::transfer( const eosio::name&    from,
     require_auth( from );
     const eosio::name ram_payer = from;
 
-    // is contract paused or not
-    check_contract_active();
-
     // Only monitor incoming transfers to get_self() account
     if ( to != get_self() ) return;
 
@@ -19,9 +16,12 @@ void wps::transfer( const eosio::name&    from,
     // funding WPS from designated system account
     // funding WPS using donations (memo="donate")
     if ( memo == "donate" || from == "eosio.names"_n || from == "eosio.ramfee"_n ) {
-        add_funding( quantity );
+        if ( _state.exists() ) add_funding( quantity );
         return;
     }
+
+    // is contract paused or not
+    check_contract_active();
 
     // deposit quantity to account
     eosio::name deposit_to = from;
