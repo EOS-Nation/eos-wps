@@ -1,6 +1,9 @@
 # 2020-03-17
 
+- removed deferred transaction from `complete`
 - remove `pause` param in settings
+- `vote` added check for `active` proposals
+- if proposal doesn't met threshold, set `status` to `expired` (cancels all subsequent periods for proposal)
 
 # 2020-03-14
 

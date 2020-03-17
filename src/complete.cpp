@@ -68,10 +68,11 @@ void wps::handle_payouts()
             _proposals.modify( proposals_itr, same_payer, [&]( auto& row ) {
                 row.payouts += monthly_budget;
             });
-
-            // push 0 second deferred transaction to auto-execute claim
-            const uint64_t key = proposal_name.value + "claim"_n.value;
-            send_deferred( claim.to_action( proposal_name ), key, 0 );
+        } else {
+            // remove proposal that no longer met threshold, cancel all subsequent proposals
+            _proposals.modify( proposals_itr, same_payer, [&]( auto& row ) {
+                row.status = "expired"_n;
+            });
         }
 
         // set proposals to `completed/partial/expired/active`

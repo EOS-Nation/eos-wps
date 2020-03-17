@@ -40,6 +40,7 @@ void wps::check_proposal_can_vote( const name proposal_name )
     check( proposals_itr != _proposals.end(), "[proposal_name] does not exists");
     check( proposals_itr->start_voting_period <= current_time_point(), "[proposal_name] has not yet started");
     check( proposals_itr->end > current_time_point(), "[proposal_name] has ended");
+    check( proposals_itr->status == "active"_n, "[proposal_name] must be active");
 }
 
 void wps::update_vote( const name voter, const name proposal_name, const name vote )

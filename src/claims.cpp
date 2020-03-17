@@ -18,6 +18,8 @@ void wps::claim( const eosio::name proposal_name )
     check( claimable.amount > 0, "no claimable amount" );
 
     transfer.send( get_self(), proposer, claimable, "wps::" + proposal_name.to_string() );
+
+    // TESTING PURPOSE
     add_claim( proposer, proposal_name, claimable );
 
     _proposals.modify( proposals_itr, same_payer, [&]( auto& row ) {
@@ -25,6 +27,7 @@ void wps::claim( const eosio::name proposal_name )
     });
 }
 
+// TESTING PURPOSE
 void wps::add_claim( const eosio::name proposer, const eosio::name proposal_name, const eosio::asset quantity )
 {
     _claims.emplace( get_self(), [&]( auto& row ) {
