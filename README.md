@@ -19,6 +19,23 @@
 2. send 100 EOS
 3. `refund` action to return 100 EOS
 
+## Deploy Smart Contract
+
+**MSIG #1**
+
+- Action 1: create `eosio.wps` account
+- Action 2: buy ram `eosio.wps` account
+- Action 3: set CPU/NET `eosio.wps` account
+
+**MSIG #2**
+
+- Action 1: deploy smart contract & ABI
+
+**MSIG #3**
+
+- Action 1: send EOS funds to contract
+- Action 2: `init` contract parameters
+
 ## ACTION - USER
 
 - [`submitdraft`](#action-submitdraft)

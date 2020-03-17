@@ -27,7 +27,6 @@ static constexpr symbol CORE_SYMBOL = symbol{"EOS", 4};
  * - `{uint64_t} [voting_interval=2592000]` -  election interval in seconds
  * - `{asset} [max_monthly_budget="25000.0000 EOS"]` - maximum monthly budget
  * - `{uint64_t} [min_time_voting_end=86400]` - minimum time required to activate at the end of the current voting period
- * - `{bool} [paused=false] - [true/false] contract is paused
  *
  * ### example
  *
@@ -37,8 +36,7 @@ static constexpr symbol CORE_SYMBOL = symbol{"EOS", 4};
  *   "deposit_required": "100.0000 EOS",
  *   "voting_interval": 2592000,
  *   "max_monthly_budget": "25000.0000 EOS",
- *   "min_time_voting_end": 432000,
- *   "paused": false
+ *   "min_time_voting_end": 432000
  * }
  * ```
  */
@@ -48,7 +46,6 @@ struct [[eosio::table("settings"), eosio::contract("eosio.wps")]] wps_parameters
     uint64_t                voting_interval = MONTH;
     asset                   max_monthly_budget = asset{ 250000000, CORE_SYMBOL};
     uint64_t                min_time_voting_end = DAY * 5;
-    bool                    paused = false;
 };
 
 typedef eosio::singleton< "settings"_n, wps_parameters> settings_table;
@@ -626,27 +623,6 @@ public:
      */
     [[eosio::action]]
     void claim( const name proposal_name );
-
-    /**
-     * ## ACTION `pause`
-     *
-     * Pause contract
-     *
-     * - disabled:  `complete()`, `start()` & incoming prevent deposits
-     * - available: `refund()` & `claim()` & `submitdraft()`
-     *
-     * - **authority**: `get_self()`
-     *
-     * ### params
-     *
-     * - `{bool} paused` - [true/false] paused contract
-     *
-     * ```bash
-     * cleos push action eosio.wps pause '[true]' -p eosio.wps
-     * ```
-     */
-    [[eosio::action]]
-    void pause( const bool paused );
 
     /**
      * ## ACTION `refresh`

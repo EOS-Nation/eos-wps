@@ -1,3 +1,7 @@
+# 2020-03-17
+
+- remove `pause` param in settings
+
 # 2020-03-14
 
 - add `wps_parameters` to `init()`
