@@ -23,9 +23,9 @@ bool wps::remove_voter( const name voter )
         // iterate over each vote
         for (std::pair<eosio::name, eosio::name> item : votes_itr->votes) {
             // voter is voting for proposal
-            if ( item.first == voter && item.second != "ignore"_n ) {
+            if ( item.first == voter ) {
                 _votes.modify( votes_itr, same_payer, [&]( auto& row ) {
-                    row.votes[ voter ] = "ignore"_n;
+                    delete row.votes[ voter ];
                     update_total_net_votes( proposal_name, row.votes );
                 });
                 removed = true;

@@ -7,6 +7,10 @@ void wps::activate( const eosio::name proposer, const eosio::name proposal_name,
     // is contract paused or not
     check_contract_active();
 
+    // check if account has enough funding
+    // cannot activate proposals during insolvent voting period
+    check_available_funding();
+
     // [optional] start voting period
     eosio::time_point_sec voting_period = time_point_sec( start_voting_period->sec_since_epoch() );
 

@@ -2,6 +2,8 @@
 
 - add `wps_parameters` to `init()`
 - merge `start()` => `init()`
+- `refresh` deletes votes instead of setting them as "ignore"
+- cannot activate proposals during insolvent voting period
 
 # 2020-03-11
 
