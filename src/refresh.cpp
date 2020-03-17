@@ -25,7 +25,7 @@ bool wps::remove_voter( const name voter )
             // voter is voting for proposal
             if ( item.first == voter ) {
                 _votes.modify( votes_itr, same_payer, [&]( auto& row ) {
-                    delete row.votes[ voter ];
+                    row.votes.erase( voter );
                     update_total_net_votes( proposal_name, row.votes );
                 });
                 removed = true;
