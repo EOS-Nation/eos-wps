@@ -42,13 +42,6 @@ cleos -v push action eosio.wps activate '["toaccount", "novote", null]' -p toacc
 # # cancel
 # cleos -v push action eosio.wps canceldraft '["myaccount", "mywps"]' -p myaccount
 
-# setproducer (LOCAL ONLY)
-cleos -v push action eosio setproducer '["mybp1", 3997400451565694464]' -p eosio
-cleos -v push action eosio setproducer '["mybp2", 3997400451565694464]' -p eosio
-cleos -v push action eosio setproducer '["mybp3", 3997400451565694464]' -p eosio
-cleos -v push action eosio setproducer '["mybp4", 3997400451565694464]' -p eosio
-cleos -v push action eosio setproducer '["mybp5", 3997400451565694464]' -p eosio
-
 # vote
 cleos -v push action eosio.wps vote '["mybp1", "mywps", "yes"]' -p mybp1
 cleos -v push action eosio.wps vote '["mybp2", "mywps", "yes"]' -p mybp2

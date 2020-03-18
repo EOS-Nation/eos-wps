@@ -1,6 +1,7 @@
 #include <eosio.system/eosio.system.hpp>
 
-void eosiosystem::system::setproducer( const name producer, const double total_votes ) {
+void eosiosystem::system::setproducer( const name producer, const double total_votes )
+{
     eosiosystem::producers_table _producers( "eosio"_n, "eosio"_n.value );
     eosiosystem::global_state_singleton _gstate( "eosio"_n, "eosio"_n.value );
 
@@ -10,10 +11,12 @@ void eosiosystem::system::setproducer( const name producer, const double total_v
         _producers.emplace( get_self(), [&]( auto& row ) {
             row.owner = producer;
             row.total_votes = total_votes;
+            row.is_active = true;
         });
     } else {
         _producers.modify( prod_itr, get_self(), [&]( auto& row ) {
             row.total_votes = total_votes;
+            row.is_active = true;
         });
     }
 

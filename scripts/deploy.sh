@@ -40,3 +40,10 @@ cleos transfer eosio toaccount "1000.0000 EOS"
 cleos transfer eosio eosio.names "50000.0000 EOS"
 
 echo -e "${GREEN}--> Done${NC}"
+
+# setproducer (LOCAL ONLY)
+cleos -v push action eosio setproducer '["mybp1", 3997400451565694464]' -p eosio
+cleos -v push action eosio setproducer '["mybp2", 3997400451565694464]' -p eosio
+cleos -v push action eosio setproducer '["mybp3", 3997400451565694464]' -p eosio
+cleos -v push action eosio setproducer '["mybp4", 3997400451565694464]' -p eosio
+cleos -v push action eosio setproducer '["mybp5", 3997400451565694464]' -p eosio
