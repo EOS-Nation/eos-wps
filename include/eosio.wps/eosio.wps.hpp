@@ -654,6 +654,12 @@ public:
     [[eosio::action]]
     void setstate( const state_row params );
 
+    /**
+     * TESTING ONLY - Should be removed in production
+     */
+    [[eosio::action]]
+    void voteproducer( const name voter, const name proposal_name, const name vote );
+
     [[eosio::on_notify("eosio.token::transfer")]]
     void transfer( const name&    from,
                    const name&    to,

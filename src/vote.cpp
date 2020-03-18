@@ -20,6 +20,16 @@ void wps::vote( const name voter, const name proposal_name, const name vote )
     update_eligible_proposals();
 }
 
+// TEST ONLY
+[[eosio::action]]
+void wps::voteproducer( const name voter, const name proposal_name, const name vote )
+{
+    // voter must be an active producer with over 100 EOS in total votes
+    check_voter_eligible( voter );
+
+    wps::vote( voter, proposal_name, vote );
+}
+
 void wps::check_voter_eligible( const name voter )
 {
     eosiosystem::producers_table _producers( "eosio"_n, "eosio"_n.value );
@@ -28,7 +38,8 @@ void wps::check_voter_eligible( const name voter )
     auto prod = _producers.get( voter.value, "[voter] must be registered as a producer" );
     auto gstate = _gstate.get();
 
-    check( prod.total_votes > 0, "[voter] must have votes");
+    check( prod.is_active, "[voter] must be an active producer");
+    check( prod.total_votes > 0.0, "[voter] must have votes");
 
     const int64_t producer_per_vote_pay = int64_t((gstate.pervote_bucket * prod.total_votes) / gstate.total_producer_vote_weight);
     check( producer_per_vote_pay >= 1000000, "[voter] must be have a vpay of 100 EOS or above");
