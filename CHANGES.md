@@ -1,5 +1,10 @@
 # 2020-03-17
 
+- fix `check_voter_eligible()` functionality
+- remove TESTING related actions
+
+# 2020-03-17
+
 - removed deferred transaction from `complete`
 - remove `pause` param in settings
 - `vote` added check for `active` proposals

@@ -2,11 +2,6 @@
 
 // utils
 #include "./utils/get_tx_id.cpp"
-#include "./utils/deferred.cpp"
-
-// testing
-#include "./testing/setstate.cpp"
-#include "./testing/clean.cpp"
 
 // main
 #include "drafts.cpp"

@@ -627,7 +627,7 @@ public:
     /**
      * ## ACTION `refresh`
      *
-     * Refresh voter account, if not eligible, active votes will be ignored
+     * Refresh a WPS voter account
      *
      * - **authority**: `any`
      *
@@ -641,24 +641,6 @@ public:
      */
     [[eosio::action]]
     void refresh( const name voter );
-
-    /**
-     * TESTING ONLY - Should be removed in production
-     */
-    [[eosio::action]]
-    void clean( const name table, const optional<name> scope );
-
-    /**
-     * TESTING ONLY - Should be removed in production
-     */
-    [[eosio::action]]
-    void setstate( const state_row params );
-
-    /**
-     * TESTING ONLY - Should be removed in production
-     */
-    [[eosio::action]]
-    void voteproducer( const name voter, const name proposal_name, const name vote );
 
     [[eosio::on_notify("eosio.token::transfer")]]
     void transfer( const name&    from,
@@ -677,6 +659,7 @@ public:
     using setproposer_action = eosio::action_wrapper<"setproposer"_n, &wps::setproposer>;
     using complete_action = eosio::action_wrapper<"complete"_n, &wps::complete>;
     using claim_action = eosio::action_wrapper<"claim"_n, &wps::claim>;
+    using refresh_action = eosio::action_wrapper<"refresh"_n, &wps::refresh>;
 
 private:
 
@@ -703,7 +686,6 @@ private:
 
     // utils
     checksum256 get_tx_id();
-    void send_deferred( const action action, const uint64_t key, const uint64_t interval );
 
     // complete
     void check_voting_period_completed();

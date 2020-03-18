@@ -9,25 +9,14 @@ void wps::vote( const name voter, const name proposal_name, const name vote )
     // cannot vote during completed voting period phase
     check_voting_period_completed();
 
-    // DISABLED FOR TESTING
-    // // voter must be an active producer with over 100 EOS in total votes
-    // check_voter_eligible( voter );
+    // voter must be an active producer with over 100 EOS in total votes
+    check_voter_eligible( voter );
 
     // update `votes` table
     update_vote( voter, proposal_name, vote );
 
     // update `proposals::eligible` field for all active proposals
     update_eligible_proposals();
-}
-
-// TEST ONLY
-[[eosio::action]]
-void wps::voteproducer( const name voter, const name proposal_name, const name vote )
-{
-    // voter must be an active producer with over 100 EOS in total votes
-    check_voter_eligible( voter );
-
-    wps::vote( voter, proposal_name, vote );
 }
 
 void wps::check_voter_eligible( const name voter )

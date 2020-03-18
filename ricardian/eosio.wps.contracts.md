@@ -171,30 +171,9 @@ This action will pause the WPS contract.
 ---
 spec_version: "0.2.0"
 title: Refresh
-summary: 'TESTING PURPOSES: Refresh a WPS voter account'
+summary: 'Refresh a WPS voter account'
 icon: @ICON_BASE_URL@/@VOTING_ICON_URI@
 ---
 
-FOR TESTING PURPOSES: This action will refresh the votes of a specified voter account.
+This action will refresh the votes of a specified voter account.
 
-<h1 class="contract">clean</h1>
-
----
-spec_version: "0.2.0"
-title: Clean
-summary: 'TESTING PURPOSES: Clean table'
-icon: @ICON_BASE_URL@/@VOTING_ICON_URI@
----
-
-FOR TESTING PURPOSES: This action will clean the WPS tables.
-
-<h1 class="contract">setstate</h1>
-
----
-spec_version: "0.2.0"
-title: Set State
-summary: 'TESTING PURPOSES: Set the WPS state values'
-icon: @ICON_BASE_URL@/@VOTING_ICON_URI@
----
-
-FOR TESTING PURPOSES: This action will set the state of the WPS contract.

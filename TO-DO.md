@@ -1,7 +1,6 @@
 ## To-Dos
 
 - build using RC's
-- test `check_voter_eligible()` functionality
 
 ## Optional
 
