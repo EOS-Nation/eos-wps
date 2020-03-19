@@ -86,7 +86,7 @@ void wps::check_draft_proposal_exists( const eosio::name proposer, const eosio::
     // handle proposals that already exists
     if ( drafts_itr == _drafts.end() ) {
         check( proposals_itr == _proposals.end(), "[proposal_name] is already activated");
-        check( false, "[proposal_name] draft does not exists");
+        check( false, "[proposal_name] draft does not exist");
     }
     check( proposals_itr == _proposals.end(), "[proposal_name] unfortunately already exists, please `canceldraft` and use a different proposal name");
 }
@@ -148,7 +148,7 @@ void wps::emplace_empty_votes( const eosio::name proposal_name, const eosio::nam
     // empty votes for proposal
     auto votes_itr = _votes.find( proposal_name.value );
 
-    check( votes_itr == _votes.end(), "[create_empty_votes] votes already exists");
+    check( votes_itr == _votes.end(), "[create_empty_votes] votes already exist");
 
     _votes.emplace( ram_payer, [&]( auto& row ) {
         row.proposal_name = proposal_name;

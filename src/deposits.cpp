@@ -6,7 +6,7 @@ void wps::refund( const eosio::name account )
     auto deposits_itr = _deposits.find( account.value );
 
     // validation
-    check( deposits_itr != _deposits.end(), "[account] does not exists");
+    check( deposits_itr != _deposits.end(), "[account] does not exist");
     check( deposits_itr->balance.amount > 0, "account has no amount to refund");
 
     // send liquid token

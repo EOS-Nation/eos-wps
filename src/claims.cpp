@@ -14,7 +14,7 @@ void wps::claim( const eosio::name proposal_name )
     // calculate claimable amount
     const eosio::asset claimable = payouts + claimed;
 
-    check( proposals_itr != _proposals.end(), "[proposal_name] does not exists" );
+    check( proposals_itr != _proposals.end(), "[proposal_name] does not exist" );
     check( claimable.amount > 0, "no claimable amount" );
 
     transfer.send( get_self(), proposer, claimable, "wps::" + proposal_name.to_string() );

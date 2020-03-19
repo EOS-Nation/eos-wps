@@ -49,7 +49,7 @@ void wps::modifydraft(const name proposer,
     drafts_table _drafts( get_self(), proposer.value );
     auto drafts_itr = _drafts.find( proposal_name.value );
 
-    check( drafts_itr != _drafts.end(), "[proposal_name] draft does not exists");
+    check( drafts_itr != _drafts.end(), "[proposal_name] draft does not exist");
     check_title( title );
 
     // modify row
@@ -74,7 +74,7 @@ void wps::modifybudget(const name proposer,
     drafts_table _drafts( get_self(), proposer.value );
     auto drafts_itr = _drafts.find( proposal_name.value );
 
-    check( drafts_itr != _drafts.end(), "[proposal_name] draft does not exists");
+    check( drafts_itr != _drafts.end(), "[proposal_name] draft does not exist");
     check_monthly_budget( monthly_budget );
     check_duration( duration );
 
@@ -95,7 +95,7 @@ void wps::canceldraft( const name proposer, const name proposal_name )
     drafts_table _drafts( get_self(), proposer.value );
     auto drafts_itr = _drafts.find( proposal_name.value );
 
-    check( drafts_itr != _drafts.end(), "[proposal_name] draft does not exists");
+    check( drafts_itr != _drafts.end(), "[proposal_name] draft does not exist");
 
     // add deposit
     _drafts.erase( drafts_itr );
