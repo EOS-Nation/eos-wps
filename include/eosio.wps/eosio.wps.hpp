@@ -24,9 +24,9 @@ static constexpr symbol CORE_SYMBOL = symbol{"EOS", 4};
  *
  * - `{int16_t} [vote_margin=20]` - minimum BP vote margin threshold to reach for proposals
  * - `{asset} [deposit_required="100.0000 EOS"]` - deposit required to active proposal
- * - `{uint64_t} [voting_interval=2592000]` -  election interval in seconds
+ * - `{uint64_t} [voting_interval=2592000]` - voting interval in seconds
  * - `{asset} [max_monthly_budget="25000.0000 EOS"]` - maximum monthly budget
- * - `{uint64_t} [min_time_voting_end=86400]` - minimum time required to activate at the end of the current voting period
+ * - `{uint64_t} [min_time_voting_end=432000]` - minimum time required to activate at the end of the current voting period
  *
  * ### example
  *
@@ -563,7 +563,7 @@ public:
      * - `{wps_parameters} params` - EOSIO WPS parameters
      *
      * ```bash
-     * cleos push action eosio.wps init '[{}]' -p eosio.wps
+     * cleos push action eosio.wps init '[{"vote_margin": 20, "deposit_required": "100.0000 EOS", "voting_interval": 2592000, "max_monthly_budget": "25000.0000 EOS", "min_time_voting_end": 432000 }]' -p eosio.wps
      * ```
      */
     [[eosio::action]]
@@ -582,7 +582,7 @@ public:
      * - `{wps_parameters} params` - EOSIO WPS parameters
      *
      * ```bash
-     * cleos push action eosio.wps setparams '[{}]' -p eosio.wps
+     * cleos push action eosio.wps setparams '[{"vote_margin": 20, "deposit_required": "100.0000 EOS", "voting_interval": 2592000, "max_monthly_budget": "25000.0000 EOS", "min_time_voting_end": 432000 }]' -p eosio.wps
      * ```
      */
     [[eosio::action]]

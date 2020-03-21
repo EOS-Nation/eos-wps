@@ -1,4 +1,4 @@
-# EOSIO WPS
+# EOS WPS
 
 ## Workflows
 
@@ -50,21 +50,22 @@
 
 - [`complete`](#action-complete)
 - [`claim`](#action-claim)
+- [`refresh`](#action-refresh)
 
 ## ACTION - CONTRACT
 
-- [`setparams`](#action-setparams)
 - [`init`](#action-init)
+- [`setparams`](#action-setparams)
 
 ## TABLE
 
-- [`proposals`](#table-proposals)
-- [`votes`](#table-votes)
 - [`settings`](#table-settings)
-- [`state`](#table-state)
-- [`deposits`](#table-deposits)
 - [`drafts`](#table-drafts)
 - [`proposers`](#table-proposers)
+- [`proposals`](#table-proposals)
+- [`votes`](#table-votes)
+- [`state`](#table-state)
+- [`deposits`](#table-deposits)
 - [`periods`](#table-periods)
 - [`claims`](#table-claims)
 
@@ -234,10 +235,10 @@ Initialize WPS contract
 
 ### params
 
-- `{time_point_sec} initial_voting_period` - initial voting period
+- `{wps_parameters} params` - EOSIO WPS parameters
 
 ```bash
-cleos push action eosio.wps init '["2019-11-25T00:00:00"]' -p eosio.wps
+cleos push action eosio.wps init '[{"vote_margin": 20, "deposit_required": "100.0000 EOS", "voting_interval": 2592000, "max_monthly_budget": "25000.0000 EOS", "min_time_voting_end": 432000 }]' -p eosio.wps
 ```
 
 ## ACTION `complete`
@@ -263,151 +264,49 @@ Set paramaters for WPS contract
 
 ### params
 
-- `{int16_t} [vote_margin=15]` - minimum BP vote margin threshold to reach for proposals
-- `{asset} [deposit_required="100.0000 EOS"]` - deposit required to active proposal
-- `{uint64_t} [voting_interval=2592000]` -  election interval in seconds
-- `{asset} [max_monthly_budget="50000.0000 EOS"]` - maximum monthly budget
+- `{wps_parameters} params` - EOSIO WPS parameters
 
 ```bash
-cleos push action eosio.wps setparams '[{"vote_margin": 15, "deposit_required": "100.0000 EOS", "voting_interval": 2592000, "max_monthly_budget": "50000.0000 EOS"}]' -p eosio.wps
+cleos push action eosio.wps setparams '[{"vote_margin": 20, "deposit_required": "100.0000 EOS", "voting_interval": 2592000, "max_monthly_budget": "25000.0000 EOS", "min_time_voting_end": 432000 }]' -p eosio.wps
 ```
 
-## TABLE `proposals`
+## ACTION `refresh`
 
-**multi-indexes**
+Refresh a WPS voter account
 
-| `param`    | `index_position` | `key_type` |
-|------------|------------------|------------|
-| `status`   | 2                | i64        |
-| `proposer` | 3                | i64        |
+- **authority**: `any`
 
-**status**
+### params
 
-| `param`     | `value`                                 |
-|-------------|-----------------------------------------|
-| `active`    | available for current voting period     |
-| `completed` | proposal completed and payout in full   |
-| `partial`   | proposal completed and partial payout   |
-| `expired`   | proposal expired without any payout     |
+- `{name} voter` - voter account
 
-**params**
-
-- `{name} proposer` - proposer of proposal
-- `{name} proposal_name` - proposal name
-- `{string} title` - proposal title
-- `{asset} monthly_budget` - monthly budget payment request
-- `{uint8_t} duration` - monthly budget duration (maximum of 6 months)
-- `{asset} total_budget` - total budget payment request
-- `{map<name, string>} proposal_json` - a sorted container of <key, value>
-- `{name} status` - status of proposal (active/expired/completed)
-- `{int16_t} total_net_votes` - total net votes
-- `{bool} eligible` - (true/false) eligible for current voting period payout
-- `{asset} payouts` - total payouts amount received
-- `{asset} claimed` - total claimed amount
-- `{time_point_sec} created` - time proposal was created (UTC)
-- `{time_point_sec} start_voting_period` - start of voting period (UTC)
-- `{time_point_sec} end` - end of proposal (UTC)
-
-### example
-
-```json
-{
-  "proposer": "myaccount",
-  "proposal_name": "mywps",
-  "title": "My WPS",
-  "monthly_budget": "500.0000 EOS",
-  "duration": 2,
-  "total_budget": "1000.0000 EOS",
-  "proposal_json": [
-    { "key": "category", "value": "other" },
-    { "key": "region", "value": "global" }
-  ],
-  "status": "active",
-  "total_net_votes": 2,
-  "eligible": true,
-  "payouts": "0.0000 EOS",
-  "claimed": "0.0000 EOS",
-  "created": "2019-11-05T12:10:00",
-  "start_voting_period": "2019-11-01T00:00:00",
-  "end": "2019-12-01T00:00:00"
-}
-```
-
-## TABLE `votes`
-
-- `{name} proposal_name` - The proposal's name, its ID among all proposals
-- `{map<name, name>} votes` - a sorted container of <voter, vote>
-
-### example
-
-```json
-{
-  "proposal_name": "mywps",
-  "votes": [
-      { "key": "mybp1", "value": "yes" },
-      { "key": "mybp2", "value": "no" },
-      { "key": "mybp3", "value": "yes" },
-      { "key": "mybp4", "value": "abstain" },
-      { "key": "mybp5", "value": "yes" }
-  ]
-}
+```bash
+cleos push action eosio.wps refresh '["mybp"]' -p myaccount
 ```
 
 ## TABLE `settings`
 
-- `{int16_t} [vote_margin=15]` - minimum BP vote margin threshold to reach for proposals
+- `{int16_t} [vote_margin=20]` - minimum BP vote margin threshold to reach for proposals
 - `{asset} [deposit_required="100.0000 EOS"]` - deposit required to active proposal
-- `{uint64_t} [voting_interval=2592000]` -  election interval in seconds
-- `{asset} [max_monthly_budget="50000.0000 EOS"]` - maximum monthly budget
+- `{uint64_t} [voting_interval=2592000]` - voting interval in seconds
+- `{asset} [max_monthly_budget="25000.0000 EOS"]` - maximum monthly budget
+- `{uint64_t} [min_time_voting_end=432000]` - minimum time required to activate at the end of the currentoting period
 
 ### example
 
 ```json
 {
-  "vote_margin": 15,
+  "vote_margin": 20,
   "deposit_required": "100.0000 EOS",
   "voting_interval": 2592000,
-  "max_monthly_budget": "50000.0000 EOS"
-}
-```
-
-## TABLE `state`
-
-- `{time_point_sec} current_voting_period` - current voting period
-- `{time_point_sec} next_voting_period` - next voting period
-- `{asset} [liquid_deposits="0.0000 EOS"]` - liquid deposits
-- `{asset} [locked_deposits="0.0000 EOS"]` - locked deposits
-- `{asset} [available_funding="0.0000 EOS"]` - available funding
-
-### example
-
-```json
-{
-  "current_voting_period": "2019-12-12T00:00:00",
-  "next_voting_period": "2020-01-11T00:00:00",
-  "liquid_deposits": "100.0000 EOS",
-  "locked_deposits": "200.0000 EOS",
-  "available_funding": "50000.0000 EOS",
-}
-```
-
-## TABLE `deposits`
-
-- `{name} account` - account balance owner
-- `{asset} balance` - token balance amount
-
-### example
-
-```json
-{
-  "account": "myaccount",
-  "balance": "100.0000 EOS"
+  "max_monthly_budget": "25000.0000 EOS",
+  "min_time_voting_end": 432000
 }
 ```
 
 ## TABLE `drafts`
 
-**scope**: `proposer`
+- scope: `proposer`
 
 - `{name} proposer` - proposer of proposal
 - `{name} proposal_name` - proposal name
@@ -450,6 +349,103 @@ cleos push action eosio.wps setparams '[{"vote_margin": 15, "deposit_required": 
 }
 ```
 
+## TABLE `proposals`
+
+- `{name} proposer` - proposer of proposal
+- `{name} proposal_name` - proposal name
+- `{string} title` - proposal title
+- `{asset} monthly_budget` - monthly budget payment request
+- `{uint8_t} duration` - monthly budget duration (maximum of 6 months)
+- `{asset} total_budget` - total budget payment request
+- `{map<name, string>} proposal_json` - a sorted container of <key, value>
+- `{name} status` - status of proposal (active/expired/completed)
+- `{int16_t} total_net_votes` - total net votes
+- `{bool} eligible` - (true/false) eligible for current voting period payout
+- `{asset} payouts` - total payouts amount received
+- `{asset} claimed` - total claimed amount
+- `{time_point_sec} created` - time proposal was created (UTC)
+- `{time_point_sec} start_voting_period` - start of voting period (UTC)
+- `{time_point_sec} end` - end of proposal (UTC)
+
+### example
+
+```json
+{
+  "proposer": "myaccount",
+  "proposal_name": "mywps",
+  "title": "My WPS",
+  "monthly_budget": "500.0000 EOS",
+  "duration": 2,
+  "total_budget": "1000.0000 EOS",
+  "proposal_json": [
+    { "key": "category", "value": "other" },
+    { "key": "region", "value": "global" }
+  ],
+  "status": "active",
+  "total_net_votes": 2,
+  "eligible": false,
+  "payouts": "0.0000 EOS",
+  "claimed": "0.0000 EOS",
+  "created": "2019-11-05T12:10:00",
+  "start_voting_period": "2019-11-01T00:00:00",
+  "end": "2019-12-01T00:00:00"
+}
+```
+
+## TABLE `votes`
+
+- `{name} proposal_name` - The proposal's name, its ID among all proposals
+- `{map<name, name>} votes` - a sorted container of <voter, vote>
+
+### example
+
+```json
+{
+  "proposal_name": "mywps",
+  "votes": [
+    { "key": "mybp1", "value": "yes" },
+    { "key": "mybp2", "value": "no" },
+    { "key": "mybp3", "value": "yes" },
+    { "key": "mybp4", "value": "abstain" },
+    { "key": "mybp5", "value": "yes" }
+  ]
+}
+```
+
+## TABLE `state`
+
+- `{time_point_sec} current_voting_period` - current voting period
+- `{time_point_sec} next_voting_period` - next voting period
+- `{asset} [liquid_deposits="0.0000 EOS"]` - liquid deposits
+- `{asset} [locked_deposits="0.0000 EOS"]` - locked deposits
+- `{asset} [available_funding="0.0000 EOS"]` - available funding
+
+### example
+
+```json
+{
+  "current_voting_period": "2019-12-12T00:00:00",
+  "next_voting_period": "2020-01-11T00:00:00",
+  "liquid_deposits": "100.0000 EOS",
+  "locked_deposits": "200.0000 EOS",
+  "available_funding": "50000.0000 EOS",
+}
+```
+
+## TABLE `deposits`
+
+- `{name} account` - account balance owner
+- `{asset} balance` - token balance amount
+
+### example
+
+```json
+{
+  "account": "myaccount",
+  "balance": "100.0000 EOS"
+}
+```
+
 ## TABLE `periods`
 
 - `{time_point_sec} voting_period` - voting period
@@ -460,7 +456,7 @@ cleos push action eosio.wps setparams '[{"vote_margin": 15, "deposit_required": 
 ```json
 {
   "voting_period": "2019-11-01T00:00:00",
-  "proposals": ["mywps"]
+  "proposals": ["mywps"],
 }
 ```
 
