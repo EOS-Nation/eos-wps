@@ -19,22 +19,20 @@
 2. send 100 EOS
 3. `refund` action to return 100 EOS
 
-## Deploy Smart Contract
+## EOS WPS scheduled MSIG
 
-**MSIG #1**
+### Stage 1
+- Create `eosio.wps` account with 2MB worth of RAM
 
-- Action 1: create `eosio.wps` account
-- Action 2: buy ram `eosio.wps` account
-- Action 3: set CPU/NET `eosio.wps` account
+### Stage 2
+- Transfer `eosio.wps` account with `50,000 EOS` from `eosio.names` account
 
-**MSIG #2**
+### Stage 3
+- Deploy EOS WPS smart contract
+  https://github.com/EOS-Nation/eos-wps
 
-- Action 1: deploy smart contract & ABI
-
-**MSIG #3**
-
-- Action 1: send EOS funds to contract
-- Action 2: `init` contract parameters
+### Stage 4
+- Initialize EOS WPS (start will be 00:00UTC the day `init` is executed)
 
 ## ACTION - USER
 
