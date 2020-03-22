@@ -270,16 +270,13 @@ cleos push action eosio.wps setparams '[{"vote_margin": 20, "deposit_required": 
 
 ## ACTION `refresh`
 
-Refresh a WPS voter account
+Update `votes` from eligible voters
+Any existing votes with voters with less than 100 EOS vpay will be removed
 
 - **authority**: `any`
 
-### params
-
-- `{name} voter` - voter account
-
 ```bash
-cleos push action eosio.wps refresh '["mybp"]' -p myaccount
+cleos push action eosio.wps refresh '[]' -p myaccount
 ```
 
 ## TABLE `settings`

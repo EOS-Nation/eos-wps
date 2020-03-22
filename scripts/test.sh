@@ -45,22 +45,31 @@ cleos -v push action eosio.wps activate '["toaccount", "novote", null]' -p toacc
 # vote
 cleos -v push action eosio.wps vote '["mybp1", "mywps", "yes"]' -p mybp1
 cleos -v push action eosio.wps vote '["mybp2", "mywps", "yes"]' -p mybp2
-cleos -v push action eosio.wps vote '["mybp3", "mywps", "no"]' -p mybp3
-cleos -v push action eosio.wps vote '["mybp4", "mywps", "abstain"]' -p mybp4
+cleos -v push action eosio.wps vote '["mybp3", "mywps", "yes"]' -p mybp3
+cleos -v push action eosio.wps vote '["mybp4", "mywps", "yes"]' -p mybp4
 
-cleos -v push action eosio.wps vote '["mybp1", "towps", "yes"]' -p mybp1
-cleos -v push action eosio.wps vote '["mybp2", "towps", "yes"]' -p mybp2
-cleos -v push action eosio.wps vote '["mybp3", "towps", "yes"]' -p mybp3
+cleos -v push action eosio.wps vote '["mybp1", "towps", "abstain"]' -p mybp1
+cleos -v push action eosio.wps vote '["mybp2", "towps", "abstain"]' -p mybp2
+cleos -v push action eosio.wps vote '["mybp3", "towps", "abstain"]' -p mybp3
+cleos -v push action eosio.wps vote '["mybp4", "towps", "abstain"]' -p mybp4
 
-cleos -v push action eosio.wps vote '["mybp1", "short", "yes"]' -p mybp1
+cleos -v push action eosio.wps vote '["mybp1", "short", "no"]' -p mybp1
 cleos -v push action eosio.wps vote '["mybp2", "short", "yes"]' -p mybp2
 cleos -v push action eosio.wps vote '["mybp3", "short", "yes"]' -p mybp3
+cleos -v push action eosio.wps vote '["mybp4", "short", "yes"]' -p mybp4
 
 cleos -v push action eosio.wps vote '["mybp1", "novote", "no"]' -p mybp1
 cleos -v push action eosio.wps vote '["mybp2", "novote", "no"]' -p mybp2
+cleos -v push action eosio.wps vote '["mybp3", "novote", "no"]' -p mybp3
+cleos -v push action eosio.wps vote '["mybp4", "novote", "no"]' -p mybp4
 
 # can't vote
 cleos -v push action eosio.wps vote '["mybp5", "mywps", "yes"]' -p mybp5
 
-# complete
-cleos push action eosio.wps complete '[]' -p eosio.wps
+# change bp vote & refresh
+cleos system voteproducer prods voter mybp1 mybp2 mybp3
+cleos push action eosio.wps refresh '[]' -p myaccount
+
+# # complete
+# cleos push action eosio.wps complete '[]' -p eosio.wps
+

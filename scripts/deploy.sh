@@ -68,6 +68,7 @@ cleos system regproducer mybp5 EOS6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5GD
 cleos system voteproducer prods voter mybp1 mybp2 mybp3 mybp4
 cleos system voteproducer prods smallvoter mybp5
 
+sleep 1
 # claimrewards (custom system contract)
 # pervote_bucket = 227746253
 # total_producer_vote_weight = 139063550990300872704.00000000000000000

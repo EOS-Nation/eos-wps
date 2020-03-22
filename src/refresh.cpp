@@ -1,12 +1,23 @@
 [[eosio::action]]
-void wps::refresh( const name voter )
+void wps::refresh( )
 {
-    check( !is_voter_eligible( voter ), "voter is eligible, no change");
-
-    check( remove_voter( voter ), "voter has no votes to remove");
+    // update `votes` from eligible voters
+    // any existing votes with voters with less than 100 EOS vpay will be removed
+    check( refresh_proposals(), "nothing was modified");
 
     // update `proposals::eligible` field for all active proposals
     update_eligible_proposals();
+}
+
+bool wps::refresh_proposals()
+{
+    set<name> eligible_producers = get_eligible_producers();
+    bool modified = false;
+
+    for ( auto proposal_name : group_proposals( "active"_n ) ) {
+        if ( refresh_proposal( proposal_name, eligible_producers ) ) modified = true;
+    }
+    return modified;
 }
 
 bool wps::refresh_proposal( const name proposal_name, const set<name> eligible_producers )
@@ -29,36 +40,10 @@ bool wps::refresh_proposal( const name proposal_name, const set<name> eligible_p
     if ( modified ) {
         _votes.modify( votes_itr, same_payer, [&]( auto& row ) {
             row.votes = votes;
+            update_total_net_votes( proposal_name, row.votes );
         });
-        update_total_net_votes( proposal_name, votes );
     }
     return modified;
-}
-
-bool wps::remove_voter( const name voter )
-{
-    // settings
-    auto settings = _settings.get();
-    auto state = _state.get();
-    bool removed = false;
-
-    // iterate proposals by active status
-    for ( auto proposal_name : group_proposals( "active"_n ) ) {
-        auto votes_itr = _votes.find( proposal_name.value );
-
-        // iterate over each vote
-        for (std::pair<eosio::name, eosio::name> item : votes_itr->votes) {
-            // voter is voting for proposal
-            if ( item.first == voter ) {
-                _votes.modify( votes_itr, same_payer, [&]( auto& row ) {
-                    row.votes.erase( voter );
-                    update_total_net_votes( proposal_name, row.votes );
-                });
-                removed = true;
-            }
-        }
-    }
-    return removed;
 }
 
 bool wps::is_voter_eligible( const name voter )

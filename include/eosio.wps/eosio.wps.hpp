@@ -627,20 +627,17 @@ public:
     /**
      * ## ACTION `refresh`
      *
-     * Refresh a WPS voter account
+     * Update `votes` from eligible voters
+     * Any existing votes with voters with less than 100 EOS vpay will be removed
      *
      * - **authority**: `any`
      *
-     * ### params
-     *
-     * - `{name} voter` - voter account
-     *
      * ```bash
-     * cleos push action eosio.wps refresh '["mybp"]' -p myaccount
+     * cleos push action eosio.wps refresh '[]' -p myaccount
      * ```
      */
     [[eosio::action]]
-    void refresh( const name voter );
+    void refresh( );
 
     [[eosio::on_notify("eosio.token::transfer")]]
     void transfer( const name&    from,
@@ -724,11 +721,11 @@ private:
     void check_available_funding();
 
     // refresh
+    bool refresh_proposals();
+    bool refresh_proposal( const name proposal_name, const set<name> eligible_producers );
     bool is_voter_eligible( const name voter );
-    bool remove_voter( const name voter );
     void get_all_voter_eligible();
     set<name> get_eligible_producers();
-    bool refresh_proposal( const name proposal_name, const set<name> eligible_producers );
 };
 
 }
