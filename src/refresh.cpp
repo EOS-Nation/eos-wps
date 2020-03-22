@@ -12,22 +12,27 @@ void wps::refresh( const name voter )
 bool wps::refresh_proposal( const name proposal_name, const set<name> eligible_producers )
 {
     auto votes_itr = _votes.find( proposal_name.value );
-    bool removed = false;
+    map<name, name> votes = votes_itr->votes;
+    bool modified = false;
 
-    _votes.modify( votes_itr, same_payer, [&]( auto& row ) {
-        // iterate over each vote
-        for (std::pair<eosio::name, eosio::name> item : votes_itr->votes) {
-            const name voter = item.first;
+    // iterate over each vote
+    for (std::pair<eosio::name, eosio::name> item : votes) {
+        const name voter = item.first;
 
-            // remove votes from voters not eligible
-            if ( eligible_producers.find( voter ) == eligible_producers.end() ) {
-                row.votes.erase( voter );
-                removed = true;
-            }
+        // remove votes from voters not eligible
+        if ( eligible_producers.find( voter ) == eligible_producers.end() ) {
+            votes.erase( voter );
+            modified = true;
         }
-        if ( removed ) update_total_net_votes( proposal_name, row.votes );
-    });
-    return removed;
+    }
+    // modify table
+    if ( modified ) {
+        _votes.modify( votes_itr, same_payer, [&]( auto& row ) {
+            row.votes = votes;
+        });
+        update_total_net_votes( proposal_name, votes );
+    }
+    return modified;
 }
 
 bool wps::remove_voter( const name voter )
