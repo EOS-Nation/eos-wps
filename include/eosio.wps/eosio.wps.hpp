@@ -728,6 +728,7 @@ private:
     bool remove_voter( const name voter );
     void get_all_voter_eligible();
     set<name> get_eligible_producers();
+    bool refresh_proposal( const name proposal_name, const set<name> eligible_producers );
 };
 
 }

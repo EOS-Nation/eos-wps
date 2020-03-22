@@ -17,8 +17,10 @@ bool wps::refresh_proposal( const name proposal_name, const set<name> eligible_p
     _votes.modify( votes_itr, same_payer, [&]( auto& row ) {
         // iterate over each vote
         for (std::pair<eosio::name, eosio::name> item : votes_itr->votes) {
+            const name voter = item.first;
+
             // remove votes from voters not eligible
-            if ( !is_voter_eligible( item.first, eligible_producers ) ) {
+            if ( !is_voter_eligible( voter, eligible_producers ) ) {
                 row.votes.erase( voter );
                 removed = true;
             }
