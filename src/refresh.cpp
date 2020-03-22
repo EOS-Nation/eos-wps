@@ -1,7 +1,7 @@
 [[eosio::action]]
 void wps::refresh( const name voter )
 {
-    check( !is_voter_eligible( voter, get_eligible_producers() ), "voter is eligible, no change");
+    check( !is_voter_eligible( voter ), "voter is eligible, no change");
 
     check( remove_voter( voter ), "voter has no votes to remove");
 
@@ -20,7 +20,7 @@ bool wps::refresh_proposal( const name proposal_name, const set<name> eligible_p
             const name voter = item.first;
 
             // remove votes from voters not eligible
-            if ( !is_voter_eligible( voter, eligible_producers ) ) {
+            if ( eligible_producers.find( voter ) == eligible_producers.end() ) {
                 row.votes.erase( voter );
                 removed = true;
             }
@@ -56,25 +56,29 @@ bool wps::remove_voter( const name voter )
     return removed;
 }
 
-bool wps::is_voter_eligible( const name voter, const set<name> eligible_producers )
+bool wps::is_voter_eligible( const name voter )
 {
-    return eligible_producers.find( voter ) != eligible_producers.end();
+    eosiosystem::producers_table _producers( "eosio"_n, "eosio"_n.value );
+    eosiosystem::global_state_singleton _gstate( "eosio"_n, "eosio"_n.value );
+
+    auto itr = _producers.find( voter.value );
+    auto gstate = _gstate.get();
+
+    const int64_t producer_per_vote_pay = int64_t((gstate.pervote_bucket * itr->total_votes) / gstate.total_producer_vote_weight);
+    if ( producer_per_vote_pay < 1000000 ) return false;
+    return true;
 }
 
 set<name> wps::get_eligible_producers()
 {
     eosiosystem::producers_table _producers( "eosio"_n, "eosio"_n.value );
-    eosiosystem::global_state_singleton _gstate( "eosio"_n, "eosio"_n.value );
-
     auto producer_by_votes = _producers.get_index<"prototalvote"_n>();
-    auto gstate = _gstate.get();
 
     set<name> eligible_producers;
 
-    for ( auto producer : producer_by_votes ) {
-        const int64_t producer_per_vote_pay = int64_t((gstate.pervote_bucket * producer.total_votes) / gstate.total_producer_vote_weight);
-        if ( producer_per_vote_pay < 1000000 ) break;
-        eligible_producers.insert( producer.owner );
+    for ( auto row : producer_by_votes ) {
+        if ( is_voter_eligible( row.owner )) eligible_producers.insert( row.owner );
+        else break;
     }
     return eligible_producers;
 }

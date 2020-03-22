@@ -724,7 +724,7 @@ private:
     void check_available_funding();
 
     // refresh
-    bool is_voter_eligible( const name voter, const set<name> eligible_producers );
+    bool is_voter_eligible( const name voter );
     bool remove_voter( const name voter );
     void get_all_voter_eligible();
     set<name> get_eligible_producers();
