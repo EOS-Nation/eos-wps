@@ -17,7 +17,7 @@ void wps::vote( const name voter, const name proposal_name, const name vote )
 
     // update `votes` from eligible voters
     // any existing votes with voters with less than 100 EOS vpay will be removed
-    refresh_proposal( proposal_name, get_eligible_producers() )
+    refresh_proposal( proposal_name, get_eligible_producers() );
 
     // update `proposals::eligible` field for all active proposals
     update_eligible_proposals();
