@@ -23,10 +23,8 @@ void wps::init( const wps_parameters params )
     state.next_voting_period = state.current_voting_period + settings.voting_interval;
     _state.set( state, ram_payer );
 
-    // check if account has enough funding
+    // check if WPS account has enough funding to initialize the first voting period
     check_available_funding();
-
-    // must manually execute the `start` action after `init` to begin voting period
 }
 
 [[eosio::action]]
