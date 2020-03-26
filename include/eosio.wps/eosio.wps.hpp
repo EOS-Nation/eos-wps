@@ -22,6 +22,8 @@ static constexpr symbol CORE_SYMBOL = symbol{"EOS", 4};
 /**
  * ## TABLE `settings`
  *
+ * ### params
+ *
  * - `{int16_t} [vote_margin=20]` - minimum BP vote margin threshold to reach for proposals
  * - `{asset} [deposit_required="100.0000 EOS"]` - deposit required to active proposal
  * - `{uint64_t} [voting_interval=2592000]` - voting interval in seconds
@@ -54,6 +56,9 @@ typedef eosio::singleton< "settings"_n, wps_parameters> settings_table;
  * ## TABLE `drafts`
  *
  * - scope: `proposer`
+ * - ram_payer: `proposer`
+ *
+ * ### params
  *
  * - `{name} proposer` - proposer of proposal
  * - `{name} proposal_name` - proposal name
@@ -96,6 +101,8 @@ typedef eosio::multi_index< "drafts"_n, drafts_row> drafts_table;
 /**
  * ## TABLE `proposers`
  *
+ * ### params
+ *
  * - `{name} proposer` - proposer of proposal
  * - `{map<name, string>} metadata_json` - a sorted container of <key, value>
  *
@@ -119,7 +126,70 @@ struct [[eosio::table("proposers"), eosio::contract("eosio.wps")]] proposers_row
 typedef eosio::multi_index< "proposers"_n, proposers_row> proposers_table;
 
 /**
+ * ## TABLE `comments`
+ *
+ * - scope: `proposal_name`
+ * - ram_payer: `account`
+ *
+ * ### multi-indexes
+ *
+ * | `param`     | `index_position` | `key_type` |
+ * |-------------|------------------|------------|
+ * | `timestamp` | 2                | i64        |
+ *
+ * ### params
+ *
+ * - `{name} account` - account name
+ * - `{time_point_sec} timestamp` - last time created/modified
+ * - `{uint16_t} version` - version number
+ * - `{map<name, string>} comment_json` - a sorted container of <key, value>
+ *
+ * ### example
+ *
+ * ```json
+ * {
+ *   "account": "myaccount",
+ *   "timestamp": "2020-03-26T12:00:00",
+ *   "version": 0,
+ *   "comment_json": [
+ *     { "key": "text", "value": "my comment" }
+ *   ]
+ * }
+ * ```
+ */
+struct [[eosio::table("comments"), eosio::contract("eosio.wps")]] comments_row {
+    name                    account;
+    time_point_sec          timestamp;
+    uint16_t                version;
+    map<name, string>       comment_json;
+
+    uint64_t primary_key() const { return account.value; }
+    uint64_t by_timestamp() const { return timestamp.sec_since_epoch(); }
+};
+typedef eosio::multi_index< "comments"_n, comments_row,
+    indexed_by<"bytimestamp"_n, const_mem_fun<comments_row, uint64_t, &comments_row::by_timestamp>>
+> comments_table;
+
+/**
  * ## TABLE `proposals`
+ *
+ * ### multi-indexes
+ *
+ * | `param`    | `index_position` | `key_type` |
+ * |------------|------------------|------------|
+ * | `status`   | 2                | i64        |
+ * | `proposer` | 3                | i64        |
+ *
+ * ### status
+ *
+ * | `param`     | `value`                                 |
+ * |-------------|-----------------------------------------|
+ * | `active`    | available for current voting period     |
+ * | `completed` | proposal completed and payout in full   |
+ * | `partial`   | proposal completed and partial payout   |
+ * | `expired`   | proposal expired without any payout     |
+ *
+ * ### params
  *
  * - `{name} proposer` - proposer of proposal
  * - `{name} proposal_name` - proposal name
@@ -186,6 +256,8 @@ typedef eosio::multi_index< "proposals"_n, proposals_row,
 /**
  * ## TABLE `votes`
  *
+ * ### params
+ *
  * - `{name} proposal_name` - The proposal's name, its ID among all proposals
  * - `{map<name, name>} votes` - a sorted container of <voter, vote>
  *
@@ -215,6 +287,8 @@ typedef eosio::multi_index< "votes"_n, votes_row> votes_table;
 
 /**
  * ## TABLE `state`
+ *
+ * ### params
  *
  * - `{time_point_sec} current_voting_period` - current voting period
  * - `{time_point_sec} next_voting_period` - next voting period
@@ -247,6 +321,8 @@ typedef eosio::singleton< "state"_n, state_row> state_table;
 /**
  * ## TABLE `deposits`
  *
+ * ### params
+ *
  * - `{name} account` - account balance owner
  * - `{asset} balance` - token balance amount
  *
@@ -271,6 +347,8 @@ typedef eosio::multi_index< "deposits"_n, deposits_row > deposits_table;
 /**
  * ## TABLE `periods`
  *
+ * ### params
+ *
  * - `{time_point_sec} voting_period` - voting period
  * - `{set<name>} proposals` - set of proposal names
  *
@@ -294,6 +372,8 @@ typedef eosio::multi_index< "periods"_n, periods_row > periods_table;
 
 /**
  * ## TABLE `claims`
+ *
+ * ### params
  *
  * - `{uint64_t} id` - claim identifier
  * - `{name} proposer` - proposer
@@ -639,6 +719,31 @@ public:
     [[eosio::action]]
     void refresh( );
 
+    /**
+     * ## ACTION `comment`
+     *
+     * - **authority**: `account`
+     * - **ram_payer**: `account`
+     *
+     * ### params
+     *
+     * - `{name} account` - account name
+     * - `{name} proposal_name` - proposal name
+     * - `{map<name, string>} comment_json` - a sorted container of <key, value>
+     *
+     * ### example
+     *
+     * ```bash
+     * # create/modify comment
+     * cleos push action eosio.wps comment '["myaccount", "myproposal", [{ "key": "text", "value": "my comment" }]]' -p myaccount
+     *
+     * # delete comment
+     * cleos push action eosio.wps comment '["myaccount", "myproposal", []]' -p myaccount
+     * ```
+     */
+    [[eosio::action]]
+    void comment( const name account, const name proposal_name, const map<name, string> comment_json );
+
     [[eosio::on_notify("eosio.token::transfer")]]
     void transfer( const name&    from,
                    const name&    to,
@@ -657,6 +762,7 @@ public:
     using complete_action = eosio::action_wrapper<"complete"_n, &wps::complete>;
     using claim_action = eosio::action_wrapper<"claim"_n, &wps::claim>;
     using refresh_action = eosio::action_wrapper<"refresh"_n, &wps::refresh>;
+    using comment_action = eosio::action_wrapper<"comment"_n, &wps::comment>;
 
 private:
 

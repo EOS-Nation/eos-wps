@@ -14,3 +14,4 @@
 #include "complete.cpp"
 #include "claims.cpp"
 #include "refresh.cpp"
+#include "comments.cpp"

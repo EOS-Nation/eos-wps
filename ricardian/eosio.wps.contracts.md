@@ -177,3 +177,13 @@ icon: @ICON_BASE_URL@/@VOTING_ICON_URI@
 
 This action will refresh the votes of a specified voter account.
 
+<h1 class="contract">comment</h1>
+
+---
+spec_version: "0.2.0"
+title: Comment
+summary: 'Comment on proposal'
+icon: @ICON_BASE_URL@/@VOTING_ICON_URI@
+---
+
+This action allows eligible {{account}} to comment on {{proposal_name}}.

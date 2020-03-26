@@ -80,3 +80,8 @@ cleos push action eosio.wps refresh '[]' -p myaccount
 # # complete
 # cleos push action eosio.wps complete '[]' -p eosio.wps
 
+# create/modify comment
+cleos push action eosio.wps comment '["myaccount", "mywps", [{ "key": "text", "value": "my comment" }]]' -p myaccount
+
+# delete comment
+cleos push action eosio.wps comment '["myaccount", "mywps", []]' -p myaccount
