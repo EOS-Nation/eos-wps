@@ -1,5 +1,5 @@
 [[eosio::action]]
-void wps::comment( const name account, const name proposal_name, const map<name, string> comment_json )
+void wps::comment( const name account, const name proposal_name, const map<name, string> metadata_json )
 {
     require_auth( account );
     const eosio::name ram_payer = account;
@@ -12,23 +12,23 @@ void wps::comment( const name account, const name proposal_name, const map<name,
     check( is_voter_eligible( account ) || proposal.proposer == account, "[account] not eligible to comment on proposal, must be proposer or eligible voter");
 
     if ( comments_itr == _comments.end() ) {
-        check( comment_json.size(), "[comment_json] is empty");
+        check( metadata_json.size(), "[metadata_json] is empty");
 
         _comments.emplace( ram_payer, [&]( auto& row ) {
             row.account = account;
             row.timestamp = current_time_point();
             row.version = 0;
-            row.comment_json = comment_json;
+            row.metadata_json = metadata_json;
         });
     } else {
         check( proposal.status == "active"_n, "cannot modify/erase comment when proposal is no longer active");
 
         // modify comment
-        if ( comment_json.size() ) {
+        if ( metadata_json.size() ) {
             _comments.modify( comments_itr, same_payer, [&]( auto& row ) {
                 row.timestamp = current_time_point();
                 row.version += 1;
-                row.comment_json = comment_json;
+                row.metadata_json = metadata_json;
             });
         // delete comment
         } else {

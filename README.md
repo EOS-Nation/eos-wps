@@ -44,6 +44,7 @@
 - [`activate`](#action-activate)
 - [`refund`](#action-refund)
 - [`comment`](#action-comment)
+- [`setproposer`](#action-setproposer)
 
 ## ACTION - ANY
 
@@ -290,7 +291,7 @@ cleos push action eosio.wps refresh '[]' -p myaccount
 
 - `{name} account` - account name
 - `{name} proposal_name` - proposal name
-- `{map<name, string>} comment_json` - a sorted container of <key, value>
+- `{map<name, string>} metadata_json` - a sorted container of <key, value>
 
 ### example
 
@@ -551,7 +552,7 @@ cleos push action eosio.wps comment '["myaccount", "myproposal", []]' -p myaccou
 - `{name} account` - account name
 - `{time_point_sec} timestamp` - last time created/modified
 - `{uint16_t} version` - version number
-- `{map<name, string>} comment_json` - a sorted container of <key, value>
+- `{map<name, string>} metadata_json` - a sorted container of <key, value>
 
 ### example
 
@@ -560,7 +561,7 @@ cleos push action eosio.wps comment '["myaccount", "myproposal", []]' -p myaccou
   "account": "myaccount",
   "timestamp": "2020-03-26T12:00:00",
   "version": 0,
-  "comment_json": [
+  "metadata_json": [
     { "key": "text", "value": "my comment" }
   ]
 }

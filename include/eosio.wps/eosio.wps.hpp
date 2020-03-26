@@ -142,7 +142,7 @@ typedef eosio::multi_index< "proposers"_n, proposers_row> proposers_table;
  * - `{name} account` - account name
  * - `{time_point_sec} timestamp` - last time created/modified
  * - `{uint16_t} version` - version number
- * - `{map<name, string>} comment_json` - a sorted container of <key, value>
+ * - `{map<name, string>} metadata_json` - a sorted container of <key, value>
  *
  * ### example
  *
@@ -151,7 +151,7 @@ typedef eosio::multi_index< "proposers"_n, proposers_row> proposers_table;
  *   "account": "myaccount",
  *   "timestamp": "2020-03-26T12:00:00",
  *   "version": 0,
- *   "comment_json": [
+ *   "metadata_json": [
  *     { "key": "text", "value": "my comment" }
  *   ]
  * }
@@ -161,7 +161,7 @@ struct [[eosio::table("comments"), eosio::contract("eosio.wps")]] comments_row {
     name                    account;
     time_point_sec          timestamp;
     uint16_t                version;
-    map<name, string>       comment_json;
+    map<name, string>       metadata_json;
 
     uint64_t primary_key() const { return account.value; }
     uint64_t by_timestamp() const { return timestamp.sec_since_epoch(); }
