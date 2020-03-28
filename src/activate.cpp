@@ -7,6 +7,9 @@ void wps::activate( const eosio::name proposer, const eosio::name proposal_name,
     // is contract paused or not
     check_contract_active();
 
+    // check if proposer is eligible to activate proposal
+    check_eligible_proposer( proposer );
+
     // check if account has enough funding
     // cannot activate proposals during insolvent voting period
     check_available_funding();
@@ -159,4 +162,10 @@ void wps::check_start_vote_period( const eosio::time_point_sec start_voting_peri
 {
     auto state = _state.get();
     check( start_voting_period == state.current_voting_period || start_voting_period == state.next_voting_period, "[start_voting_period] must equal to [current_voting_period] or [next_voting_period]");
+}
+
+void wps::check_eligible_proposer( const name proposer )
+{
+    eosiosystem::producers_table _producers( "eosio"_n, "eosio"_n.value );
+    check( _producers.find( proposer.value ) == _producers.end(), "[proposer] cannot be a registered producer");
 }

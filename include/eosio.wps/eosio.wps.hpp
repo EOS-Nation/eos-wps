@@ -777,6 +777,7 @@ private:
     void emplace_proposal_from_draft( const name proposer, const name proposal_name, const time_point_sec start_voting_period, const name ram_payer );
     void emplace_empty_votes( const name proposal_name, const name ram_payer );
     void check_start_vote_period( const time_point_sec start_voting_period );
+    void check_eligible_proposer( const name proposer );
 
     // vote
     int16_t calculate_total_net_votes( const map<name, name> votes );

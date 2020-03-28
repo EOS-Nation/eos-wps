@@ -1,3 +1,7 @@
+# 2020-03-28
+
+- add check if proposer is eligible to activate proposal
+
 # 2020-03-17
 
 - fix `check_voter_eligible()` functionality

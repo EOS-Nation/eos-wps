@@ -14,6 +14,9 @@ void wps::submitdraft(const name proposer,
     auto drafts_itr = _drafts.find( proposal_name.value );
     auto proposals_itr = _proposals.find( proposal_name.value );
 
+    // check if proposer is eligible to activate proposal
+    check_eligible_proposer( proposer );
+
     // validation
     check( proposals_itr == _proposals.end(), "[proposal_name] activated proposal already exists, try using a different proposal name" );
     check( drafts_itr == _drafts.end(), "[proposal_name] draft already exists, try using `modifydraft` or `canceldraft` or `modifybudget`" );
