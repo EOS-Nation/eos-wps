@@ -1,3 +1,7 @@
+# 2020-03-29
+
+- add `CORE_TOKEN_CONTRACT` to replace hardcoded value of `eosio.token`
+
 # 2020-03-28
 
 - add check if proposer is eligible to activate proposal

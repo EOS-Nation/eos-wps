@@ -18,6 +18,7 @@ static constexpr uint64_t DAY = 86400; // 24 hours
 static constexpr uint64_t WEEK = 604800; // 7 days
 static constexpr uint64_t MONTH = 2592000; // 30 days
 static constexpr symbol CORE_SYMBOL = symbol{"EOS", 4};
+static constexpr name CORE_TOKEN_CONTRACT = "eosio.token"_n;
 
 /**
  * ## TABLE `settings`

@@ -12,7 +12,7 @@ void wps::init( const wps_parameters params )
 
     // set available EOS as `available_funding`
     auto state = _state.get_or_default();
-    state.available_funding = token::get_balance( "eosio.token"_n, get_self(), CORE_SYMBOL.code() );
+    state.available_funding = token::get_balance( CORE_TOKEN_CONTRACT, get_self(), CORE_SYMBOL.code() );
 
     // start of voting period will start at the nearest 00:00UTC
     const uint64_t now = current_time_point().sec_since_epoch();
@@ -64,7 +64,7 @@ void wps::check_available_funding()
     auto state = _state.get();
     auto settings = _settings.get();
 
-    const asset balance = token::get_balance( "eosio.token"_n, get_self(), CORE_SYMBOL.code() );
+    const asset balance = token::get_balance( CORE_TOKEN_CONTRACT, get_self(), CORE_SYMBOL.code() );
     check( state.available_funding >= settings.max_monthly_budget, "[available_funding] must be equal or greater than [max_monthly_budget]");
     check( balance >= settings.max_monthly_budget, "[balance] must be equal or greater than [max_monthly_budget]");
 }
