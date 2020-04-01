@@ -10,6 +10,10 @@ NC='\033[0m'
 cleos wallet unlock --password $(cat ~/eosio-wallet/.pass)
 cleos wallet import --private-key 5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3
 
+# activate PREACTIVATE_FEATURE
+echo -e "${CYAN}-----------------------PREACTIVATE FEATURE-----------------------${NC}"
+curl -X POST http://127.0.0.1:8888/v1/producer/schedule_protocol_feature_activations -d '{"protocol_features_to_activate": ["0ec7e080177b2c02b278d5088611686b49d739925a92d9bfcacd7fc6b74053bd"]}' | jq
+
 # create system accounts
 echo -e "${CYAN}-----------------------CREATING SYSTEM ACCOUNTS-----------------------${NC}"
 cleos create account eosio eosio.bpay EOS6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5GDW5CV
