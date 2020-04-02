@@ -45,6 +45,7 @@ void wps::check_wps_parameters( const wps_parameters params )
     check( params.deposit_required.amount >= 0, "[deposit_required] must be positive");
     check( params.max_monthly_budget.amount >= 0, "[max_monthly_budget] must be positive");
     check( params.vote_margin > 0, "[vote_margin] must be above zero");
+    check( params.min_time_voting_end < params.voting_interval, "[min_time_voting_end] must less than [voting_interval]");
 }
 
 void wps::check_contract_active()

@@ -1,6 +1,6 @@
 # 2020-04-02
 
-### SECURITY AUDIT
+### SECURITY AUDIT FIXES
 
 - add `check_wps_parameters` to for both `init` & `setparams`:
   - `voting_interval` must be equal to 30 days (2592000)
@@ -10,6 +10,7 @@
 - rename `CORE_SYMBOL` => `BUDGET_SYMBOL`
 - rename `CORE_TOKEN_CONTRACT` => `BUDGET_TOKEN_CONTRACT`
 - to be eligible to comment, must be `proposer` or `voter` must cast a vote on that particular proposal.
+- `min_time_voting_end` must less than `voting_interval`
 
 # 2020-03-29
 
