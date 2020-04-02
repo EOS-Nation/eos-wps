@@ -3,7 +3,7 @@
 
 # init, fund & start
 cleos transfer eosio.names eosio.wps "25000.0000 EOS"
-cleos -v push action eosio.wps init '[{"vote_margin": 2, "deposit_required": "100.0000 EOS", "voting_interval": 86400, "max_monthly_budget": "25000.0000 EOS", "min_time_voting_end": 0 }]' -p eosio.wps
+cleos -v push action eosio.wps init '[{"vote_margin": 2, "deposit_required": "100.0000 EOS", "voting_interval": 2592000, "max_monthly_budget": "25000.0000 EOS", "min_time_voting_end": 0 }]' -p eosio.wps
 
 # setparams
 # 1 day   = 86400
