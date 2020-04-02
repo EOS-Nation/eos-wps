@@ -808,8 +808,8 @@ private:
     // settings
     void add_funding( const asset quantity );
     void sub_funding( const asset quantity );
-    void check_contract_paused();
     void check_contract_active();
+    void check_wps_parameters( const wps_parameters params );
 
     // deposits
     void add_deposit( const name account, const asset quantity, const name ram_payer );

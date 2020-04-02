@@ -1,3 +1,13 @@
+# 2020-04-02
+
+### SECURITY AUDIT
+
+- add `check_wps_parameters` to for both `init` & `setparams`:
+  - `voting_interval` must be equal to 30 days (2592000)
+  - `max_monthly_budget` must be postive asset
+  - `deposit_required` must be positive asset
+  - `vote_margin` must be above zero
+
 # 2020-03-29
 
 - add `CORE_TOKEN_CONTRACT` to replace hardcoded value of `eosio.token`

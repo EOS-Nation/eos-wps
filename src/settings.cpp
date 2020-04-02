@@ -5,6 +5,7 @@ void wps::init( const wps_parameters params )
     const name ram_payer = get_self();
 
     check( !_state.exists(), "already initialized" );
+    check_wps_parameters( params );
 
     // define `settings`
     auto settings = params;
@@ -31,12 +32,19 @@ void wps::init( const wps_parameters params )
 void wps::setparams( const wps_parameters params )
 {
     require_auth( get_self() );
-
-    check( params.voting_interval >= DAY, "[voting_interval] must be equal or above 24 hours (86400)");
-    check( params.deposit_required.symbol == CORE_SYMBOL, "[deposit_required] invalid CORE_SYMBOL");
-    check( params.max_monthly_budget.symbol == CORE_SYMBOL, "[max_monthly_budget] invalid CORE_SYMBOL");
+    check_wps_parameters( params );
 
     _settings.set( params, get_self() );
+}
+
+void wps::check_wps_parameters( const wps_parameters params )
+{
+    check( params.voting_interval == MONTH, "[voting_interval] must equal to 30 days (2592000)");
+    check( params.deposit_required.symbol == CORE_SYMBOL, "[deposit_required] invalid CORE_SYMBOL");
+    check( params.max_monthly_budget.symbol == CORE_SYMBOL, "[max_monthly_budget] invalid CORE_SYMBOL");
+    check( params.deposit_required.amount >= 0, "[deposit_required] must be positive");
+    check( params.max_monthly_budget.amount >= 0, "[max_monthly_budget] must be positive");
+    check( params.vote_margin > 0, "[vote_margin] must be above zero");
 }
 
 void wps::check_contract_active()
