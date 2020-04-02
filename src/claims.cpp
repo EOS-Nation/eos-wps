@@ -4,7 +4,7 @@ void wps::claim( const eosio::name proposal_name )
     // no authorization required (can be executed by any account)
 
     // static actions
-    token::transfer_action transfer( CORE_TOKEN_CONTRACT, { get_self(), "active"_n });
+    token::transfer_action transfer( BUDGET_TOKEN_CONTRACT, { get_self(), "active"_n });
 
     auto proposals_itr = _proposals.find( proposal_name.value );
     const eosio::name proposer = proposals_itr->proposer;

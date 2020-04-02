@@ -11,9 +11,9 @@ void wps::init( const wps_parameters params )
     auto settings = params;
     _settings.set( settings, ram_payer );
 
-    // set available EOS as `available_funding`
+    // set available BUDGET_SYMBOL ("EOS") as `available_funding`
     auto state = _state.get_or_default();
-    state.available_funding = token::get_balance( CORE_TOKEN_CONTRACT, get_self(), CORE_SYMBOL.code() );
+    state.available_funding = token::get_balance( BUDGET_TOKEN_CONTRACT, get_self(), BUDGET_SYMBOL.code() );
 
     // start of voting period will start at the nearest 00:00UTC
     const uint64_t now = current_time_point().sec_since_epoch();
@@ -40,8 +40,8 @@ void wps::setparams( const wps_parameters params )
 void wps::check_wps_parameters( const wps_parameters params )
 {
     check( params.voting_interval == MONTH, "[voting_interval] must equal to 30 days (2592000)");
-    check( params.deposit_required.symbol == CORE_SYMBOL, "[deposit_required] invalid CORE_SYMBOL");
-    check( params.max_monthly_budget.symbol == CORE_SYMBOL, "[max_monthly_budget] invalid CORE_SYMBOL");
+    check( params.deposit_required.symbol == BUDGET_SYMBOL, "[deposit_required] invalid symbol");
+    check( params.max_monthly_budget.symbol == BUDGET_SYMBOL, "[max_monthly_budget] invalid symbol");
     check( params.deposit_required.amount >= 0, "[deposit_required] must be positive");
     check( params.max_monthly_budget.amount >= 0, "[max_monthly_budget] must be positive");
     check( params.vote_margin > 0, "[vote_margin] must be above zero");
@@ -72,7 +72,7 @@ void wps::check_available_funding()
     auto state = _state.get();
     auto settings = _settings.get();
 
-    const asset balance = token::get_balance( CORE_TOKEN_CONTRACT, get_self(), CORE_SYMBOL.code() );
+    const asset balance = token::get_balance( BUDGET_TOKEN_CONTRACT, get_self(), BUDGET_SYMBOL.code() );
     check( state.available_funding >= settings.max_monthly_budget, "[available_funding] must be equal or greater than [max_monthly_budget]");
     check( balance >= settings.max_monthly_budget, "[balance] must be equal or greater than [max_monthly_budget]");
 }

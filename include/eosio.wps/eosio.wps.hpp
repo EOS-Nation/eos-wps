@@ -17,8 +17,8 @@ using namespace std;
 static constexpr uint64_t DAY = 86400; // 24 hours
 static constexpr uint64_t WEEK = 604800; // 7 days
 static constexpr uint64_t MONTH = 2592000; // 30 days
-static constexpr symbol CORE_SYMBOL = symbol{"EOS", 4};
-static constexpr name CORE_TOKEN_CONTRACT = "eosio.token"_n;
+static constexpr symbol BUDGET_SYMBOL = symbol{"EOS", 4};
+static constexpr name BUDGET_TOKEN_CONTRACT = "eosio.token"_n;
 
 /**
  * ## TABLE `settings`
@@ -45,9 +45,9 @@ static constexpr name CORE_TOKEN_CONTRACT = "eosio.token"_n;
  */
 struct [[eosio::table("settings"), eosio::contract("eosio.wps")]] wps_parameters {
     int16_t                 vote_margin = 20;
-    asset                   deposit_required = asset{ 1000000, CORE_SYMBOL};
+    asset                   deposit_required = asset{ 1000000, BUDGET_SYMBOL};
     uint64_t                voting_interval = MONTH;
-    asset                   max_monthly_budget = asset{ 250000000, CORE_SYMBOL};
+    asset                   max_monthly_budget = asset{ 250000000, BUDGET_SYMBOL};
     uint64_t                min_time_voting_end = DAY * 5;
 };
 
@@ -312,9 +312,9 @@ typedef eosio::multi_index< "votes"_n, votes_row> votes_table;
 struct [[eosio::table("state"), eosio::contract("eosio.wps")]] state_row {
     time_point_sec       current_voting_period;
     time_point_sec       next_voting_period;
-    asset                liquid_deposits = asset{0, CORE_SYMBOL};
-    asset                locked_deposits = asset{0, CORE_SYMBOL};
-    asset                available_funding = asset{0, CORE_SYMBOL};
+    asset                liquid_deposits = asset{0, BUDGET_SYMBOL};
+    asset                locked_deposits = asset{0, BUDGET_SYMBOL};
+    asset                available_funding = asset{0, BUDGET_SYMBOL};
 };
 
 typedef eosio::singleton< "state"_n, state_row> state_table;

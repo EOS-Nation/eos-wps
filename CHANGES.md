@@ -7,6 +7,8 @@
   - `max_monthly_budget` must be postive asset
   - `deposit_required` must be positive asset
   - `vote_margin` must be above zero
+- rename `CORE_SYMBOL` => `BUDGET_SYMBOL`
+- rename `CORE_TOKEN_CONTRACT` => `BUDGET_TOKEN_CONTRACT`
 
 # 2020-03-29
 
