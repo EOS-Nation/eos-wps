@@ -51,7 +51,6 @@ void wps::update_vote( const name voter, const name proposal_name, const name vo
 {
     // validate vote
     auto votes_itr = _votes.find( proposal_name.value );
-    auto proposals_itr = _proposals.find( proposal_name.value );
 
     check( votes_itr != _votes.end(), "[proposal_name] votes does not exist");
     check( vote == "yes"_n || vote == "no"_n || vote == "abstain"_n, "[vote] invalid (ex: yes/no/abstain)");
@@ -84,7 +83,6 @@ void wps::update_eligible_proposals()
             // proposal variables
             auto proposal_itr = _proposals.find( proposal_name.value );
             const int16_t total_net_votes = itr->first;
-            const eosio::name proposer = proposal_itr->proposer;
             const eosio::asset monthly_budget = proposal_itr->monthly_budget;
 
             // min requirements for payouts

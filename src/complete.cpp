@@ -53,9 +53,6 @@ void wps::handle_payouts()
     auto settings = _settings.get();
     auto state = _state.get();
 
-    // static actions
-    wps::claim_action claim( get_self(), { get_self(), "active"_n });
-
     // iterate proposals by active status
     for ( auto proposal_name : group_proposals( "active"_n ) ) {
         auto proposals_itr = _proposals.find( proposal_name.value );
