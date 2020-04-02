@@ -6,10 +6,12 @@ void wps::comment( const name account, const name proposal_name, const map<name,
 
     comments_table _comments( get_self(), proposal_name.value );
     auto comments_itr = _comments.find( account.value );
+    const auto proposal = _proposals.get( proposal_name.value, "[proposal_name] does not exists" );
 
     // only proposer and/or eligile voters are allowed to comment
-    const auto proposal = _proposals.get( proposal_name.value, "[proposal_name] does not exists" );
-    check( is_voter_eligible( account ) || proposal.proposer == account, "[account] not eligible to comment on proposal, must be proposer or eligible voter");
+    const map<name, name> votes = _votes.get( proposal_name.value, "[proposal_name] does not exists" ).votes;
+    const bool is_voting = votes.find( account ) != votes.end();
+    check( proposal.proposer == account || is_voting, "[account] not eligible to comment on [proposal_name], must be proposer or voted on proposal");
 
     if ( comments_itr == _comments.end() ) {
         check( metadata_json.size(), "[metadata_json] is empty");

@@ -9,6 +9,7 @@
   - `vote_margin` must be above zero
 - rename `CORE_SYMBOL` => `BUDGET_SYMBOL`
 - rename `CORE_TOKEN_CONTRACT` => `BUDGET_TOKEN_CONTRACT`
+- to be eligible to comment, must be `proposer` or `voter` must cast a vote on that particular proposal.
 
 # 2020-03-29
 
