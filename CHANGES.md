@@ -12,6 +12,7 @@
 - to be eligible to comment, must be `proposer` or `voter` must cast a vote on that particular proposal.
 - `min_time_voting_end` must less than `voting_interval`
 - remove unused parameters
+- remove `update_eligible_proposals()` executing a second time at `complete`
 
 # 2020-03-29
 

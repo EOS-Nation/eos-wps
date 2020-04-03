@@ -27,9 +27,6 @@ void wps::complete( )
 
     // update current & next voting period
     update_to_next_voting_period();
-
-    // re-update `proposals::eligible`
-    update_eligible_proposals();
 }
 
 bool wps::is_voting_period_complete()
