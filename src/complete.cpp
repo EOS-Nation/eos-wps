@@ -124,14 +124,13 @@ bool wps::proposal_exists_per_voting_period( const eosio::name proposal_name, co
 
 void wps::set_pending_to_active()
 {
-    auto index = _proposals.get_index<"bystatus"_n>();
-    auto itr = index.find("pending"_n.value);
+    for ( auto proposal_name : group_proposals( "pending"_n ) ) {
+        auto proposals_itr = _proposals.find( proposal_name.value );
 
-    if (itr == index.end()) return;
-
-    index.modify( itr, same_payer, [&]( auto& row ) {
-        row.status = "active"_n;
-    });
+        _proposals.modify( proposals_itr, same_payer, [&]( auto& row ) {
+            row.status = "active"_n;
+        });
+    }
 }
 
 void wps::check_voting_period_completed()

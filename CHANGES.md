@@ -13,6 +13,7 @@
 - `min_time_voting_end` must less than `voting_interval`
 - remove unused parameters
 - remove `update_eligible_proposals()` executing a second time at `complete`
+- fix `set_pending_to_active()` to modify multiple rows
 
 # 2020-03-29
 
