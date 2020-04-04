@@ -14,6 +14,7 @@
 - remove unused parameters
 - remove `update_eligible_proposals()` executing a second time at `complete`
 - fix `set_pending_to_active()` to modify multiple rows
+- add explicite check for to prevent having above 100 active proposals
 
 # 2020-03-29
 

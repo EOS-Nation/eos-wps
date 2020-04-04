@@ -14,6 +14,10 @@ void wps::activate( const eosio::name proposer, const eosio::name proposal_name,
     // cannot activate proposals during insolvent voting period
     check_available_funding();
 
+    // check if less than 100 active proposals
+    // prevents excessive execute time for processing large amounts of proposals
+    check_max_number_proposals();
+
     // [optional] start voting period
     eosio::time_point_sec voting_period = time_point_sec( start_voting_period->sec_since_epoch() );
 
@@ -73,7 +77,6 @@ void wps::proposal_to_periods( const eosio::name proposal_name, const eosio::nam
         } else {
             _periods.modify( periods_itr, ram_payer, [&]( auto& row ) {
                 row.proposals.insert( proposal_name );
-                check(row.proposals.size() <= 100, "cannot exceed 100 proposals per single voting period");
             });
         }
     }
@@ -168,4 +171,11 @@ void wps::check_eligible_proposer( const name proposer )
 {
     eosiosystem::producers_table _producers( "eosio"_n, "eosio"_n.value );
     check( _producers.find( proposer.value ) == _producers.end(), "[proposer] cannot be a registered producer");
+}
+
+void wps::check_max_number_proposals()
+{
+    auto periods_itr = _periods.find( _state.get().current_voting_period.sec_since_epoch() );
+    if ( periods_itr == _periods.end() ) return; // skip if no proposals in current period
+    check(periods_itr->proposals.size() <= 100, "cannot exceed 100 proposals per single voting period");
 }
