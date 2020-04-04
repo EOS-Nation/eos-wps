@@ -70,7 +70,7 @@ cleos -v push action eosio.wps vote '["mybp2", "novote", "no"]' -p mybp2
 cleos -v push action eosio.wps vote '["mybp3", "novote", "abstain"]' -p mybp3
 cleos -v push action eosio.wps vote '["mybp4", "novote", "no"]' -p mybp4
 
-# can't vote
+# ERROR can't vote
 cleos -v push action eosio.wps vote '["mybp5", "mywps", "yes"]' -p mybp5
 
 # change bp vote & refresh
@@ -82,6 +82,9 @@ cleos push action eosio.wps refresh '[]' -p myaccount
 
 # create/modify comment
 cleos push action eosio.wps comment '["myaccount", "mywps", [{ "key": "text", "value": "my comment" }]]' -p myaccount
+
+# illegible voter is allowed to comment if has previously voted for proposal
+cleos push action eosio.wps comment '["mybp4", "mywps", [{ "key": "text", "value": "my bp comment" }]]' -p mybp4
 
 # delete comment
 cleos push action eosio.wps comment '["myaccount", "mywps", []]' -p myaccount

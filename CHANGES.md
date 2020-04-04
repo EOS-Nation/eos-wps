@@ -1,3 +1,13 @@
+# 2020-04-04
+
+### SECURITY AUDIT FIXES
+
+- retain ineligible votes
+  - do not delete votes when voter becomes ineligible in `refresh_proposal()`
+  - handle ineligible producers in `calculate_total_net_votes()`
+  - simplify `refresh_proposal()`
+  - allows voters to `comment()` if no longer eligible
+
 # 2020-04-02
 
 ### SECURITY AUDIT FIXES

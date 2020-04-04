@@ -12,12 +12,9 @@ void wps::vote( const name voter, const name proposal_name, const name vote )
     // voter must be an active producer with over 100 EOS in total votes
     check_voter_eligible( voter );
 
-    // update `votes` table
-    update_vote( voter, proposal_name, vote );
-
-    // update `votes` from eligible voters
-    // any existing votes with voters with less than 100 EOS vpay will be removed
-    refresh_proposal( proposal_name, get_eligible_producers() );
+    // update `votes` table & eligible voters
+    // any existing votes with voters with less than 100 EOS vpay will be excluded
+    update_vote( voter, proposal_name, vote, get_eligible_producers() );
 
     // update `proposals::eligible` field for all active proposals
     update_eligible_proposals();
@@ -47,7 +44,7 @@ void wps::check_proposal_can_vote( const name proposal_name )
     check( proposals_itr->status == "active"_n, "[proposal_name] must be active");
 }
 
-void wps::update_vote( const name voter, const name proposal_name, const name vote )
+void wps::update_vote( const name voter, const name proposal_name, const name vote, const set<name> eligible_producers )
 {
     // validate vote
     auto votes_itr = _votes.find( proposal_name.value );
@@ -59,7 +56,7 @@ void wps::update_vote( const name voter, const name proposal_name, const name vo
     _votes.modify( votes_itr, same_payer, [&]( auto& row ) {
         check(row.votes[voter] != vote, "[vote] has not been modified");
         row.votes[voter] = vote;
-        update_total_net_votes( proposal_name, row.votes );
+        update_total_net_votes( proposal_name, row.votes, eligible_producers );
     });
 }
 
@@ -116,24 +113,35 @@ std::map<int16_t, std::set<eosio::name>> wps::sort_proposals_by_net_votes( const
 }
 
 
-int16_t wps::calculate_total_net_votes( const std::map<name, name> votes )
+int16_t wps::calculate_total_net_votes( const std::map<name, name> votes, const set<name> eligible_producers )
 {
     int16_t total_net_votes = 0;
     for (std::pair<name, name> item : votes) {
+        const name voter = item.first;
         const name vote = item.second;
+
+        // illegible voters are skipped in calculation (value=0)
+        if ( eligible_producers.find( voter ) == eligible_producers.end() ) continue;
         if (vote == "yes"_n) total_net_votes += 1;
         else if (vote == "no"_n) total_net_votes -= 1;
     }
     return total_net_votes;
 }
 
-void wps::update_total_net_votes( const name proposal_name, const std::map<name, name> votes )
+bool wps::update_total_net_votes( const name proposal_name, const std::map<name, name> votes, const set<name> eligible_producers )
 {
     auto proposal_itr = _proposals.find( proposal_name.value );
     check( proposal_itr != _proposals.end(), "[update_total_net_votes::proposal_name] is not found");
 
     // re-caculate votes
-    _proposals.modify( proposal_itr, same_payer, [&]( auto& row ) {
-        row.total_net_votes = calculate_total_net_votes( votes );
-    });
+    const int16_t total_net_votes = calculate_total_net_votes( votes, eligible_producers );
+    if ( proposal_itr->total_net_votes != total_net_votes ) {
+        _proposals.modify( proposal_itr, same_payer, [&]( auto& row ) {
+            row.total_net_votes = total_net_votes;
+        });
+        // modified
+        return true;
+    }
+    // not modified
+    return false;
 }

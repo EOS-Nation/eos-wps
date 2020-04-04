@@ -782,13 +782,13 @@ private:
     void check_max_number_proposals();
 
     // vote
-    int16_t calculate_total_net_votes( const map<name, name> votes );
-    void update_total_net_votes( const name proposal_name, const std::map<name, name> votes );
-    void update_vote( const name voter, const name proposal_name, const name vote );
+    int16_t calculate_total_net_votes( const map<name, name> votes, const set<name> eligible_producers );
+    bool update_total_net_votes( const name proposal_name, const std::map<name, name> votes, const set<name> eligible_producers );
+    void update_vote( const name voter, const name proposal_name, const name vote, const set<name> eligible_producers );
     void update_eligible_proposals( );
     void check_proposal_can_vote( const name proposal_name );
-    map<int16_t, set<name>> sort_proposals_by_net_votes( const name status );
     void check_voter_eligible( const name voter );
+    map<int16_t, set<name>> sort_proposals_by_net_votes( const name status );
 
     // utils
     checksum256 get_tx_id();
