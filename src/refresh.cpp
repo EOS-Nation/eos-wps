@@ -24,7 +24,7 @@ bool wps::refresh_proposal( const name proposal_name, const set<name> eligible_p
 {
     auto votes_itr = _votes.find( proposal_name.value );
     if ( votes_itr == _votes.end() ) return false;
-    if ( votes_itr.votes.length == 0 ) return false;
+    if ( votes_itr->votes.size() == 0 ) return false;
 
    return update_total_net_votes( proposal_name, votes_itr->votes, eligible_producers );
 }
@@ -34,10 +34,10 @@ bool wps::is_voter_eligible( const name voter )
     eosiosystem::producers_table _producers( "eosio"_n, "eosio"_n.value );
     eosiosystem::global_state_singleton _gstate( "eosio"_n, "eosio"_n.value );
 
-    auto itr = _producers.find( voter.value );
+    auto producer_itr = _producers.find( voter.value );
     auto gstate = _gstate.get();
 
-    const int64_t producer_per_vote_pay = calculate_producer_per_vote_pay( pervote_bucket, total_votes, total_producer_vote_weight );
+    const int64_t producer_per_vote_pay = calculate_producer_per_vote_pay( gstate.pervote_bucket, producer_itr->total_votes, gstate.total_producer_vote_weight );
     if ( producer_per_vote_pay < 1000000 ) return false;
     return true;
 }
