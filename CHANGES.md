@@ -7,6 +7,7 @@
   - handle ineligible producers in `calculate_total_net_votes()`
   - simplify `refresh_proposal()`
   - allows voters to `comment()` if no longer eligible
+- add `calculate_producer_per_vote_pay` helper method
 
 # 2020-04-02
 

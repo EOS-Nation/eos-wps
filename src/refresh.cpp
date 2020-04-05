@@ -37,7 +37,7 @@ bool wps::is_voter_eligible( const name voter )
     auto itr = _producers.find( voter.value );
     auto gstate = _gstate.get();
 
-    const int64_t producer_per_vote_pay = int64_t((gstate.pervote_bucket * itr->total_votes) / gstate.total_producer_vote_weight);
+    const int64_t producer_per_vote_pay = calculate_producer_per_vote_pay( pervote_bucket, total_votes, total_producer_vote_weight );
     if ( producer_per_vote_pay < 1000000 ) return false;
     return true;
 }

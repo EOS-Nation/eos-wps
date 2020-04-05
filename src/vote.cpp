@@ -31,7 +31,7 @@ void wps::check_voter_eligible( const name voter )
     check( prod.is_active, "[voter] must be an active producer");
     check( prod.total_votes > 0.0, "[voter] must have votes");
 
-    const int64_t producer_per_vote_pay = int64_t((gstate.pervote_bucket * prod.total_votes) / gstate.total_producer_vote_weight);
+    const int64_t producer_per_vote_pay = calculate_producer_per_vote_pay( pervote_bucket, total_votes, total_producer_vote_weight );
     check( producer_per_vote_pay >= 1000000, "[voter] must be have a vpay of 100 EOS or above");
 }
 
@@ -144,4 +144,9 @@ bool wps::update_total_net_votes( const name proposal_name, const std::map<name,
     }
     // not modified
     return false;
+}
+
+int64_t calculate_producer_per_vote_pay( const int64_t pervote_bucket, const double total_votes, const double total_producer_vote_weight )
+{
+    return int64_t(( pervote_bucket * total_votes ) / total_producer_vote_weight);
 }
