@@ -32,12 +32,10 @@ bool wps::refresh_proposal( const name proposal_name, const set<name> eligible_p
 bool wps::is_voter_eligible( const name voter )
 {
     eosiosystem::producers_table _producers( "eosio"_n, "eosio"_n.value );
-    eosiosystem::global_state_singleton _gstate( "eosio"_n, "eosio"_n.value );
 
     auto producer_itr = _producers.find( voter.value );
-    auto gstate = _gstate.get();
 
-    const int64_t producer_per_vote_pay = calculate_producer_per_vote_pay( gstate.pervote_bucket, producer_itr->total_votes, gstate.total_producer_vote_weight );
+    const int64_t producer_per_vote_pay = calculate_producer_per_vote_pay( producer_itr->total_votes );
     if ( producer_per_vote_pay < 1000000 ) return false;
     return true;
 }

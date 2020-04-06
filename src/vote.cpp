@@ -23,15 +23,13 @@ void wps::vote( const name voter, const name proposal_name, const name vote )
 void wps::check_voter_eligible( const name voter )
 {
     eosiosystem::producers_table _producers( "eosio"_n, "eosio"_n.value );
-    eosiosystem::global_state_singleton _gstate( "eosio"_n, "eosio"_n.value );
 
     auto prod = _producers.get( voter.value, "[voter] must be registered as a producer" );
-    auto gstate = _gstate.get();
 
     check( prod.is_active, "[voter] must be an active producer");
     check( prod.total_votes > 0.0, "[voter] must have votes");
 
-    const int64_t producer_per_vote_pay = calculate_producer_per_vote_pay( gstate.pervote_bucket, prod.total_votes, gstate.total_producer_vote_weight );
+    const int64_t producer_per_vote_pay = calculate_producer_per_vote_pay( prod.total_votes );
     check( producer_per_vote_pay >= 1000000, "[voter] must be have a vpay of 100 EOS or above");
 }
 
@@ -40,7 +38,6 @@ void wps::check_proposal_can_vote( const name proposal_name )
     auto proposals_itr = _proposals.find( proposal_name.value );
     check( proposals_itr != _proposals.end(), "[proposal_name] does not exist");
     check( proposals_itr->start_voting_period <= current_time_point(), "[proposal_name] has not yet started");
-    check( proposals_itr->end > current_time_point(), "[proposal_name] has ended");
     check( proposals_itr->status == "active"_n, "[proposal_name] must be active");
 }
 
@@ -146,7 +143,10 @@ bool wps::update_total_net_votes( const name proposal_name, const std::map<name,
     return false;
 }
 
-int64_t wps::calculate_producer_per_vote_pay( const int64_t pervote_bucket, const double total_votes, const double total_producer_vote_weight )
+int64_t wps::calculate_producer_per_vote_pay( const double total_votes )
 {
-    return int64_t(( pervote_bucket * total_votes ) / total_producer_vote_weight);
+    eosiosystem::global_state_singleton _gstate( "eosio"_n, "eosio"_n.value );
+    auto gstate = _gstate.get();
+
+    return int64_t(( gstate.pervote_bucket * total_votes ) / gstate.total_producer_vote_weight );
 }

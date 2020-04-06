@@ -789,7 +789,7 @@ private:
     void check_proposal_can_vote( const name proposal_name );
     void check_voter_eligible( const name voter );
     map<int16_t, set<name>> sort_proposals_by_net_votes( const name status );
-    int64_t calculate_producer_per_vote_pay( const int64_t pervote_bucket, const double total_votes, const double total_producer_vote_weight );
+    int64_t calculate_producer_per_vote_pay( const double total_votes );
 
     // utils
     checksum256 get_tx_id();
