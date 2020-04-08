@@ -132,9 +132,6 @@ void wps::emplace_proposal_from_draft( const eosio::name proposer, const eosio::
         if ( start_voting_period == time_point(state.current_voting_period) ) row.status = "active"_n;
         else row.status = "pending"_n;
 
-        // remaining_voting_periods uses duration to set initial value
-        const int16_t remaining_voting_periods = row.status == "active"_n ? drafts_itr->duration - 1 : drafts_itr->duration;
-
         // extras
         row.total_net_votes             = 0;
         row.eligible                    = false;
@@ -142,7 +139,7 @@ void wps::emplace_proposal_from_draft( const eosio::name proposer, const eosio::
         row.claimed                     = asset{0, symbol{"EOS", 4}};
         row.created                     = current_time_point();
         row.start_voting_period         = start_voting_period;
-        row.remaining_voting_periods    = remaining_voting_periods;
+        row.remaining_voting_periods    = drafts_itr->duration;
     });
 
     // erase draft

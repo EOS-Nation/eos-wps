@@ -105,12 +105,20 @@ void wps::update_proposal_status( const eosio::name proposal_name )
     auto proposal_itr = _proposals.find( proposal_name.value );
 
     _proposals.modify( proposal_itr, same_payer, [&]( auto& row ) {
-        // proposal which are no longer active during the next voting period
-        if ( !proposal_exists_per_voting_period( proposal_name, state.next_voting_period )) {
+        // reduce active voting period by 1
+        if ( row.status == "active"_n && row.remaining_voting_periods > 0 ) row.remaining_voting_periods -= 1;
+
+        // no more remaining voting periods
+        if ( row.remaining_voting_periods <= 0 ) {
             if ( row.payouts == row.total_budget ) row.status = "completed"_n;
             else if ( row.payouts.amount > 0 ) row.status = "partial"_n;
             else row.status = "expired"_n;
             row.eligible = false;
+        }
+
+        // set finished proposals to 0 remaining voting periods
+        if ( row.status == "completed"_n || row.status == "partial"_n || row.status == "expired"_n ) {
+            row.remaining_voting_periods = 0;
         }
     });
 }
