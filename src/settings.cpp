@@ -15,9 +15,13 @@ void wps::init( const wps_parameters params )
     auto state = _state.get_or_default();
     state.available_funding = token::get_balance( BUDGET_TOKEN_CONTRACT, get_self(), BUDGET_SYMBOL.code() );
 
-    // start of voting period will start at the nearest 00:00UTC
-    const uint64_t now = current_time_point().sec_since_epoch();
-    const time_point_sec current_voting_period = time_point_sec(now - now % DAY);
+    // // UNCOMMENT FOR PRODUCTION
+    // // start of voting period will start at the nearest 00:00UTC
+    // const uint64_t now = current_time_point().sec_since_epoch();
+    // const time_point_sec current_voting_period = time_point_sec(now - now % DAY);
+
+    if ( TESTING ) print("set `current_voting_period` to now");
+    const time_point_sec current_voting_period = current_time_point();
 
     // define `state`
     state.current_voting_period = current_voting_period;
@@ -39,7 +43,9 @@ void wps::setparams( const wps_parameters params )
 
 void wps::check_wps_parameters( const wps_parameters params )
 {
-    check( params.voting_interval == MONTH, "[voting_interval] must equal to 30 days (2592000)");
+    if ( TESTING ) print("removed `voting_interval` check");
+    // // UNCOMMENT FOR PRODUCTION
+    // check( params.voting_interval == MONTH, "[voting_interval] must equal to 30 days (2592000)");
     check( params.deposit_required.symbol == BUDGET_SYMBOL, "[deposit_required] invalid symbol");
     check( params.max_monthly_budget.symbol == BUDGET_SYMBOL, "[max_monthly_budget] invalid symbol");
     check( params.deposit_required.amount >= 0, "[deposit_required] must be positive");

@@ -20,6 +20,9 @@ static constexpr uint64_t MONTH = 2592000; // 30 days
 static constexpr symbol BUDGET_SYMBOL = symbol{"EOS", 4};
 static constexpr name BUDGET_TOKEN_CONTRACT = "eosio.token"_n;
 
+// remove TESTING flag to break all the testing logic
+static constexpr bool TESTING = true;
+
 /**
  * ## TABLE `settings`
  *

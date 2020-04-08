@@ -39,8 +39,16 @@ void wps::update_to_next_voting_period()
     auto state = _state.get();
     auto settings = _settings.get();
 
-    state.current_voting_period = state.next_voting_period;
-    state.next_voting_period = state.next_voting_period + settings.voting_interval;
+    // // UNCOMMENT FOR PRODUCTION
+    // // start of voting period will start at the nearest 00:00UTC
+    // const uint64_t now = current_time_point().sec_since_epoch();
+    // const time_point_sec current_voting_period = time_point_sec(now - now % DAY);
+
+    if ( TESTING ) print("set `current_voting_period` to now");
+    const time_point_sec current_voting_period = current_time_point();
+
+    state.current_voting_period = current_voting_period;
+    state.next_voting_period = state.current_voting_period + settings.voting_interval;
     _state.set( state, same_payer );
 }
 
