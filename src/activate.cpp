@@ -116,9 +116,6 @@ void wps::emplace_proposal_from_draft( const eosio::name proposer, const eosio::
     drafts_table _drafts( get_self(), proposer.value );
     auto drafts_itr = _drafts.find( proposal_name.value );
 
-    // duration of proposal
-    const time_point end = time_point(start_voting_period) + time_point_sec(settings.voting_interval * drafts_itr->duration);
-
     // convert draft proposal to active
     _proposals.emplace( ram_payer, [&]( auto& row ) {
         row.proposer            = proposer;
@@ -135,14 +132,17 @@ void wps::emplace_proposal_from_draft( const eosio::name proposer, const eosio::
         if ( start_voting_period == time_point(state.current_voting_period) ) row.status = "active"_n;
         else row.status = "pending"_n;
 
+        // remaining_voting_periods uses duration to set initial value
+        const int16_t remaining_voting_periods = row.status == "active"_n ? drafts_itr->duration - 1 : drafts_itr->duration;
+
         // extras
-        row.total_net_votes     = 0;
-        row.eligible            = false;
-        row.payouts             = asset{0, symbol{"EOS", 4}};
-        row.claimed             = asset{0, symbol{"EOS", 4}};
-        row.created             = current_time_point();
-        row.start_voting_period = start_voting_period;
-        row.end                 = end;
+        row.total_net_votes             = 0;
+        row.eligible                    = false;
+        row.payouts                     = asset{0, symbol{"EOS", 4}};
+        row.claimed                     = asset{0, symbol{"EOS", 4}};
+        row.created                     = current_time_point();
+        row.start_voting_period         = start_voting_period;
+        row.remaining_voting_periods    = remaining_voting_periods;
     });
 
     // erase draft

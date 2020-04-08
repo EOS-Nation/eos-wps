@@ -242,7 +242,7 @@ struct [[eosio::table("proposals"), eosio::contract("eosio.wps")]] proposals_row
     asset                   claimed;
     time_point_sec          created;
     time_point_sec          start_voting_period;
-    time_point_sec          end;
+    int16_t                 remaining_voting_periods;
 
     uint64_t primary_key() const { return proposal_name.value; }
     uint64_t by_status() const { return status.value; }
