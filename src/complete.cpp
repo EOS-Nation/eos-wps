@@ -22,11 +22,12 @@ void wps::complete( )
     // payouts of active proposals
     handle_payouts();
 
+    // update current & next voting period
+    update_to_next_voting_period();
+
     // set pending proposals to active status
     set_pending_to_active();
 
-    // update current & next voting period
-    update_to_next_voting_period();
 }
 
 bool wps::is_voting_period_complete()
@@ -145,6 +146,7 @@ void wps::set_pending_to_active()
 
         _proposals.modify( proposals_itr, same_payer, [&]( auto& row ) {
             row.status = "active"_n;
+            row.start_voting_period = _state.get().current_voting_period;
         });
     }
 }

@@ -518,14 +518,14 @@ public:
      *
      * - `{name} proposer` - proposer
      * - `{name} proposal_name` - proposal name
-     * - `{time_point_sec} [start_voting_period=null]` - (optional) activate proposal at the specified voting period (must be current or next)
+     * - `{bool} [activate_next=false]` - (optional) activate proposal at next voting period (default to current voting period)
      *
      * ```bash
-     * cleos push action eosio.wps activate '["myaccount", "mywps", "2019-11-25T00:00:00"]' -p myaccount
+     * cleos push action eosio.wps activate '["myaccount", "mywps", false]' -p myaccount
      * ```
      */
     [[eosio::action]]
-    void activate( const name proposer, const name proposal_name, const optional<time_point_sec> start_voting_period );
+    void activate( const name proposer, const name proposal_name, const bool activate_next );
 
     /**
      * ## ACTION `refund`
@@ -775,12 +775,11 @@ private:
 
     // activate
     void proposal_to_periods( const name proposal_name, const name ram_payer );
-    void check_min_time_voting_end( const time_point_sec start_voting_period );
+    void check_min_time_voting_end( );
     void check_draft_proposal_exists( const name proposer, const name proposal_name );
     void deduct_proposal_activate_fee( const name proposer );
-    void emplace_proposal_from_draft( const name proposer, const name proposal_name, const time_point_sec start_voting_period, const name ram_payer );
+    void emplace_proposal_from_draft( const name proposer, const name proposal_name, const bool activate_next, const name ram_payer );
     void emplace_empty_votes( const name proposal_name, const name ram_payer );
-    void check_start_vote_period( const time_point_sec start_voting_period );
     void check_eligible_proposer( const name proposer );
     void check_max_number_proposals();
 

@@ -20,6 +20,7 @@ cleos -v push action eosio.wps submitdraft '["toaccount", "short", "Short WPS", 
 cleos -v push action eosio.wps submitdraft '["toaccount", "novote", "No Vote WPS", "500.0000 EOS", 1, [{"key":"category", "value":"novote"}]]' -p toaccount
 cleos -v push action eosio.wps submitdraft '["toaccount", "optional", "Optional Vote WPS", "500.0000 EOS", 1, [{"key":"category", "value":"optional"}]]' -p toaccount
 cleos -v push action eosio.wps submitdraft '["myaccount", "large", "My WPS", "20000.0000 EOS", 1, [{"key":"category", "value":"large"}]]' -p myaccount
+cleos -v push action eosio.wps submitdraft '["myaccount", "pending", "My Pending WPS", "24500.0000 EOS", 1, [{"key":"category", "value":"pending"}]]' -p myaccount
 
 # # cancel draft
 # cleos -v push action eosio.wps canceldraft '["myaccount", "mywps"]' -p myaccount
@@ -28,18 +29,19 @@ cleos -v push action eosio.wps submitdraft '["myaccount", "large", "My WPS", "20
 # cleos -v push action eosio.wps modifydraft '["myaccount", "mywps", "My WPS", [{"key":"category", "value":"other"}]]' -p myaccount
 
 # deposit EOS into account
-cleos -v transfer myaccount eosio.wps "200.0000 EOS" ""
-cleos -v transfer toaccount eosio.wps "400.0000 EOS" ""
+cleos -v transfer myaccount eosio.wps "500.0000 EOS" ""
+cleos -v transfer toaccount eosio.wps "500.0000 EOS" ""
 
 # # refund
 # cleos -v push action eosio.wps refund '["myaccount"]' -p myaccount
 
 # activate
-cleos -v push action eosio.wps activate '["myaccount", "mywps", null]' -p myaccount
-cleos -v push action eosio.wps activate '["toaccount", "towps", null]' -p toaccount
-cleos -v push action eosio.wps activate '["toaccount", "short", null]' -p toaccount
-cleos -v push action eosio.wps activate '["toaccount", "novote", null]' -p toaccount
-cleos -v push action eosio.wps activate '["myaccount", "large", null]' -p myaccount
+cleos -v push action eosio.wps activate '["myaccount", "mywps", false]' -p myaccount
+cleos -v push action eosio.wps activate '["toaccount", "towps", false]' -p toaccount
+cleos -v push action eosio.wps activate '["toaccount", "short", false]' -p toaccount
+cleos -v push action eosio.wps activate '["toaccount", "novote", false]' -p toaccount
+cleos -v push action eosio.wps activate '["myaccount", "large", false]' -p myaccount
+cleos -v push action eosio.wps activate '["myaccount", "pending", true]' -p myaccount
 
 # # cancel
 # cleos -v push action eosio.wps canceldraft '["myaccount", "mywps"]' -p myaccount
