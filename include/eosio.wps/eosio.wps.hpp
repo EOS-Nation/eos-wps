@@ -20,7 +20,7 @@ static constexpr uint64_t MONTH = 2592000; // 30 days
 static constexpr symbol BUDGET_SYMBOL = symbol{"EOS", 4};
 static constexpr name BUDGET_TOKEN_CONTRACT = "eosio.token"_n;
 
-// remove TESTING flag to break all the testing logic
+// set TESTING true/false
 static constexpr bool TESTING = true;
 
 /**
@@ -773,15 +773,18 @@ private:
     // private helpers
     // ===============
 
+    // periods
+    void add_proposal_to_periods( const name proposal_name );
+    void copy_current_to_next_periods();
+    void check_max_number_proposals();
+
     // activate
-    void proposal_to_periods( const name proposal_name, const name ram_payer );
     void check_min_time_voting_end( );
     void check_draft_proposal_exists( const name proposer, const name proposal_name );
     void deduct_proposal_activate_fee( const name proposer );
-    void emplace_proposal_from_draft( const name proposer, const name proposal_name, const bool activate_next, const name ram_payer );
-    void emplace_empty_votes( const name proposal_name, const name ram_payer );
+    void emplace_proposal_from_draft( const name proposer, const name proposal_name, const bool activate_next );
+    void emplace_empty_votes( const name proposal_name );
     void check_eligible_proposer( const name proposer );
-    void check_max_number_proposals();
 
     // vote
     int16_t calculate_total_net_votes( const map<name, name> votes, const set<name> eligible_producers );
