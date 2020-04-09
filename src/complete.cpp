@@ -22,6 +22,9 @@ void wps::complete( )
     // payouts of active proposals
     handle_payouts();
 
+    // copy current proposals to next period
+    copy_current_to_next_periods();
+
     // update current & next voting period
     update_to_next_voting_period();
 
@@ -40,13 +43,10 @@ void wps::update_to_next_voting_period()
     auto state = _state.get();
     auto settings = _settings.get();
 
-    // // UNCOMMENT FOR PRODUCTION
-    // // start of voting period will start at the nearest 00:00UTC
-    // const uint64_t now = current_time_point().sec_since_epoch();
-    // const time_point_sec current_voting_period = time_point_sec(now - now % DAY);
-
-    if ( TESTING ) print("set `current_voting_period` to now");
-    const time_point_sec current_voting_period = current_time_point();
+    // start of voting period will start at the nearest 00:00UTC
+    const uint64_t now = current_time_point().sec_since_epoch();
+    time_point_sec current_voting_period = time_point_sec(now - now % DAY);
+    if ( TESTING ) current_voting_period = current_time_point();
 
     state.current_voting_period = current_voting_period;
     state.next_voting_period = state.current_voting_period + settings.voting_interval;
@@ -148,6 +148,7 @@ void wps::set_pending_to_active()
             row.status = "active"_n;
             row.start_voting_period = _state.get().current_voting_period;
         });
+        add_proposal_to_periods( proposal_name );
     }
 }
 
@@ -156,3 +157,4 @@ void wps::check_voting_period_completed()
     auto state = _state.get();
     check( current_time_point() < time_point( state.next_voting_period ), "[current_voting_period] is completed, any account must execute [complete] ACTION to continue");
 }
+

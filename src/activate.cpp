@@ -2,7 +2,6 @@
 void wps::activate( const name proposer, const name proposal_name, bool activate_next )
 {
     require_auth( proposer );
-    const name ram_payer = get_self();
 
     // is contract paused or not
     check_contract_active();
@@ -31,13 +30,13 @@ void wps::activate( const name proposer, const name proposal_name, bool activate
     deduct_proposal_activate_fee( proposer );
 
     // create proposal
-    emplace_proposal_from_draft( proposer, proposal_name, activate_next, ram_payer );
+    emplace_proposal_from_draft( proposer, proposal_name, activate_next );
 
     // add empty votes for proposal
-    emplace_empty_votes( proposal_name, ram_payer );
+    emplace_empty_votes( proposal_name );
 
     // add proposal name to time periods
-    if ( !activate_next ) proposal_to_periods( proposal_name, ram_payer );
+    if ( !activate_next ) add_proposal_to_periods( proposal_name );
 }
 
 void wps::check_min_time_voting_end()
@@ -46,32 +45,6 @@ void wps::check_min_time_voting_end()
     auto settings = _settings.get();
     const time_point end_voting_period = time_point( state.current_voting_period ) + time_point_sec( settings.voting_interval );
     check( current_time_point() + time_point_sec( settings.min_time_voting_end ) < end_voting_period, "cannot activate within " + to_string( settings.min_time_voting_end ) + " seconds of next voting period ending");
-}
-
-void wps::proposal_to_periods( const name proposal_name, const name ram_payer )
-{
-    // settings
-    auto settings = _settings.get();
-    auto proposals_itr = _proposals.find( proposal_name.value );
-
-    // insert proposal name into multiple periods
-    for (int i = 0; i < proposals_itr->duration; i++) {
-        const time_point_sec voting_period = time_point(proposals_itr->start_voting_period) + time_point_sec(settings.voting_interval * i);
-        auto periods_itr = _periods.find( voting_period.sec_since_epoch() );
-
-        // create new set of proposals
-        if ( periods_itr == _periods.end() ) {
-            _periods.emplace( ram_payer, [&]( auto& row ) {
-                row.voting_period   = voting_period;
-                row.proposals       = set<name> { proposal_name };
-            });
-        // insert proposal to old ones
-        } else {
-            _periods.modify( periods_itr, ram_payer, [&]( auto& row ) {
-                row.proposals.insert( proposal_name );
-            });
-        }
-    }
 }
 
 void wps::check_draft_proposal_exists( const name proposer, const name proposal_name )
@@ -100,9 +73,10 @@ void wps::deduct_proposal_activate_fee( const name proposer )
     move_to_locked_deposits( settings.deposit_required );
 }
 
-void wps::emplace_proposal_from_draft( const name proposer, const name proposal_name, const bool activate_next, const name ram_payer )
+void wps::emplace_proposal_from_draft( const name proposer, const name proposal_name, const bool activate_next )
 {
     // settings
+    const name ram_payer = get_self();
     auto settings = _settings.get();
     auto state = _state.get();
     drafts_table _drafts( get_self(), proposer.value );
@@ -137,8 +111,10 @@ void wps::emplace_proposal_from_draft( const name proposer, const name proposal_
     _drafts.erase( drafts_itr );
 }
 
-void wps::emplace_empty_votes( const name proposal_name, const name ram_payer )
+void wps::emplace_empty_votes( const name proposal_name )
 {
+    const name ram_payer = get_self();
+
     // empty votes for proposal
     auto votes_itr = _votes.find( proposal_name.value );
 
@@ -153,11 +129,4 @@ void wps::check_eligible_proposer( const name proposer )
 {
     eosiosystem::producers_table _producers( "eosio"_n, "eosio"_n.value );
     check( _producers.find( proposer.value ) == _producers.end(), "[proposer] cannot be a registered producer");
-}
-
-void wps::check_max_number_proposals()
-{
-    auto periods_itr = _periods.find( _state.get().current_voting_period.sec_since_epoch() );
-    if ( periods_itr == _periods.end() ) return; // skip if no proposals in current period
-    check(periods_itr->proposals.size() <= 100, "cannot exceed 100 proposals per single voting period");
 }
