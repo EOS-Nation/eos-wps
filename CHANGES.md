@@ -1,15 +1,4 @@
-# 2020-04-04
-
-### SECURITY AUDIT FIXES
-
-- retain ineligible votes
-  - do not delete votes when voter becomes ineligible in `refresh_proposal()`
-  - handle ineligible producers in `calculate_total_net_votes()`
-  - simplify `refresh_proposal()`
-  - allows voters to `comment()` if no longer eligible
-- add `calculate_producer_per_vote_pay` helper method
-
-# 2020-04-02
+# 2020-04-02 to 2020-04-09
 
 ### SECURITY AUDIT FIXES
 
@@ -26,6 +15,33 @@
 - remove `update_eligible_proposals()` executing a second time at `complete`
 - fix `set_pending_to_active()` to modify multiple rows
 - add explicite check for to prevent having above 100 active proposals
+- retain ineligible votes
+  - do not delete votes when voter becomes ineligible in `refresh_proposal()`
+  - handle ineligible producers in `calculate_total_net_votes()`
+  - simplify `refresh_proposal()`
+  - allows voters to `comment()` if no longer eligible
+- add `calculate_producer_per_vote_pay` helper method
+
+#### `remaining_voting_periods` major change
+
+- remove `proposals::end` value
+- add `proposals::remaining_voting_periods` number which represent how many remaining of voting periods the proposal has.
+- when proposal `activate` the `remaining_voting_periods` is set to the `duration` (for both active & pending proposals)
+- whenever `complete` is executed, all `active` proposals will reduce -1 the `remaining_voting_periods`, `pending` proposals are unchanged.
+- any proposals that have 0 duration are set to either `completed`/`expired`/`partial`
+- replace `start_voting_period` from `activate()` and replace with `bool activate_next`
+- don't add future or past proposals to `periods`
+- when `complete` add all `active` & `pending` proposal names to `periods`
+- only include `pending` proposals to `periods` when active
+- set `start_voting_period` = 0 for `pending` proposals
+- when `complete` update current & next voting periods to 0:00 UTC (in case multiple days/weeks are skipped, the current voting period will be set to the day the last `complete` is executed).
+- set `start_voting_period` for proposals changing from `pending` => `active`
+
+#### Breaking UI changes
+
+- replace `start_voting_period` from `activate()` ACTION and replace with `bool activate_next` (true = activate next, false = active current)
+- replace `end` value with `remaining_voting_periods` in `proposals` TABLE
+- `remaining_voting_periods` number represents how many remaining of voting periods the proposal has.
 
 # 2020-03-29
 

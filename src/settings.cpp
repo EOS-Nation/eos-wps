@@ -17,7 +17,9 @@ void wps::init( const wps_parameters params )
 
     // start of voting period will start at the nearest 00:00UTC
     const uint64_t now = current_time_point().sec_since_epoch();
-    const time_point_sec current_voting_period = time_point_sec(now - now % DAY);
+    time_point_sec current_voting_period = time_point_sec(now - now % DAY);
+
+    if ( TESTING ) current_voting_period = current_time_point();
 
     // define `state`
     state.current_voting_period = current_voting_period;
@@ -39,7 +41,7 @@ void wps::setparams( const wps_parameters params )
 
 void wps::check_wps_parameters( const wps_parameters params )
 {
-    check( params.voting_interval == MONTH, "[voting_interval] must equal to 30 days (2592000)");
+    if ( !TESTING ) check( params.voting_interval == MONTH, "[voting_interval] must equal to 30 days (2592000)");
     check( params.deposit_required.symbol == BUDGET_SYMBOL, "[deposit_required] invalid symbol");
     check( params.max_monthly_budget.symbol == BUDGET_SYMBOL, "[max_monthly_budget] invalid symbol");
     check( params.deposit_required.amount >= 0, "[deposit_required] must be positive");

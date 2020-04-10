@@ -22,11 +22,15 @@ void wps::complete( )
     // payouts of active proposals
     handle_payouts();
 
-    // set pending proposals to active status
-    set_pending_to_active();
+    // copy current proposals to next period
+    copy_current_to_next_periods();
 
     // update current & next voting period
     update_to_next_voting_period();
+
+    // set pending proposals to active status
+    set_pending_to_active();
+
 }
 
 bool wps::is_voting_period_complete()
@@ -39,8 +43,13 @@ void wps::update_to_next_voting_period()
     auto state = _state.get();
     auto settings = _settings.get();
 
-    state.current_voting_period = state.next_voting_period;
-    state.next_voting_period = state.next_voting_period + settings.voting_interval;
+    // start of voting period will start at the nearest 00:00UTC
+    const uint64_t now = current_time_point().sec_since_epoch();
+    time_point_sec current_voting_period = time_point_sec(now - now % DAY);
+    if ( TESTING ) current_voting_period = current_time_point();
+
+    state.current_voting_period = current_voting_period;
+    state.next_voting_period = state.current_voting_period + settings.voting_interval;
     _state.set( state, same_payer );
 }
 
@@ -105,12 +114,20 @@ void wps::update_proposal_status( const eosio::name proposal_name )
     auto proposal_itr = _proposals.find( proposal_name.value );
 
     _proposals.modify( proposal_itr, same_payer, [&]( auto& row ) {
-        // proposal which are no longer active during the next voting period
-        if ( !proposal_exists_per_voting_period( proposal_name, state.next_voting_period )) {
+        // reduce active voting period by 1
+        if ( row.status == "active"_n && row.remaining_voting_periods > 0 ) row.remaining_voting_periods -= 1;
+
+        // no more remaining voting periods
+        if ( row.remaining_voting_periods <= 0 ) {
             if ( row.payouts == row.total_budget ) row.status = "completed"_n;
             else if ( row.payouts.amount > 0 ) row.status = "partial"_n;
             else row.status = "expired"_n;
             row.eligible = false;
+        }
+
+        // set finished proposals to 0 remaining voting periods
+        if ( row.status == "completed"_n || row.status == "partial"_n || row.status == "expired"_n ) {
+            row.remaining_voting_periods = 0;
         }
     });
 }
@@ -129,7 +146,9 @@ void wps::set_pending_to_active()
 
         _proposals.modify( proposals_itr, same_payer, [&]( auto& row ) {
             row.status = "active"_n;
+            row.start_voting_period = _state.get().current_voting_period;
         });
+        add_proposal_to_periods( proposal_name );
     }
 }
 
@@ -138,3 +157,4 @@ void wps::check_voting_period_completed()
     auto state = _state.get();
     check( current_time_point() < time_point( state.next_voting_period ), "[current_voting_period] is completed, any account must execute [complete] ACTION to continue");
 }
+

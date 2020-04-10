@@ -52,9 +52,9 @@ cleos system newaccount eosio mybp4 EOS6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYq
 cleos system newaccount eosio mybp5 EOS6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5GDW5CV --stake-cpu "100.0000 EOS" --stake-net "100.0000 EOS" --buy-ram-kbytes 8 --transfer
 
 # transfer tokens
-cleos transfer eosio myaccount "1000.0000 EOS"
-cleos transfer eosio toaccount "1000.0000 EOS"
-cleos transfer eosio eosio.names "50000.0000 EOS"
+cleos transfer eosio myaccount "2000.0000 EOS"
+cleos transfer eosio toaccount "2000.0000 EOS"
+cleos transfer eosio eosio.names "100000.0000 EOS"
 
 # WPS Contract
 cleos system newaccount eosio eosio.wps EOS6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5GDW5CV --stake-cpu "100.0000 EOS" --stake-net "100.0000 EOS" --buy-ram-bytes 2097152  --transfer
