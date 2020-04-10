@@ -139,8 +139,8 @@ typedef eosio::multi_index< "proposers"_n, proposers_row> proposers_table;
  *
  * | `param`        | `index_position` | `key_type` |
  * |----------------|------------------|------------|
- * | `account_type` | 2                | i64        |
- * | `timestamp`    | 3                | i64        |
+ * | `timestamp`    | 2                | i64        |
+ * | `account_type` | 3                | i64        |
  *
  * ### params
  *
@@ -172,8 +172,8 @@ struct [[eosio::table("comments"), eosio::contract("eosio.wps")]] comments_row {
     map<name, string>       comment_json;
 
     uint64_t primary_key() const { return account.value; }
-    uint64_t by_account_type() const { return account_type.value; }
     uint64_t by_timestamp() const { return timestamp.sec_since_epoch(); }
+    uint64_t by_account_type() const { return account_type.value; }
 };
 typedef eosio::multi_index< "comments"_n, comments_row,
     indexed_by<"bytimestamp"_n, const_mem_fun<comments_row, uint64_t, &comments_row::by_timestamp>>,
@@ -621,7 +621,7 @@ public:
     /**
      * ## ACTION `setproposer`
      *
-     * Set proposer's metadata
+     * Set proposer's json metadata
      *
      * - **authority**: `proposer`
      * - **ram_payer**: `proposer`
@@ -629,7 +629,7 @@ public:
      * ### params
      *
      * - `{name} proposer` - proposer of proposal
-     * - `{map<name, string>} metadata_json` - a sorted container of <key, value>
+     * - `{map<name, string>} proposer_json` - a sorted container of <key, value>
      *
      * ### example
      *
@@ -638,7 +638,7 @@ public:
      * ```
      */
     [[eosio::action]]
-    void setproposer(const name proposer, const map<name, string> metadata_json );
+    void setproposer(const name proposer, const map<name, string> proposer_json );
 
     /**
      * ## ACTION `init`

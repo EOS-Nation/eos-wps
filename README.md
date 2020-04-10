@@ -211,7 +211,7 @@ cleos push action eosio.wps modifybudget '["myaccount", "mywps", "500.0000 EOS",
 
 ## ACTION `setproposer`
 
-Set proposer's metadata
+Set proposer's json metadata
 
 - **authority**: `proposer`
 - **ram_payer**: `proposer`
@@ -219,7 +219,7 @@ Set proposer's metadata
 ### params
 
 - `{name} proposer` - proposer of proposal
-- `{map<name, string>} metadata_json` - a sorted container of <key, value>
+- `{map<name, string>} proposer_json` - a sorted container of <key, value>
 
 ### example
 
