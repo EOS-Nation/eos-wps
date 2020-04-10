@@ -291,7 +291,7 @@ cleos push action eosio.wps refresh '[]' -p myaccount
 
 - `{name} account` - account name
 - `{name} proposal_name` - proposal name
-- `{map<name, string>} metadata_json` - a sorted container of <key, value>
+- `{map<name, string>} comment_json` - a sorted container of <key, value>
 
 ### example
 
@@ -362,14 +362,14 @@ cleos push action eosio.wps comment '["myaccount", "myproposal", []]' -p myaccou
 ### params
 
 - `{name} proposer` - proposer of proposal
-- `{map<name, string>} metadata_json` - a sorted container of <key, value>
+- `{map<name, string>} proposer_json` - a sorted container of <key, value>
 
 ### example
 
 ```json
 {
   "proposer": "myaccount",
-  "metadata_json": [
+  "proposer_json": [
     { "key": "region", "value": "global" }
   ]
 }
@@ -552,7 +552,7 @@ cleos push action eosio.wps comment '["myaccount", "myproposal", []]' -p myaccou
 - `{name} account` - account name
 - `{time_point_sec} timestamp` - last time created/modified
 - `{uint16_t} version` - version number
-- `{map<name, string>} metadata_json` - a sorted container of <key, value>
+- `{map<name, string>} comment_json` - a sorted container of <key, value>
 
 ### example
 
@@ -561,7 +561,7 @@ cleos push action eosio.wps comment '["myaccount", "myproposal", []]' -p myaccou
   "account": "myaccount",
   "timestamp": "2020-03-26T12:00:00",
   "version": 0,
-  "metadata_json": [
+  "comment_json": [
     { "key": "text", "value": "my comment" }
   ]
 }

@@ -105,14 +105,14 @@ typedef eosio::multi_index< "drafts"_n, drafts_row> drafts_table;
  * ### params
  *
  * - `{name} proposer` - proposer of proposal
- * - `{map<name, string>} metadata_json` - a sorted container of <key, value>
+ * - `{map<name, string>} proposer_json` - a sorted container of <key, value>
  *
  * ### example
  *
  * ```json
  * {
  *   "proposer": "myaccount",
- *   "metadata_json": [
+ *   "proposer_json": [
  *     { "key": "region", "value": "global" }
  *   ]
  * }
@@ -120,7 +120,7 @@ typedef eosio::multi_index< "drafts"_n, drafts_row> drafts_table;
  */
 struct [[eosio::table("proposers"), eosio::contract("eosio.wps")]] proposers_row {
     name                    proposer;
-    map<name, string>       metadata_json;
+    map<name, string>       proposer_json;
 
     uint64_t primary_key() const { return proposer.value; }
 };
@@ -134,25 +134,28 @@ typedef eosio::multi_index< "proposers"_n, proposers_row> proposers_table;
  *
  * ### multi-indexes
  *
- * | `param`     | `index_position` | `key_type` |
- * |-------------|------------------|------------|
- * | `timestamp` | 2                | i64        |
+ * | `param`        | `index_position` | `key_type` |
+ * |----------------|------------------|------------|
+ * | `account_type` | 2                | i64        |
+ * | `timestamp`    | 3                | i64        |
  *
  * ### params
  *
  * - `{name} account` - account name
+ * - `{name} account_type` - account type (voter/proposer/other)
  * - `{time_point_sec} timestamp` - last time created/modified
  * - `{uint16_t} version` - version number
- * - `{map<name, string>} metadata_json` - a sorted container of <key, value>
+ * - `{map<name, string>} comment_json` - a sorted container of <key, value>
  *
  * ### example
  *
  * ```json
  * {
  *   "account": "myaccount",
+ *   "account_type": "proposer",
  *   "timestamp": "2020-03-26T12:00:00",
  *   "version": 0,
- *   "metadata_json": [
+ *   "comment_json": [
  *     { "key": "text", "value": "my comment" }
  *   ]
  * }
@@ -160,15 +163,18 @@ typedef eosio::multi_index< "proposers"_n, proposers_row> proposers_table;
  */
 struct [[eosio::table("comments"), eosio::contract("eosio.wps")]] comments_row {
     name                    account;
+    name                    account_type;
     time_point_sec          timestamp;
     uint16_t                version;
-    map<name, string>       metadata_json;
+    map<name, string>       comment_json;
 
     uint64_t primary_key() const { return account.value; }
+    uint64_t by_account_type() const { return account_type.value; }
     uint64_t by_timestamp() const { return timestamp.sec_since_epoch(); }
 };
 typedef eosio::multi_index< "comments"_n, comments_row,
-    indexed_by<"bytimestamp"_n, const_mem_fun<comments_row, uint64_t, &comments_row::by_timestamp>>
+    indexed_by<"bytimestamp"_n, const_mem_fun<comments_row, uint64_t, &comments_row::by_timestamp>>,
+    indexed_by<"byaccnttype"_n, const_mem_fun<comments_row, uint64_t, &comments_row::by_account_type>>
 > comments_table;
 
 /**
