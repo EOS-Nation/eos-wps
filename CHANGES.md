@@ -1,3 +1,25 @@
+# 2020-04-09
+
+**BREAKING** changes:
+1. renamed all map<name, string> types:
+- `comment_json`
+- `proposer_json`
+- `proposal_json` (no change)
+
+2. actions also affected by renaming:
+- `setproposer`
+- `comment`
+
+3. ACTION `activate` has modified parameters (`start_voting_period` replaced by `bool activate_next`)
+> true = activate next
+> false = active current
+
+**NEW** features:
+- `account_type` is added to comments TABLE (multi-index 2)
+> 3 types: voter, proposer, other
+
+- `remaining_voting_periods` has been added to `proposals` TABLE (counts to track how many voting periods is left for the proposals)
+
 # 2020-04-02 to 2020-04-09
 
 ### SECURITY AUDIT FIXES
