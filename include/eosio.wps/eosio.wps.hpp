@@ -780,8 +780,8 @@ private:
     // ===============
 
     // periods
-    void add_proposal_to_periods( const name proposal_name );
-    void copy_current_to_next_periods();
+    void add_proposal_to_periods( const name proposal_name, const time_point_sec voting_period );
+    void copy_active_voting_periods( const time_point_sec current_voting_period, const time_point_sec next_voting_period );
     void check_max_number_proposals();
 
     // activate

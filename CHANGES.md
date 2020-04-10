@@ -1,3 +1,8 @@
+# 2020-04-10
+
+- update `copy_active_voting_periods` to only copy over `active` proposals
+- fix `copy_active_voting_periods` & `add_proposal_to_periods` to match the same next voting period
+
 # 2020-04-09
 
 **BREAKING** changes:

@@ -22,15 +22,17 @@ void wps::complete( )
     // payouts of active proposals
     handle_payouts();
 
-    // copy current proposals to next period
-    copy_current_to_next_periods();
+    // get current voting period before update
+    const time_point_sec current_voting_period = _state.get().current_voting_period;
 
     // update current & next voting period
     update_to_next_voting_period();
 
+    // copy active current proposals to next period
+    copy_active_voting_periods( current_voting_period, _state.get().current_voting_period );
+
     // set pending proposals to active status
     set_pending_to_active();
-
 }
 
 bool wps::is_voting_period_complete()
@@ -141,14 +143,16 @@ bool wps::proposal_exists_per_voting_period( const eosio::name proposal_name, co
 
 void wps::set_pending_to_active()
 {
+    const time_point_sec current_voting_period = _state.get().current_voting_period;
+
     for ( auto proposal_name : group_proposals( "pending"_n ) ) {
         auto proposals_itr = _proposals.find( proposal_name.value );
 
         _proposals.modify( proposals_itr, same_payer, [&]( auto& row ) {
             row.status = "active"_n;
-            row.start_voting_period = _state.get().current_voting_period;
+            row.start_voting_period = current_voting_period;
         });
-        add_proposal_to_periods( proposal_name );
+        add_proposal_to_periods( proposal_name, current_voting_period );
     }
 }
 

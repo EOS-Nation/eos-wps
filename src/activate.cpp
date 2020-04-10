@@ -36,7 +36,7 @@ void wps::activate( const name proposer, const name proposal_name, bool activate
     emplace_empty_votes( proposal_name );
 
     // add proposal name to time periods
-    if ( !activate_next ) add_proposal_to_periods( proposal_name );
+    if ( !activate_next ) add_proposal_to_periods( proposal_name, _state.get().current_voting_period );
 }
 
 void wps::check_min_time_voting_end()
